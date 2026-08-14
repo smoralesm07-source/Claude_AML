@@ -1,0 +1,980 @@
+<title>IFL Cockpit</title>
+<style>
+@import url('data:text/css,');
+:root{
+  --bg:#070d1a;--s1:#0c1525;--s2:#101c30;--s3:#162540;
+  --bd:rgba(255,255,255,0.07);--bds:#1e3050;
+  --tx:#ddeafc;--tx2:#7090bc;--txm:#354f78;
+  --ac:#3b82f6;--ac2:#1d4ed8;--acg:linear-gradient(135deg,#1d4ed8,#3b82f6);
+  --cr:#ef4444;--cr-bg:rgba(239,68,68,.12);
+  --ch:#f97316;--ch-bg:rgba(249,115,22,.12);
+  --cm:#eab308;--cm-bg:rgba(234,179,8,.12);
+  --cl:#22c55e;--cl-bg:rgba(34,197,94,.12);
+  --sii:#10b981;--sii-bg:rgba(16,185,129,.15);--sii-tx:#34d399;
+  --uaf:#a78bfa;--uaf-bg:rgba(167,139,250,.15);--uaf-tx:#c4b5fd;
+  --cgr:#38bdf8;--cgr-bg:rgba(56,189,248,.15);--cgr-tx:#7dd3fc;
+  --del:#f87171;--del-bg:rgba(248,113,113,.15);--del-tx:#fca5a5;
+  --pre:#fbbf24;--pre-bg:rgba(251,191,36,.15);--pre-tx:#fcd34d;
+  --san:#818cf8;--san-bg:rgba(129,140,248,.15);--san-tx:#a5b4fc;
+  --osl:#22d3ee;--osl-bg:rgba(34,211,238,.15);--osl-tx:#67e8f9;
+  --sid:224px;--top:54px;
+  --rad:10px;--rad-sm:7px;
+}
+@media(prefers-color-scheme:light){:root:not([data-theme=dark]){
+  --bg:#f0f4fb;--s1:#fff;--s2:#f5f8fe;--s3:#eaf0fb;
+  --bd:rgba(0,0,0,0.07);--bds:#d0daea;
+  --tx:#0d1e3a;--tx2:#3d5278;--txm:#8098b8;
+  --ac:#1d4ed8;--ac2:#1e40af;
+  --cr:#dc2626;--cr-bg:rgba(220,38,38,.09);
+  --ch:#ea580c;--ch-bg:rgba(234,88,12,.09);
+  --cm:#ca8a04;--cm-bg:rgba(202,138,4,.09);
+  --cl:#16a34a;--cl-bg:rgba(22,163,74,.09);
+  --sii:#059669;--sii-bg:rgba(5,150,105,.1);--sii-tx:#047857;
+  --uaf:#7c3aed;--uaf-bg:rgba(124,58,237,.1);--uaf-tx:#6d28d9;
+  --cgr:#0284c7;--cgr-bg:rgba(2,132,199,.1);--cgr-tx:#0369a1;
+  --del:#dc2626;--del-bg:rgba(220,38,38,.1);--del-tx:#b91c1c;
+  --pre:#b45309;--pre-bg:rgba(180,83,9,.1);--pre-tx:#92400e;
+  --san:#4338ca;--san-bg:rgba(67,56,202,.1);--san-tx:#3730a3;
+  --osl:#0e7490;--osl-bg:rgba(14,116,144,.1);--osl-tx:#155e75;
+}}
+:root[data-theme=light]{
+  --bg:#f0f4fb;--s1:#fff;--s2:#f5f8fe;--s3:#eaf0fb;
+  --bd:rgba(0,0,0,0.07);--bds:#d0daea;
+  --tx:#0d1e3a;--tx2:#3d5278;--txm:#8098b8;
+  --ac:#1d4ed8;--ac2:#1e40af;
+  --cr:#dc2626;--cr-bg:rgba(220,38,38,.09);
+  --ch:#ea580c;--ch-bg:rgba(234,88,12,.09);
+  --cm:#ca8a04;--cm-bg:rgba(202,138,4,.09);
+  --cl:#16a34a;--cl-bg:rgba(22,163,74,.09);
+  --sii:#059669;--sii-bg:rgba(5,150,105,.1);--sii-tx:#047857;
+  --uaf:#7c3aed;--uaf-bg:rgba(124,58,237,.1);--uaf-tx:#6d28d9;
+  --cgr:#0284c7;--cgr-bg:rgba(2,132,199,.1);--cgr-tx:#0369a1;
+  --del:#dc2626;--del-bg:rgba(220,38,38,.1);--del-tx:#b91c1c;
+  --pre:#b45309;--pre-bg:rgba(180,83,9,.1);--pre-tx:#92400e;
+  --san:#4338ca;--san-bg:rgba(67,56,202,.1);--san-tx:#3730a3;
+  --osl:#0e7490;--osl-bg:rgba(14,116,144,.1);--osl-tx:#155e75;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--tx);display:flex;height:100vh;overflow:hidden;font-size:13px;line-height:1.5}
+/* SIDEBAR */
+#sb{width:var(--sid);background:var(--s1);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;z-index:50;border-right:1px solid var(--bd)}
+.brand{padding:20px 16px 16px;border-bottom:1px solid var(--bd);margin-bottom:4px}
+.brand-tag{font-size:9px;letter-spacing:3px;color:var(--ac);font-weight:800;text-transform:uppercase;margin-bottom:6px;opacity:.9}
+.brand-name{font-size:16px;color:var(--tx);font-weight:800;line-height:1.15;letter-spacing:-.03em}
+.brand-ver{font-size:10px;color:var(--txm);margin-top:5px;font-variant-numeric:tabular-nums}
+.nav-sec{padding:4px 0}
+.nav-lbl{padding:8px 16px 3px;font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--txm);text-transform:uppercase}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 14px 8px 12px;cursor:pointer;border:none;background:0 0;color:var(--tx2);width:100%;text-align:left;font-size:12.5px;transition:.12s;border-left:3px solid transparent;font-family:inherit;font-weight:500}
+.ni:hover{background:rgba(59,130,246,.07);color:var(--tx)}
+.ni.on{background:rgba(59,130,246,.1);color:var(--ac);border-left-color:var(--ac)}
+.ni-ic{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.ni-bd{margin-left:auto;background:var(--cr);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:99px;min-width:18px;text-align:center}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#tb{height:var(--top);background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0}
+#tb-title{font-size:14px;font-weight:700;color:var(--tx);letter-spacing:-.02em}
+#tb-sep{color:var(--bds);font-size:16px;margin:0 2px}
+#ct{flex:1;overflow-y:auto;padding:22px}
+/* CONTROLS */
+.fsel{border:1px solid var(--bd);border-radius:7px;padding:5px 9px;font-size:12px;color:var(--tx2);background:var(--s2);cursor:pointer;font-family:inherit;font-weight:500}
+.fbtn{border:1px solid var(--bd);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;background:var(--s2);color:var(--tx2);font-family:inherit;transition:.12s;font-weight:500}
+.fbtn.on,.fbtn:hover{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3);color:var(--ac)}
+.sinp{border:1px solid var(--bd);border-radius:7px;padding:6px 12px;font-size:12px;color:var(--tx);background:var(--s2);width:200px;font-family:inherit}
+.sinp:focus{outline:none;border-color:rgba(59,130,246,.5);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.fbr{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tb-acts{margin-left:auto;display:flex;gap:6px}
+.btn{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s2);color:var(--tx2);font-family:inherit;transition:.12s}
+.btn:hover{border-color:rgba(59,130,246,.3);color:var(--ac)}
+.btn-p{background:var(--acg);color:#fff;border-color:transparent}
+.btn-p:hover{opacity:.9;color:#fff}
+/* LAYOUT */
+.mh{margin-bottom:20px}
+.mh h1{font-size:22px;font-weight:800;color:var(--tx);letter-spacing:-.03em;line-height:1.1}
+.mh p{font-size:12px;color:var(--tx2);margin-top:4px}
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:18px}
+.kpi{background:var(--s1);border-radius:var(--rad);padding:14px 16px;border:1px solid var(--bd);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--kc,var(--ac))}
+.kpi.sii{--kc:var(--sii)}.kpi.uaf{--kc:var(--uaf)}.kpi.cgr{--kc:var(--cgr)}
+.kpi.del{--kc:var(--del)}.kpi.pre{--kc:var(--pre)}.kpi.san{--kc:var(--san)}
+.kpi.osl{--kc:var(--osl)}.kpi.cr{--kc:var(--cr)}.kpi.hi{--kc:var(--ch)}.kpi.acc{--kc:var(--ac)}
+.kl{font-size:10px;color:var(--tx2);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.kv{font-size:28px;font-weight:800;margin:4px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1}
+.ks{font-size:11px;color:var(--txm)}
+.ksp{position:absolute;bottom:10px;right:12px;opacity:.7}
+.card{background:var(--s1);border-radius:var(--rad);border:1px solid var(--bd);padding:16px;margin-bottom:14px}
+.ct{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:12px;letter-spacing:-.01em}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:14px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+/* BADGES */
+.bd{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.1px}
+.bd.sii{background:var(--sii-bg);color:var(--sii-tx)}.bd.uaf{background:var(--uaf-bg);color:var(--uaf-tx)}
+.bd.cgr{background:var(--cgr-bg);color:var(--cgr-tx)}.bd.del{background:var(--del-bg);color:var(--del-tx)}
+.bd.pre{background:var(--pre-bg);color:var(--pre-tx)}.bd.san{background:var(--san-bg);color:var(--san-tx)}
+.bd.osl{background:var(--osl-bg);color:var(--osl-tx)}
+.rk{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:700}
+.rk.cr{background:var(--cr-bg);color:var(--cr)}.rk.hi{background:var(--ch-bg);color:var(--ch)}
+.rk.md{background:var(--cm-bg);color:var(--cm)}.rk.lo{background:var(--cl-bg);color:var(--cl)}
+/* TABLE */
+.dtbl{width:100%;border-collapse:collapse;font-size:12px}
+.dtbl th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bd);background:var(--s2);white-space:nowrap}
+.dtbl td{padding:9px 10px;border-bottom:1px solid var(--bd)}
+.dtbl tr:last-child td{border-bottom:none}
+.dtbl tbody tr:hover td{background:var(--s2)}
+/* HALLAZGO CARDS */
+.hcard{background:var(--s1);border-radius:var(--rad);border:1px solid var(--bd);padding:16px;margin-bottom:13px;transition:box-shadow .18s,transform .18s}
+.hcard:hover{box-shadow:0 4px 24px rgba(0,0,0,.18);transform:translateY(-1px)}
+.hcard.cr{border-top:2px solid var(--cr)}.hcard.hi{border-top:2px solid var(--ch)}
+.hcard.md{border-top:2px solid var(--cm)}.hcard.lo{border-top:2px solid var(--cl)}
+.htop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px}
+.hid h3{font-size:14px;font-weight:700;letter-spacing:-.02em}
+.hid .rut{font-size:11px;color:var(--txm);margin-top:2px;font-family:'SF Mono',Menlo,monospace}
+.hid .metas{margin-top:7px;display:flex;gap:5px;flex-wrap:wrap}
+.hscore{text-align:center;flex-shrink:0;margin-left:14px}
+.sigs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px}
+.sc{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid}
+.hyp{background:var(--s2);border-radius:7px;padding:10px 13px;margin-bottom:9px;border-left:3px solid var(--ac)}
+.hyp-lbl{font-size:9px;font-weight:800;color:var(--ac);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.hyp-tx{font-size:12px;color:var(--tx2);line-height:1.6}
+.nxt{display:flex;flex-wrap:wrap;gap:4px}
+.nxt-s{background:var(--s2);padding:3px 9px;border-radius:5px;font-size:11px;color:var(--tx2);border:1px solid var(--bd)}
+/* GUARDRAIL */
+.gr{background:var(--s2);border:1px solid var(--bd);border-left:3px solid var(--txm);border-radius:7px;padding:10px 14px;font-size:11px;color:var(--tx2);margin-bottom:16px;line-height:1.6}
+.gr strong{color:var(--tx)}
+/* PROGRESS */
+.pb{height:5px;background:var(--bd);border-radius:99px;overflow:hidden}
+.pf{height:100%;border-radius:99px}
+/* TAG */
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700}
+/* REGION ROW */
+.rrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.rrow:last-child{border-bottom:none}
+.rname{width:160px;font-size:12px;flex-shrink:0;font-weight:500}
+.rbw{flex:1}.rval{width:52px;text-align:right;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
+.rct{width:50px;text-align:right;font-size:11px;color:var(--txm)}
+/* ANOM */
+.ac{background:var(--s1);border-radius:var(--rad);border:1px solid var(--bd);padding:14px;margin-bottom:10px}
+.ah{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.at{font-size:13px;font-weight:700;letter-spacing:-.01em}
+.adesc{font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.6}
+.aev{font-size:11px;color:var(--txm)}
+/* METRIC PAIR */
+.mpair{display:flex;align-items:baseline;gap:6px;margin-top:2px}
+.mpair .delta{font-size:11px;font-weight:600}
+.delta.up{color:var(--cr)}.delta.dn{color:var(--cl)}
+code.rut{font-family:'SF Mono',Menlo,monospace;font-size:12px;color:var(--tx2)}
+@media(max-width:800px){.g2,.g3,.g12,.g21{grid-template-columns:1fr}}
+</style>
+
+<div style="display:flex;height:100vh;overflow:hidden">
+<aside id="sb">
+  <div class="brand">
+    <div class="brand-tag">IFL · v0.6</div>
+    <div class="brand-name">Intelligence<br>Fusion Layer</div>
+    <div class="brand-ver">Cockpit Analítico · 2024</div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Exploración</div>
+    <button class="ni on" data-m="hallazgos" onclick="sw(this)"><span class="ni-ic">🎯</span><span>Motor de Hallazgos</span><span class="ni-bd">12</span></button>
+    <button class="ni" data-m="territorio" onclick="sw(this)"><span class="ni-ic">🗺</span><span>Territorio</span></button>
+    <button class="ni" data-m="actividad" onclick="sw(this)"><span class="ni-ic">📊</span><span>Actividad Sectorial</span></button>
+    <button class="ni" data-m="anomalias" onclick="sw(this)"><span class="ni-ic">⚠️</span><span>Anomalías</span><span class="ni-bd">7</span></button>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Análisis AML</div>
+    <button class="ni" data-m="aml360" onclick="sw(this)"><span class="ni-ic">🔎</span><span>AML 360°</span></button>
+    <button class="ni" data-m="red" onclick="sw(this)"><span class="ni-ic">🔗</span><span>Red de Relaciones</span></button>
+    <button class="ni" data-m="evidencia" onclick="sw(this)"><span class="ni-ic">📋</span><span>Evidencia</span></button>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Fiscalización</div>
+    <button class="ni" data-m="fiscal" onclick="sw(this)"><span class="ni-ic">🏛</span><span>Perímetro UAF</span></button>
+    <button class="ni" data-m="sanciones" onclick="sw(this)"><span class="ni-ic">⚖️</span><span>Sanciones</span></button>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Búsqueda</div>
+    <button class="ni" data-m="perfil" onclick="sw(this)"><span class="ni-ic">🔍</span><span>Perfil por RUT</span></button>
+  </div>
+  <div style="margin-top:auto;padding:14px 16px;border-top:1px solid var(--bd)">
+    <button class="fbtn" style="width:100%;justify-content:center;display:flex;gap:6px" onclick="toggleTheme()">☀ Cambiar tema</button>
+  </div>
+</aside>
+<main id="main" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+  <header id="tb">
+    <span id="tb-title">Motor de Hallazgos</span>
+    <span id="tb-sep">|</span>
+    <div class="fbr">
+      <select class="fsel" id="fp"><option>2024</option><option>2023</option><option>2022–2024</option></select>
+      <select class="fsel" id="fr"><option>Todas las regiones</option><option>RM</option><option>Valparaíso</option><option>Biobío</option><option>La Araucanía</option><option>Antofagasta</option></select>
+      <select class="fsel" id="fl"><option>Todos los niveles</option><option>Crítico ≥80</option><option>Alto 60–79</option><option>Medio 40–59</option></select>
+    </div>
+    <div class="tb-acts">
+      <button class="btn">↓ Exportar</button>
+      <button class="btn btn-p">↻ Actualizar</button>
+    </div>
+  </header>
+  <div id="ct" style="flex:1;overflow-y:auto;padding:22px"></div>
+</main>
+</div>
+
+<script>
+// ── DATA ───────────────────────────────────────────────────────
+const REG=[
+  {id:'XV', n:'Arica y Parinacota',  risk:62,so:23,  cr:145, sp:48200,  al:8,  osfl:12,cgr:3},
+  {id:'I',  n:'Tarapacá',            risk:71,so:41,  cr:287, sp:125e3,  al:14, osfl:18,cgr:5},
+  {id:'II', n:'Antofagasta',         risk:58,so:89,  cr:412, sp:289e3,  al:19, osfl:34,cgr:9},
+  {id:'III',n:'Atacama',             risk:44,so:31,  cr:198, sp:87e3,   al:7,  osfl:9, cgr:4},
+  {id:'IV', n:'Coquimbo',            risk:51,so:67,  cr:334, sp:156e3,  al:12, osfl:21,cgr:6},
+  {id:'V',  n:'Valparaíso',          risk:68,so:178, cr:891, sp:478e3,  al:31, osfl:87,cgr:18},
+  {id:'RM', n:'Metropolitana',       risk:82,so:1243,cr:3456,sp:4820e3, al:127,osfl:432,cgr:67},
+  {id:'VI', n:"O'Higgins",           risk:41,so:54,  cr:267, sp:134e3,  al:9,  osfl:27,cgr:7},
+  {id:'VII',n:'Maule',               risk:48,so:62,  cr:312, sp:145e3,  al:11, osfl:31,cgr:8},
+  {id:'XVI',n:'Ñuble',               risk:39,so:28,  cr:178, sp:78e3,   al:6,  osfl:14,cgr:3},
+  {id:'VIII',n:'Biobío',             risk:61,so:134, cr:678, sp:345e3,  al:24, osfl:73,cgr:14},
+  {id:'IX', n:'La Araucanía',        risk:73,so:87,  cr:534, sp:212e3,  al:28, osfl:56,cgr:12},
+  {id:'XIV',n:'Los Ríos',            risk:45,so:39,  cr:234, sp:98e3,   al:8,  osfl:22,cgr:5},
+  {id:'X',  n:'Los Lagos',           risk:55,so:91,  cr:389, sp:198e3,  al:17, osfl:43,cgr:9},
+  {id:'XI', n:'Aisén',               risk:32,so:14,  cr:87,  sp:45e3,   al:3,  osfl:7, cgr:2},
+  {id:'XII',n:'Magallanes',          risk:37,so:21,  cr:98,  sp:67e3,   al:5,  osfl:10,cgr:3},
+];
+
+const HA=[
+  {id:1,n:'Corporación Agro-Sur Limitada',rut:'76.123.456-7',tipo:'Persona Jurídica',reg:'RM',score:94,
+   sigs:[{src:'san',tx:'3 sanciones ALA/CFT (SVS, CMF) — reincidente confirmado',w:30},{src:'pre',tx:'Pagos Estado +782% en 24 meses; concentración 94% en 1 organismo',w:28},{src:'cgr',tx:'Hallazgo CGR: proveedor recurrente con observaciones contables',w:18},{src:'uaf',tx:'MATCH_FUERTE: actividad SII coincide con sector UAF sin inscripción',w:14},{src:'del',tx:'Comuna de operación: +67% delitos Ley 19.913',w:10}],
+   hyp:'Posible uso de persona jurídica como vehículo de captación y canalización de fondos hacia el sector público. La concentración extrema de pagos en un organismo, combinada con sanciones ALA/CFT previas y ausencia de inscripción UAF, configura un perfil de riesgo prioritario.',
+   nxt:['Verificar inscripción UAF con fuente regulatoria','Revisar cadena de beneficiario final (DDC)','Cruzar con licitaciones en ChileCompra']},
+  {id:2,n:'Inmobiliaria del Pacífico SpA',rut:'77.234.567-8',tipo:'Persona Jurídica',reg:'V',score:87,
+   sigs:[{src:'pre',tx:'Fraccionamiento: 14 pagos similares en 6 días (umbral OC)',w:32},{src:'uaf',tx:'CANDIDATO: actividad inmobiliaria sin reporte ROE período anual',w:25},{src:'sii',tx:'2 empleados / Tramo ventas >UF 100.000: razón atípica',w:20},{src:'cgr',tx:'Organismo pagador: 2 observaciones CGR en período',w:15},{src:'san',tx:'Sanción UAF activa: incumplimiento DDC (2023)',w:8}],
+   hyp:'El patrón de fraccionamiento en pagos públicos combinado con baja dotación y ausencia de ROE sugiere posible estructuración para eludir umbrales de reporte.',
+   nxt:['Analizar si pagos son económicamente idénticos','Verificar OC asociadas','Revisar relación con funcionarios del organismo']},
+  {id:3,n:'Consultora Delta Asesores Ltda.',rut:'78.345.678-9',tipo:'Persona Jurídica',reg:'RM',score:81,
+   sigs:[{src:'sii',tx:'Constitución 2021. Ventas 2023: +8.100% vs año anterior',w:28},{src:'osl',tx:'OSFL relacionada: mismos representantes con antecedentes delictuales',w:24},{src:'pre',tx:'Primer pago estatal 2022: $890M (top 3% proveedores nuevos)',w:22},{src:'cgr',tx:'Presencia en 3 regiones simultáneamente en 18 meses',w:14},{src:'del',tx:'Representante legal: vinculado a investigación Ley 19.913',w:12}],
+   hyp:'Empresa de constitución reciente con crecimiento exponencial y conexiones a OSFL cuyos representantes registran antecedentes delictuales. Patrón consistente con persona jurídica instrumental.',
+   nxt:['Mapear red completa de personas relacionadas','Verificar si OSFL reporta ante SII','Revisar beneficiario final en CMF']},
+  {id:4,n:'Transportes del Norte SA',rut:'79.456.789-0',tipo:'Persona Jurídica',reg:'II',score:74,
+   sigs:[{src:'uaf',tx:'SO UAF inscrito: sin ROS desde 2021. Sin ROE último período',w:26},{src:'san',tx:'Proceso regulatorio activo CMF, materia ALA/CFT (2024)',w:24},{src:'sii',tx:'Domicilio tributario ≠ domicilio operacional; múltiples ACTECO',w:20},{src:'pre',tx:'Migración de organismos: 4 organismos distintos en 3 años',w:18},{src:'del',tx:'Antofagasta: +43% delitos tráfico en período overlapping',w:12}],
+   hyp:'SO que no cumple obligaciones de reportabilidad mientras mantiene relaciones con múltiples organismos. El patrón de migración entre organismos sugiere posible evasión de controles internos.',
+   nxt:['Confirmar estado proceso CMF','Verificar si incumplimiento ROS es persistente','Revisar historial licitaciones por organismo']},
+  {id:5,n:'Minera Atacama Holdings SpA',rut:'76.567.890-1',tipo:'Persona Jurídica',reg:'III',score:69,
+   sigs:[{src:'pre',tx:'Proveedor que crece simultáneamente en 5 instituciones distintas',w:30},{src:'cgr',tx:'Auditorías CGR en 2 organismos: observaciones por trato directo',w:27},{src:'uaf',tx:'MATCH_FUERTE: minería coincide con sector UAF sin inscripción verificada',w:25},{src:'sii',tx:'Ventas 2023/2022 = 12.4x; dotación de trabajadores sin variación',w:18}],
+   hyp:'Crecimiento exponencial simultáneo en múltiples instituciones con hallazgos CGR en contratantes. La ausencia de crecimiento en dotación sugiere que el aumento de facturación no responde a mayor capacidad productiva real.',
+   nxt:['Correlacionar organismos con funcionarios en hallazgos CGR','Verificar si contratos fueron licitación o trato directo']},
+];
+
+const ANOM=[
+  {id:1,title:'Concentración anormal de pagos en nov–dic',type:'anomalia',srcs:['pre'],
+   desc:'14 organismos concentran más del 68% de sus pagos anuales en noviembre–diciembre, con montos superiores al promedio mensual en factor 8.3x. Patrón de ejecución presupuestaria de fin de año con dispersión atípica hacia proveedores de constitución reciente.',
+   ev:'Presupuesto Abierto 2024 · Umbral: razón nov–dic / promedio mensual > 5x.',affected:14},
+  {id:2,title:'Grupos de proveedores con comportamiento temporal sincronizado',type:'anomalia',srcs:['pre','sii'],
+   desc:'3 grupos de 4–6 proveedores cada uno inician y terminan contratos en organismos distintos en ventanas de 30 días, con montos similares y tipos de gasto equivalentes.',
+   ev:'Presupuesto Abierto + ACTECO SII · Correlación temporal de series de pago.',affected:17},
+  {id:3,title:'OSFL sin registro SII con actividad económica activa',type:'anomalia',srcs:['osl','sii'],
+   desc:'38 organizaciones sin fines de lucro constituidas 2020–2023 no registran inicio de actividades ante SII pese a tener RUT asignado y movimiento en el sistema. 12 aparecen vinculadas a personas jurídicas con pagos estatales.',
+   ev:'Radar OSFL + Radar SII · Cruce por RUT exacto.',affected:38},
+  {id:4,title:'SO con término de giro SII no reflejado en nómina UAF',type:'fiscal',srcs:['uaf','sii'],
+   desc:'23 entidades clasificadas como sujetos obligados en el corte UAF registran término de giro ante SII en el período. 8 entidades muestran término SII con aparente actividad UAF residual sin baja del registro.',
+   ev:'Radar SII (término giro) + corte UAF · Cruce RUT exacto.',affected:8},
+  {id:5,title:'Movimiento ROE por comunas sin masa SII correspondiente',type:'aml',srcs:['uaf','sii'],
+   desc:'6 comunas registran volumen ROE que supera en más de 3σ lo esperable según masa de personas jurídicas domiciliadas y su rango de ventas.',
+   ev:'Serie estadística ROE UAF + entity_search.parquet SII · Z-score por comuna.',affected:6},
+  {id:6,title:'Explosión de sociedades en comunas con alta delictualidad Ley 19.913',type:'anomalia',srcs:['sii','del'],
+   desc:'4 comunas RM y 2 Valparaíso registran +150% en constitución de SpA y SRL entre 2021–2023, coincidiendo con el período de mayor densidad de delitos vinculados a la Ley 19.913.',
+   ev:'Radar SII (fecha inicio actividades) + Radar Delictual · Umbral: +150% vs base 2018–2020.',affected:6},
+  {id:7,title:'Proveedores con historial adverso que ingresan a nuevos organismos',type:'anomalia',srcs:['pre','san','cgr'],
+   desc:'9 proveedores con ≥1 sanción prudencial o con aparición en hallazgos CGR en organismos anteriores aparecen por primera vez en nuevos organismos contratantes en 2024.',
+   ev:'Presupuesto Abierto + Radar Sanciones + Radar CGR · Cruce RUT exacto.',affected:9},
+];
+
+const SECT=[
+  {n:'Bancos e inst. financieras',so:45,ros:44,roe:43,s:3},
+  {n:'Corredoras de valores',so:87,ros:71,roe:65,s:8},
+  {n:'Compañías de seguros',so:34,ros:34,roe:30,s:2},
+  {n:'Casas de cambio',so:123,ros:89,roe:102,s:14},
+  {n:'Cooperativas ahorro y crédito',so:56,ros:48,roe:41,s:5},
+  {n:'Empresas de factoring',so:78,ros:52,roe:44,s:9},
+  {n:'Inmobiliarias y constructoras',so:312,ros:134,roe:98,s:23},
+  {n:'Notarios y conservadores',so:445,ros:312,roe:178,s:31},
+  {n:'Gestoras de fondos',so:67,ros:61,roe:58,s:4},
+  {n:'Casinos y juegos de azar',so:23,ros:22,roe:22,s:1},
+];
+
+const SAN=[
+  {e:'Inmobiliaria del Pacífico SpA',rut:'77.234.567-8',aut:'UAF',mat:'DDC/ALA-CFT',f:'2023-08',m:'UF 2.800',r:true,ac:true},
+  {e:'Banco Comercial Regional SA',rut:'97.001.234-5',aut:'CMF',mat:'ALA/CFT — reportabilidad',f:'2024-01',m:'UF 15.000',r:false,ac:true},
+  {e:'Transportes del Norte SA',rut:'79.456.789-0',aut:'CMF',mat:'ALA/CFT',f:'2024-03',m:'pendiente',r:false,ac:false},
+  {e:'Corredora de Valores Sur Ltda.',rut:'76.789.012-3',aut:'CMF',mat:'ALA/CFT — beneficiario final',f:'2023-11',m:'UF 8.500',r:true,ac:true},
+  {e:'Corporación Agro-Sur Ltda.',rut:'76.123.456-7',aut:'SVS',mat:'ALA/CFT',f:'2022-06',m:'UF 4.200',r:true,ac:true},
+  {e:'Corporación Agro-Sur Ltda.',rut:'76.123.456-7',aut:'CMF',mat:'ALA/CFT — DDC',f:'2023-04',m:'UF 6.100',r:true,ac:true},
+];
+
+const MO=[
+  {m:'Ene',aml:4,fis:8,ano:6},{m:'Feb',aml:3,fis:6,ano:5},{m:'Mar',aml:5,fis:9,ano:7},
+  {m:'Abr',aml:6,fis:7,ano:8},{m:'May',aml:8,fis:11,ano:9},{m:'Jun',aml:7,fis:10,ano:12},
+  {m:'Jul',aml:9,fis:12,ano:10},{m:'Ago',aml:11,fis:14,ano:11},{m:'Sep',aml:10,fis:13,ano:13},
+  {m:'Oct',aml:12,fis:15,ano:14},{m:'Nov',aml:14,fis:17,ano:18},{m:'Dic',aml:16,fis:19,ano:22},
+];
+
+// ── UTILS ──────────────────────────────────────────────────────
+function rc(s){return s>=80?'cr':s>=60?'hi':s>=40?'md':'lo'}
+function rl(s){return s>=80?'Crítico':s>=60?'Alto':s>=40?'Medio':'Bajo'}
+function rcol(s){
+  const st=getComputedStyle(document.documentElement);
+  return s>=80?st.getPropertyValue('--cr').trim():s>=60?st.getPropertyValue('--ch').trim():s>=40?st.getPropertyValue('--cm').trim():st.getPropertyValue('--cl').trim();
+}
+function fmt(n){return n.toLocaleString('es-CL')}
+function uid(){return Math.random().toString(36).slice(2)}
+
+const SM={
+  sii:{l:'SII',cl:'sii',c:'var(--sii)',bg:'var(--sii-bg)',tx:'var(--sii-tx)'},
+  uaf:{l:'UAF',cl:'uaf',c:'var(--uaf)',bg:'var(--uaf-bg)',tx:'var(--uaf-tx)'},
+  cgr:{l:'CGR',cl:'cgr',c:'var(--cgr)',bg:'var(--cgr-bg)',tx:'var(--cgr-tx)'},
+  del:{l:'Delictual',cl:'del',c:'var(--del)',bg:'var(--del-bg)',tx:'var(--del-tx)'},
+  pre:{l:'Presupuesto',cl:'pre',c:'var(--pre)',bg:'var(--pre-bg)',tx:'var(--pre-tx)'},
+  san:{l:'Sanciones',cl:'san',c:'var(--san)',bg:'var(--san-bg)',tx:'var(--san-tx)'},
+  osl:{l:'OSFL',cl:'osl',c:'var(--osl)',bg:'var(--osl-bg)',tx:'var(--osl-tx)'},
+};
+
+function bds(s){const m=SM[s]||{l:s,cl:'',c:'#888',bg:'#333',tx:'#ccc'};return`<span class="bd ${m.cl}">${m.l}</span>`}
+function scs(s,tx){const m=SM[s]||{l:s,c:'#888',bg:'#333',tx:'#ccc'};return`<span class="sc" style="background:${m.bg};color:${m.tx};border-color:${m.c}40">${m.l}: ${tx}</span>`}
+
+// ── CHARTS ─────────────────────────────────────────────────────
+function gauge(score){
+  const cls=rc(score);
+  const col=`var(--${cls==='cr'?'cr':cls==='hi'?'ch':cls==='md'?'cm':'cl'})`;
+  const r=22,cx=28,cy=28,perim=2*Math.PI*r,dash=(score/100)*perim;
+  return`<svg width="56" height="56"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bd)" stroke-width="4.5"/>
+<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="4.5" stroke-dasharray="${dash.toFixed(1)} ${perim.toFixed(1)}" stroke-dashoffset="${(perim*.25).toFixed(1)}" stroke-linecap="round"/>
+<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="13" font-weight="800" fill="${col}" font-family="system-ui,sans-serif">${score}</text></svg>`;
+}
+
+function sparkline(data,w,h,color){
+  const max=Math.max(...data),min=Math.min(...data),range=max-min||1;
+  const pts=data.map((v,i)=>`${(i/(data.length-1))*w},${h-((v-min)/range)*(h-4)-2}`).join(' ');
+  const id='sg'+uid();
+  return`<svg width="${w}" height="${h}" style="display:block"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity=".25"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+<polyline points="${pts} ${w},${h} 0,${h}" fill="url(#${id})" stroke="none"/>
+<polyline points="${pts}" stroke="${color}" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function donut(segs,W,H,label){
+  const cx=W/2,cy=H/2,r=Math.min(W,H)/2-6,ri=r*.58;
+  const total=segs.reduce((a,s)=>a+s.v,0);
+  const gap=0.04;
+  let angle=-Math.PI/2,paths='',legend='';
+  segs.forEach((s,i)=>{
+    const slice=(s.v/total)*(2*Math.PI-gap*segs.length);
+    const a1=angle+gap/2,a2=a1+slice;
+    const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const x3=cx+ri*Math.cos(a2),y3=cy+ri*Math.sin(a2);
+    const x4=cx+ri*Math.cos(a1),y4=cy+ri*Math.sin(a1);
+    const lg=slice>Math.PI?1:0;
+    paths+=`<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${lg},1 ${x2.toFixed(1)},${y2.toFixed(1)} L${x3.toFixed(1)},${y3.toFixed(1)} A${ri},${ri} 0 ${lg},0 ${x4.toFixed(1)},${y4.toFixed(1)} Z" fill="${s.c}"/>`;
+    angle+=slice+gap;
+    legend+=`<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--tx2)"><span style="width:8px;height:8px;border-radius:2px;background:${s.c};display:inline-block;flex-shrink:0"></span>${s.l}</span>`;
+  });
+  return`<div style="display:flex;flex-direction:column;align-items:center">
+<svg width="${W}" height="${H}">${paths}
+<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="800" fill="var(--tx)" font-family="system-ui,sans-serif">${total}</text>
+<text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="10" fill="var(--tx2)" font-family="system-ui,sans-serif">${label}</text></svg>
+<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px">${legend}</div></div>`;
+}
+
+function hbar(data,w,h,lw=140){
+  const maxV=Math.max(...data.map(d=>d.v))||1;
+  const rh=h/data.length;
+  let s='';
+  data.forEach((d,i)=>{
+    const y=i*rh;
+    const bw=Math.max(2,(d.v/maxV)*(w-lw-52));
+    const bh=rh*.5,by=y+rh*.25;
+    s+=`<text x="0" y="${y+rh*.65}" font-size="11" fill="var(--tx2)" font-family="system-ui,sans-serif">${d.l}</text>`;
+    s+=`<rect x="${lw}" y="${by}" width="${bw}" height="${bh}" fill="${d.c||'var(--ac)'}" rx="3"/>`;
+    s+=`<text x="${lw+bw+5}" y="${y+rh*.65}" font-size="10" fill="var(--tx)" font-weight="700" font-variant-numeric="tabular-nums" font-family="system-ui,sans-serif">${fmt(d.v)}</text>`;
+  });
+  return`<svg width="${w}" height="${h}" style="overflow:visible;display:block">${s}</svg>`;
+}
+
+function vbar(data,w,h){
+  const pad=20,iW=w-pad*2,iH=h-28,maxV=Math.max(...data.map(d=>d.v))*1.08||1;
+  const bw=Math.max(8,iW/data.length-6);
+  let s='';
+  // grid lines
+  [.33,.66,1].forEach(f=>{const y=8+iH-(f*iH);s+=`<line x1="${pad}" y1="${y}" x2="${pad+iW}" y2="${y}" stroke="var(--bd)" stroke-width="1"/>`});
+  data.forEach((d,i)=>{
+    const bh=Math.max(2,(d.v/maxV)*iH);
+    const x=pad+i*(iW/data.length)+(iW/data.length-bw)/2;
+    const y=8+iH-bh;
+    const id2='vg'+uid();
+    s+=`<defs><linearGradient id="${id2}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${d.c||'var(--ac)'}" stop-opacity="1"/><stop offset="100%" stop-color="${d.c||'var(--ac)'}" stop-opacity=".5"/></linearGradient></defs>`;
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="url(#${id2})" rx="4"/>`;
+    s+=`<text x="${x+bw/2}" y="${8+iH+16}" text-anchor="middle" font-size="9" fill="var(--tx2)" font-family="system-ui,sans-serif">${d.l}</text>`;
+    s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" font-size="9" fill="var(--tx)" font-weight="700" font-family="system-ui,sans-serif">${d.v}</text>`;
+  });
+  return`<svg width="${w}" height="${h}" style="display:block">${s}</svg>`;
+}
+
+function linechart(datasets,labels,w,h){
+  const pl=32,pr=8,pt=10,pb=22,iW=w-pl-pr,iH=h-pt-pb;
+  const allV=datasets.flatMap(d=>d.data);
+  const maxV=Math.max(...allV)*1.12||1;
+  const n=labels.length;
+  const px=i=>pl+(i/(n-1))*iW;
+  const py=v=>pt+iH-(v/maxV)*iH;
+  let s='';
+  // grid
+  [.25,.5,.75,1].forEach(f=>{
+    const y=py(maxV*f);
+    s+=`<line x1="${pl}" y1="${y}" x2="${pl+iW}" y2="${y}" stroke="var(--bd)" stroke-width="1" stroke-dasharray="3,4"/>`;
+    s+=`<text x="${pl-5}" y="${y+4}" text-anchor="end" font-size="8" fill="var(--txm)" font-family="system-ui,sans-serif">${Math.round(maxV*f)}</text>`;
+  });
+  datasets.forEach(ds=>{
+    const pts=ds.data.map((v,i)=>({x:px(i),y:py(v)}));
+    const area=pts.map((p,i)=>`${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')+` L${px(n-1).toFixed(1)},${(pt+iH).toFixed(1)} L${px(0).toFixed(1)},${(pt+iH).toFixed(1)} Z`;
+    const line=pts.map((p,i)=>`${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const gid='lg'+uid();
+    s+=`<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${ds.c}" stop-opacity=".2"/><stop offset="100%" stop-color="${ds.c}" stop-opacity="0"/></linearGradient></defs>`;
+    s+=`<path d="${area}" fill="url(#${gid})"/>`;
+    s+=`<path d="${line}" stroke="${ds.c}" stroke-width="2" fill="none" stroke-linejoin="round"/>`;
+    const last=pts[pts.length-1];
+    s+=`<circle cx="${last.x}" cy="${last.y}" r="3.5" fill="${ds.c}"/>`;
+  });
+  labels.forEach((l,i)=>{s+=`<text x="${px(i).toFixed(1)}" y="${h-4}" text-anchor="middle" font-size="8.5" fill="var(--txm)" font-family="system-ui,sans-serif">${l}</text>`});
+  return`<svg width="${w}" height="${h}" style="display:block">${s}</svg>`;
+}
+
+function heatmap(rows,cols,data,w,h){
+  const cw=Math.floor((w-60)/cols),ch=Math.floor((h-22)/rows);
+  const maxV=Math.max(...data.flat())||1;
+  let s='';
+  cols>0&&[...Array(cols)].forEach((_,j)=>{s+=`<text x="${60+j*cw+cw/2}" y="14" text-anchor="middle" font-size="8" fill="var(--txm)" font-family="system-ui,sans-serif">${MO[j]?.m||j}</text>`});
+  data.forEach((row,i)=>{
+    s+=`<text x="55" y="${22+i*ch+ch/2+4}" text-anchor="end" font-size="9" fill="var(--tx2)" font-family="system-ui,sans-serif">${rows[i]}</text>`;
+    row.forEach((v,j)=>{
+      const a=v/maxV;
+      s+=`<rect x="${60+j*cw+1}" y="${22+i*ch+1}" width="${cw-2}" height="${ch-2}" fill="var(--ac)" opacity="${a*.85+.05}" rx="2"/>`;
+      if(v>0)s+=`<text x="${60+j*cw+cw/2}" y="${22+i*ch+ch/2+4}" text-anchor="middle" font-size="8.5" fill="var(--tx)" font-weight="${v>maxV*.5?'700':'400'}" font-family="system-ui,sans-serif">${v}</text>`;
+    });
+  });
+  return`<svg width="${w}" height="${h}" style="display:block">${s}</svg>`;
+}
+
+// ── CHILE MAP (geographic proportions) ────────────────────────
+// Points approximate actual N-S proportions: Antofagasta=107px, Magallanes=93px etc.
+const CGEO=[
+  {id:'XV', n:'Arica y Parinacota',  y:0,   h:30,  xl:48,xr:118},
+  {id:'I',  n:'Tarapacá',            y:30,  h:40,  xl:44,xr:122},
+  {id:'II', n:'Antofagasta',         y:70,  h:107, xl:36,xr:128},
+  {id:'III',n:'Atacama',             y:177, h:50,  xl:28,xr:122},
+  {id:'IV', n:'Coquimbo',            y:227, h:62,  xl:22,xr:114},
+  {id:'V',  n:'Valparaíso',          y:289, h:42,  xl:15,xr:104},
+  {id:'RM', n:'Metropolitana',       y:331, h:26,  xl:13,xr:96},
+  {id:'VI', n:"O'Higgins",           y:357, h:28,  xl:12,xr:98},
+  {id:'VII',n:'Maule',               y:385, h:34,  xl:10,xr:102},
+  {id:'XVI',n:'Ñuble',               y:419, h:19,  xl:8, xr:104},
+  {id:'VIII',n:'Biobío',             y:438, h:25,  xl:6, xr:110},
+  {id:'IX', n:'La Araucanía',        y:463, h:34,  xl:4, xr:116},
+  {id:'XIV',n:'Los Ríos',            y:497, h:19,  xl:2, xr:112},
+  {id:'X',  n:'Los Lagos',           y:516, h:72,  xl:0, xr:128},
+  {id:'XI', n:'Aisén',               y:588, h:98,  xl:0, xr:152},
+  {id:'XII',n:'Magallanes',          y:686, h:93,  xl:0, xr:178},
+];
+
+function buildMap(layer){
+  const getVal=(r,l)=>{
+    const f=REG.find(x=>x.id===r.id);
+    if(!f)return 0;
+    return l==='risk'?f.risk:l==='del'?f.cr:l==='so'?f.so:l==='sp'?Math.round(f.sp/1e3):f.osfl;
+  };
+  const vals=CGEO.map(r=>getVal(r,layer));
+  const maxV=Math.max(...vals)||1;
+  let s='';
+  CGEO.forEach((r,i)=>{
+    const nxt=CGEO[i+1]||{xl:r.xl,xr:r.xr};
+    const v=vals[i],frac=v/maxV;
+    const intensity=layer==='risk'?v:frac*100;
+    const col=intensity>=75?'var(--cr)':intensity>=55?'var(--ch)':intensity>=35?'var(--cm)':'var(--cl)';
+    const pts=`${r.xl},${r.y} ${r.xr},${r.y} ${nxt.xr},${r.y+r.h} ${nxt.xl},${r.y+r.h}`;
+    const mx=(r.xl+r.xr)/2,my=r.y+r.h/2;
+    s+=`<polygon points="${pts}" fill="${col}" stroke="var(--bg)" stroke-width="1.5" opacity=".88" data-id="${r.id}" style="cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.88" onclick="selectReg('${r.id}')"/>`;
+    s+=`<text x="${mx}" y="${my+(r.h>30?4:3)}" text-anchor="middle" font-size="${r.h>40?9:8}" fill="rgba(255,255,255,.95)" font-weight="700" pointer-events="none" font-family="system-ui,sans-serif">${r.id}</text>`;
+  });
+  return`<svg id="mapa-svg" width="185" height="782" style="flex-shrink:0;border-radius:8px">${s}</svg>`;
+}
+
+let selReg='RM';
+function selectReg(id){
+  selReg=id;
+  const r=REG.find(x=>x.id===id);if(!r)return;
+  const d=document.getElementById('reg-detail');if(!d)return;
+  const col=rcol(r.risk);
+  d.innerHTML=`
+  <div style="font-size:14px;font-weight:800;color:var(--tx);margin-bottom:10px;letter-spacing:-.02em">${r.n}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);font-weight:700">Riesgo</div>
+      <div style="font-size:22px;font-weight:800;color:${col};margin:2px 0">${r.risk}</div>
+      <span class="rk ${rc(r.risk)}">${rl(r.risk)}</span>
+    </div>
+    <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);font-weight:700">Alertas</div>
+      <div style="font-size:22px;font-weight:800;color:var(--ac);margin:2px 0">${r.al}</div>
+      <div style="font-size:10px;color:var(--txm)">activas IFL</div>
+    </div>
+  </div>
+  <table class="dtbl" style="font-size:11px">
+    <tr><td style="color:var(--tx2);padding:5px 6px">SO UAF</td><td style="font-weight:700;text-align:right;padding:5px 6px">${fmt(r.so)}</td></tr>
+    <tr><td style="color:var(--tx2);padding:5px 6px">Delitos Ley 19.913</td><td style="font-weight:700;text-align:right;padding:5px 6px">${fmt(r.cr)}</td></tr>
+    <tr><td style="color:var(--tx2);padding:5px 6px">Gasto público</td><td style="font-weight:700;text-align:right;padding:5px 6px">$${fmt(r.sp)}M</td></tr>
+    <tr><td style="color:var(--tx2);padding:5px 6px">OSFL activas</td><td style="font-weight:700;text-align:right;padding:5px 6px">${r.osfl}</td></tr>
+    <tr><td style="color:var(--tx2);padding:5px 6px">Auditorías CGR</td><td style="font-weight:700;text-align:right;padding:5px 6px">${r.cgr}</td></tr>
+  </table>`;
+}
+
+// ── MODULES ────────────────────────────────────────────────────
+function rHallazgos(){
+  const sp1=sparkline(MO.map(m=>m.aml+m.fis+m.ano),60,28,'var(--ac)');
+  const sp2=sparkline(MO.map((_,i)=>40+i*5+Math.sin(i)*8),60,28,'var(--cr)');
+  const sp3=sparkline([1243,1198,1267,1312,1289,1247],60,28,'var(--uaf)');
+  const kpis=`<div class="krow">
+    <div class="kpi cr"><div class="kl">Hallazgos Prioritarios</div><div class="kv">${HA.length}</div><div class="ks">${HA.filter(h=>h.score>=80).length} en nivel Crítico</div><div class="ksp">${sp2}</div></div>
+    <div class="kpi pre"><div class="kl">Señales Activas</div><div class="kv">${HA.flatMap(h=>h.sigs).length}</div><div class="ks">De 7 fuentes independientes</div></div>
+    <div class="kpi uaf"><div class="kl">Entidades en Escrutinio</div><div class="kv">1.247</div><div class="ks">Con ≥1 señal</div><div class="ksp">${sp3}</div></div>
+    <div class="kpi acc"><div class="kl">Cobertura Territorial</div><div class="kv">16/16</div><div class="ks">Regiones con datos activos</div></div>
+    <div class="kpi san"><div class="kl">Anomalías Detectadas</div><div class="kv">${ANOM.length}</div><div class="ks">Sin corroborar: 3</div></div>
+    <div class="kpi sii"><div class="kl">Score Máximo</div><div class="kv">94</div><div class="ks">Agro-Sur Ltda. · RM</div></div>
+  </div>`;
+  const gr=`<div class="gr"><strong>Distinción semántica:</strong> Hecho ≠ Anomalía ≠ Señal AML ≠ Hipótesis. Las tarjetas muestran convergencia de señales independientes, no acusaciones. Toda evidencia debe trazarse a su fuente y regla. Anomalía de fiscalización no propaga riesgo AML.</div>`;
+  const W=Math.min(680,document.getElementById('ct')?.offsetWidth-44||620);
+  const srcSegs=[
+    {l:'SII',v:8,c:'var(--sii)'},{l:'UAF',v:6,c:'var(--uaf)'},{l:'CGR',v:5,c:'var(--cgr)'},
+    {l:'Delictual',v:7,c:'var(--del)'},{l:'Presupuesto',v:9,c:'var(--pre)'},{l:'Sanciones',v:4,c:'var(--san)'},{l:'OSFL',v:3,c:'var(--osl)'}
+  ];
+  const charts=`<div class="g2" style="margin-bottom:14px">
+    <div class="card"><div class="ct">Evolución de señales · 2024</div>
+      ${linechart([{data:MO.map(m=>m.aml),c:'var(--uaf)'},{data:MO.map(m=>m.fis),c:'var(--cgr)'},{data:MO.map(m=>m.ano),c:'var(--pre)'}],MO.map(m=>m.m),W/2-32,120)}
+      <div style="display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--txm)">
+        <span style="color:var(--uaf)">■ Señal AML</span><span style="color:var(--cgr)">■ Fiscalización</span><span style="color:var(--pre)">■ Anomalía</span>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="ct" style="width:100%">Señales por fuente</div>
+      ${donut(srcSegs,170,170,'señales')}
+    </div>
+  </div>`;
+  const cards=HA.map(h=>{
+    const cls=rc(h.score);
+    return`<div class="hcard ${cls}">
+      <div class="htop">
+        <div class="hid">
+          <h3>${h.n}</h3>
+          <div class="rut">RUT ${h.rut} · ${h.tipo} · Región ${h.reg}</div>
+          <div class="metas">${[...new Set(h.sigs.map(s=>s.src))].map(s=>bds(s)).join('')}</div>
+        </div>
+        <div class="hscore">${gauge(h.score)}<div style="margin-top:4px"><span class="rk ${cls}">${rl(h.score)}</span></div></div>
+      </div>
+      <div class="sigs">${h.sigs.map(s=>scs(s.src,s.tx)).join('')}</div>
+      <div class="hyp"><div class="hyp-lbl">Hipótesis analítica</div><div class="hyp-tx">${h.hyp}</div></div>
+      <div class="nxt">${h.nxt.map(s=>`<span class="nxt-s">→ ${s}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Motor de Hallazgos</h1><p>Entidades con mayor convergencia de señales independientes · Ordenadas por score compuesto · 7 fuentes</p></div>
+    ${gr}${kpis}${charts}
+    <div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:12px;letter-spacing:-.02em">Cola de prioridad analítica</div>
+    ${cards}`;
+}
+
+function rTerritorio(){
+  const sorted=[...REG].sort((a,b)=>b.risk-a.risk);
+  const layers=['risk','del','so','sp','osfl'];
+  const layerLabels=['Riesgo compuesto','Delictual','SO UAF','Gasto Público','OSFL'];
+  let curLayer='risk';
+  const updateMap=()=>{
+    const el=document.getElementById('mapa-container');
+    if(el)el.innerHTML=buildMap(curLayer);
+    selectReg(selReg);
+  };
+  const layerBtns=layerLabels.map((l,i)=>
+    `<button class="fbtn${i===0?' on':''}" onclick="this.parentNode.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));this.classList.add('on');curLayer='${layers[i]}';updateMap()">${l}</button>`
+  ).join('');
+  const regionRows=sorted.map(r=>{
+    const col=rcol(r.risk);
+    return`<div class="rrow">
+      <div class="rname"><strong>${r.id}</strong> <span style="color:var(--tx2)">${r.n}</span></div>
+      <div class="rbw"><div class="pb"><div class="pf" style="width:${r.risk}%;background:${col}"></div></div></div>
+      <div class="rval" style="color:${col}">${r.risk}</div>
+      <div class="rct" style="color:var(--txm)">${r.al} al.</div>
+    </div>`;
+  }).join('');
+  const W2=240;
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Análisis Territorial</h1><p>Distribución geográfica de señales · Chile · 16 regiones · CUT/Subdere</p></div>
+    <div class="fbr" style="margin-bottom:16px"><span style="font-size:12px;color:var(--tx2);font-weight:600">Capa:</span>${layerBtns}</div>
+    <div class="g12">
+      <div>
+        <div class="krow" style="margin-bottom:12px">
+          <div class="kpi cr"><div class="kl">Región Crítica</div><div class="kv" style="font-size:20px">RM</div><div class="ks">Score 82 · 127 alertas</div></div>
+          <div class="kpi hi"><div class="kl">En nivel Alto</div><div class="kv">4</div><div class="ks">Regiones ≥60</div></div>
+        </div>
+        <div class="card"><div class="ct">Score por región</div>
+          <div class="gr" style="margin-bottom:10px;font-size:10px">Score = convergencia de señales. No implica responsabilidad individual.</div>
+          ${regionRows}
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="ct">Mapa Chile · Selecciona región</div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div id="mapa-container">${buildMap('risk')}</div>
+            <div id="reg-detail" style="flex:1;min-width:0"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct">Alertas activas · Top 6 regiones</div>
+          ${vbar(sorted.slice(0,6).map(r=>({l:r.id,v:r.al,c:rcol(r.risk)})),W2,110)}
+        </div>
+      </div>
+    </div>`;
+  selectReg('RM');
+  window.curLayer=curLayer;
+  window.updateMap=updateMap;
+}
+
+function rActividad(){
+  const tot=SECT.reduce((a,b)=>a+b.so,0);
+  const totROS=SECT.reduce((a,b)=>a+b.ros,0);
+  const pctROS=Math.round(totROS/tot*100);
+  const sp=sparkline([78,82,79,75,72,68,65,63],60,28,'var(--cr)');
+  const kpis=`<div class="krow">
+    <div class="kpi uaf"><div class="kl">SO Observados</div><div class="kv">${fmt(tot)}</div><div class="ks">En nómina vigente</div></div>
+    <div class="kpi acc"><div class="kl">Actividades UAF</div><div class="kv">55</div><div class="ks">Con crosswalk SII versionado</div></div>
+    <div class="kpi sii"><div class="kl">ACTECO SII mapeados</div><div class="kv">1.247</div><div class="ks">Equivalencias N:M</div></div>
+    <div class="kpi cr"><div class="kl">Sin ROS en período</div><div class="kv">${100-pctROS}%</div><div class="ks">Del universo SO</div><div class="ksp">${sp}</div></div>
+  </div>`;
+  const heatData=[MO.map(m=>m.aml),MO.map(m=>m.fis),MO.map(m=>m.ano)];
+  const table=SECT.map(s=>{
+    const pr=Math.round(s.ros/s.so*100),pe=Math.round(s.roe/s.so*100);
+    const rkl=pr<60?'cr':pr<80?'hi':'lo';
+    return`<tr><td>${s.n}</td><td style="text-align:right;font-variant-numeric:tabular-nums">${s.so}</td>
+      <td style="text-align:right"><span class="rk ${rkl}">${pr}%</span></td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${pe}%</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${s.s}</td></tr>`;
+  }).join('');
+  const W3=Math.min(360,320);
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Actividad Sectorial</h1><p>55 actividades supervisadas UAF · Crosswalk UAF–ACTECO SII · Universo y brechas</p></div>
+    <div class="gr"><strong>Regla jurídica:</strong> ACTECO SII ≠ condición de sujeto obligado UAF. Los códigos SII sirven para screening; la condición regulatoria debe confirmarse con la fuente regulatoria competente.</div>
+    ${kpis}
+    <div class="g2">
+      <div class="card"><div class="ct">Universo SO por sector · Top 8</div>
+        ${hbar(SECT.slice(0,8).map(s=>({l:s.n.length>24?s.n.slice(0,24)+'…':s.n,v:s.so,c:'var(--uaf)'})),W3,240,180)}
+      </div>
+      <div class="card"><div class="ct">Brecha ROS · entidades sin reporte</div>
+        ${hbar(SECT.slice(0,8).map(s=>({l:s.n.length>24?s.n.slice(0,24)+'…':s.n,v:s.so-s.ros,c:'var(--cr)'})),W3,240,180)}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px"><div class="ct">Mapa de calor señales · Tipo × Mes 2024</div>
+      ${heatmap(['AML','Fiscal','Anomalía'],12,heatData,Math.min(600,500),90)}
+    </div>
+    <div class="card"><div class="ct">Detalle por sector · Reportabilidad</div>
+      <div style="overflow-x:auto"><table class="dtbl">
+        <thead><tr><th>Sector</th><th style="text-align:right">SO</th><th style="text-align:right">% ROS</th><th style="text-align:right">% ROE</th><th style="text-align:right">Sancionados</th></tr></thead>
+        <tbody>${table}</tbody>
+      </table></div>
+    </div>`;
+}
+
+function rAnomalias(){
+  const tc={anomalia:0,fiscal:0,aml:0};
+  ANOM.forEach(a=>tc[a.type]=(tc[a.type]||0)+1);
+  const typeLabel={anomalia:'Anomalía contextual',fiscal:'Alerta fiscalización',aml:'Señal AML'};
+  const typeCol={anomalia:'var(--pre)',fiscal:'var(--cgr)',aml:'var(--uaf)'};
+  const typeBg={anomalia:'var(--pre-bg)',fiscal:'var(--cgr-bg)',aml:'var(--uaf-bg)'};
+  const kpis=`<div class="krow">
+    <div class="kpi pre"><div class="kl">Anomalías contextuales</div><div class="kv">${tc.anomalia}</div><div class="ks">Requieren corroboración</div></div>
+    <div class="kpi cgr"><div class="kl">Alertas fiscalización</div><div class="kv">${tc.fiscal}</div><div class="ks">No son señales AML</div></div>
+    <div class="kpi uaf"><div class="kl">Señales AML</div><div class="kv">${tc.aml}</div><div class="ks">Con evidencia directa</div></div>
+    <div class="kpi acc"><div class="kl">Entidades afectadas</div><div class="kv">${ANOM.reduce((a,b)=>a+b.affected,0)}</div><div class="ks">En revisión activa</div></div>
+  </div>`;
+  const cards=ANOM.map(a=>`<div class="ac">
+    <div class="ah">
+      <div>
+        <div class="at">${a.title}</div>
+        <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">${a.srcs.map(s=>bds(s)).join('')}
+          <span style="font-size:10px;padding:2px 8px;border-radius:5px;background:${typeBg[a.type]};color:${typeCol[a.type]};font-weight:700">${typeLabel[a.type]}</span>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:14px">
+        <div style="font-size:26px;font-weight:800;color:${typeCol[a.type]};line-height:1">${a.affected}</div>
+        <div style="font-size:10px;color:var(--txm)">entidades</div>
+      </div>
+    </div>
+    <div class="adesc">${a.desc}</div>
+    <div class="aev">📎 ${a.ev}</div>
+  </div>`).join('');
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Anomalías Detectadas</h1><p>Patrones contextuales que requieren corroboración analítica antes de elevarse a señal gobernada</p></div>
+    <div class="gr"><strong>Guardrail:</strong> Anomalía contextual ≠ Señal AML. La anomalía requiere corroboración. No se propaga riesgo entre contrapartes. Toda anomalía expone su regla y evidencia.</div>
+    ${kpis}${cards}`;
+}
+
+function rAml360(){
+  const h=HA[0],cls=rc(h.score);
+  const W4=Math.min(380,280);
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>AML 360°</h1><p>Vista integrada de señales, convergencia, eventos, relaciones y evidencia por entidad</p></div>
+    <div class="gr"><strong>AML 360° combina:</strong> señales directas · anomalías contextuales · relaciones observadas. La convergencia de fuentes independientes aumenta la plausibilidad; no reemplaza el análisis formal. Relación ≠ herencia de riesgo.</div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="fbr"><input class="sinp" style="width:240px" placeholder="RUT: 76.123.456-7" value="${h.rut}"/><button class="btn btn-p">Analizar 360°</button><span style="font-size:11px;color:var(--txm)">o buscar por razón social</span></div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--cr)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <h2 style="font-size:16px;font-weight:800;letter-spacing:-.03em">${h.n}</h2>
+          <div style="color:var(--tx2);font-size:12px;margin-top:2px">RUT <code class="rut">${h.rut}</code> · ${h.tipo} · Región ${h.reg}</div>
+          <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">${[...new Set(h.sigs.map(s=>s.src))].map(s=>bds(s)).join('')}</div>
+        </div>
+        <div style="text-align:center">${gauge(h.score)}<div style="margin-top:4px"><span class="rk ${cls}">${rl(h.score)}</span></div></div>
+      </div>
+      <div class="g3" style="margin-bottom:13px">
+        <div style="background:var(--cr-bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:9px;color:var(--cr);font-weight:800;text-transform:uppercase;letter-spacing:.5px">Señales directas</div><div style="font-size:26px;font-weight:800;color:var(--cr);margin:4px 0">${h.sigs.length}</div></div>
+        <div style="background:var(--cm-bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:9px;color:var(--cm);font-weight:800;text-transform:uppercase;letter-spacing:.5px">Fuentes</div><div style="font-size:26px;font-weight:800;color:var(--cm);margin:4px 0">${new Set(h.sigs.map(s=>s.src)).size}</div></div>
+        <div style="background:var(--uaf-bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:9px;color:var(--uaf);font-weight:800;text-transform:uppercase;letter-spacing:.5px">Convergencia</div><div style="font-size:26px;font-weight:800;color:var(--uaf);margin:4px 0">Alta</div></div>
+      </div>
+      <div class="sigs" style="margin-bottom:12px">${h.sigs.map(s=>scs(s.src,s.tx)).join('')}</div>
+      <div class="hyp"><div class="hyp-lbl">Hipótesis analítica</div><div class="hyp-tx">${h.hyp}</div></div>
+      <div class="g2" style="margin-top:14px">
+        <div><div class="ct">Contribución de señales</div>
+          ${hbar(h.sigs.map(s=>({l:(SM[s.src]?.l||s.src),v:s.w,c:SM[s.src]?.c||'#888'})),W4,140,60)}
+        </div>
+        <div>
+          <div class="ct">Próximos pasos</div>
+          ${h.nxt.map(s=>`<div style="padding:6px 0;font-size:12px;border-bottom:1px solid var(--bd);color:var(--tx2)">→ ${s}</div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function rRed(){
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Red de Relaciones</h1><p>Expansión sobre relaciones observadas · Sin herencia de riesgo entre nodos</p></div>
+    <div class="gr"><strong>Guardrail crítico:</strong> Relación, proximidad o actividad económica compartida NO crean ni propagan riesgo AML. La red muestra vínculos observados; el analista determina su relevancia investigativa.</div>
+    <div class="card" style="margin-bottom:12px"><div class="fbr">
+      <input class="sinp" style="width:240px" placeholder="RUT o razón social…"/>
+      <select class="fsel"><option>Tipo: Todos</option><option>Representante legal</option><option>Domicilio compartido</option><option>Proveedor común</option><option>Organismo contratante</option></select>
+      <select class="fsel"><option>Profundidad: 1 salto</option><option>2 saltos</option><option>3 saltos</option></select>
+      <button class="btn btn-p">Expandir red</button>
+    </div></div>
+    <div style="background:var(--s1);border-radius:var(--rad);border:1px solid var(--bd);overflow:hidden">
+      <svg width="100%" height="360" viewBox="0 0 720 360">
+        <defs>
+          <radialGradient id="rbg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#0f2a50" stop-opacity=".4"/><stop offset="100%" stop-color="#060e1c"/></radialGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="720" height="360" fill="url(#rbg)"/>
+        <line x1="360" y1="180" x2="150" y2="80" stroke="#818cf8" stroke-width="1.5" opacity=".4"/>
+        <line x1="360" y1="180" x2="570" y2="80" stroke="#fbbf24" stroke-width="1.5" opacity=".4"/>
+        <line x1="360" y1="180" x2="160" y2="280" stroke="#10b981" stroke-width="1.5" opacity=".4"/>
+        <line x1="360" y1="180" x2="560" y2="280" stroke="#38bdf8" stroke-width="1.5" opacity=".4"/>
+        <line x1="360" y1="180" x2="360" y2="48" stroke="#ef4444" stroke-width="2" opacity=".5"/>
+        <circle cx="360" cy="180" r="34" fill="#ef4444" opacity=".92" filter="url(#glow)"/>
+        <text x="360" y="176" text-anchor="middle" font-size="9.5" fill="white" font-weight="800" font-family="system-ui,sans-serif">Agro-Sur</text>
+        <text x="360" y="189" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.7)" font-family="system-ui,sans-serif">Score 94</text>
+        <circle cx="150" cy="80" r="24" fill="#818cf8" opacity=".9"/>
+        <text x="150" y="76" text-anchor="middle" font-size="8.5" fill="white" font-family="system-ui,sans-serif">Rep. Legal</text>
+        <text x="150" y="89" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.6)" font-family="system-ui,sans-serif">Sanciones</text>
+        <circle cx="570" cy="80" r="24" fill="#fbbf24" opacity=".9"/>
+        <text x="570" y="76" text-anchor="middle" font-size="8.5" fill="white" font-family="system-ui,sans-serif">Organismo</text>
+        <text x="570" y="89" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.6)" font-family="system-ui,sans-serif">CGR obs.</text>
+        <circle cx="160" cy="280" r="24" fill="#10b981" opacity=".9"/>
+        <text x="160" y="276" text-anchor="middle" font-size="8.5" fill="white" font-family="system-ui,sans-serif">OSFL</text>
+        <text x="160" y="289" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.6)" font-family="system-ui,sans-serif">Relacionada</text>
+        <circle cx="560" cy="280" r="24" fill="#38bdf8" opacity=".9"/>
+        <text x="560" y="276" text-anchor="middle" font-size="8.5" fill="white" font-family="system-ui,sans-serif">Proveedor</text>
+        <text x="560" y="289" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.6)" font-family="system-ui,sans-serif">Compartido</text>
+        <circle cx="360" cy="48" r="22" fill="#ef4444" opacity=".65"/>
+        <text x="360" y="44" text-anchor="middle" font-size="8.5" fill="white" font-family="system-ui,sans-serif">Holding</text>
+        <text x="360" y="56" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.6)" font-family="system-ui,sans-serif">BF?</text>
+        <text x="710" y="348" text-anchor="end" font-size="8.5" fill="#3d5a80" font-family="system-ui,sans-serif">Relación ≠ herencia de riesgo · Solo vínculos observados</text>
+      </svg>
+    </div>`;
+}
+
+function rEvidencia(){
+  const srcs=[
+    {n:'Radar SII',ei:1,te:1,se:1,pe:1,cov:'Nacional',upd:'Mensual',st:'✓'},
+    {n:'Radar UAF',ei:1,te:1,se:1,pe:1,cov:'Nacional',upd:'Anual',st:'✓'},
+    {n:'Radar CGR',ei:1,te:0,se:0,pe:1,cov:'Nacional',upd:'Variable',st:'✓'},
+    {n:'Radar Delictual',ei:0,te:1,se:0,pe:1,cov:'Nacional',upd:'Mensual',st:'✓'},
+    {n:'Presupuesto Abierto',ei:1,te:1,se:1,pe:1,cov:'Nacional',upd:'Diario',st:'✓'},
+    {n:'Radar Sanciones',ei:1,te:0,se:1,pe:1,cov:'Parcial',upd:'Variable',st:'⚠'},
+    {n:'Radar OSFL',ei:1,te:1,se:0,pe:1,cov:'Nacional',upd:'Anual',st:'✓'},
+    {n:'Context Hub',ei:0,te:1,se:1,pe:1,cov:'Nacional',upd:'Anual',st:'✓'},
+  ];
+  const ck=v=>v?'<span style="color:var(--cl);font-weight:700">✓</span>':'<span style="color:var(--txm)">—</span>';
+  const rows=srcs.map(s=>`<tr><td><strong>${s.n}</strong></td>
+    <td style="text-align:center">${ck(s.ei)}</td><td style="text-align:center">${ck(s.te)}</td>
+    <td style="text-align:center">${ck(s.se)}</td><td style="text-align:center">${ck(s.pe)}</td>
+    <td>${s.cov}</td><td>${s.upd}</td><td style="font-size:14px;text-align:center">${s.st}</td></tr>`).join('');
+  const keys=[
+    {k:'entity_id',d:'Identidad canónica de la entidad (RUT conformado)'},
+    {k:'territory_id',d:'CL-REG / CL-PROV / CL-COM (CUT/Subdere)'},
+    {k:'sector_id',d:'55 actividades UAF conformadas'},
+    {k:'period_id',d:'Período canónico de la señal'},
+    {k:'source_id',d:'Fuente y versión del dato'},
+  ].map(k=>`<div style="padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px"><code style="font-family:'SF Mono',Menlo,monospace;background:var(--s2);padding:2px 7px;border-radius:4px;color:var(--ac);font-size:11px">${k.k}</code> <span style="color:var(--tx2)">${k.d}</span></div>`).join('');
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Evidencia y Trazabilidad</h1><p>Cobertura, fuente y trazabilidad de todas las señales · Principio evidence-first: missing ≠ zero</p></div>
+    <div class="gr"><strong>Principio rector:</strong> La ausencia de dato en una fuente no equivale a ausencia del hecho. Cada señal está trazada a su fuente, regla y período. <code style="font-family:monospace;font-size:11px">signals.jsonl</code> y <code style="font-family:monospace;font-size:11px">scores.jsonl</code> son invariantes de producción.</div>
+    <div class="card" style="margin-bottom:14px"><div class="ct">Matriz de cobertura por fuente</div>
+      <div style="overflow-x:auto"><table class="dtbl">
+        <thead><tr><th>Fuente</th><th style="text-align:center">entity_id</th><th style="text-align:center">territory_id</th><th style="text-align:center">sector_id</th><th style="text-align:center">period_id</th><th>Cobertura</th><th>Actualización</th><th style="text-align:center">Estado</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div>
+    <div class="card"><div class="ct">Claves conformadas del ecosistema IFL</div>${keys}
+      <div style="margin-top:13px;font-size:11px;color:var(--txm)">Las anomalías de fiscalización y alertas de fiscalización <strong>no modifican</strong> signals.jsonl ni scores.jsonl. Son objetos semánticos distintos de las señales AML gobernadas.</div>
+    </div>`;
+}
+
+function rFiscal(){
+  const tot=SECT.reduce((a,b)=>a+b.so,0),ros=SECT.reduce((a,b)=>a+b.ros,0);
+  const kpis=`<div class="krow">
+    <div class="kpi uaf"><div class="kl">SO Observados (UAF)</div><div class="kv">${fmt(tot)}</div><div class="ks">En nómina vigente</div></div>
+    <div class="kpi cr"><div class="kl">MATCH_FUERTE (ICP)</div><div class="kv">347</div><div class="ks">Sin inscripción UAF verificada</div></div>
+    <div class="kpi hi"><div class="kl">CANDIDATO (ICP)</div><div class="kv">812</div><div class="ks">Equivalencia parcial/ambigua</div></div>
+    <div class="kpi pre"><div class="kl">Sin ROS en período</div><div class="kv">${fmt(tot-ros)}</div><div class="ks">${Math.round((1-ros/tot)*100)}% del universo</div></div>
+    <div class="kpi san"><div class="kl">Sancionados supervisor</div><div class="kv">${SECT.reduce((a,b)=>a+b.s,0)}</div><div class="ks">Con evento adverso activo</div></div>
+  </div>`;
+  const W5=Math.min(340,280);
+  const table=SECT.map(s=>{
+    const pr=Math.round(s.ros/s.so*100),pe=Math.round(s.roe/s.so*100);
+    const rkl=pr<60?'cr':pr<80?'hi':'lo';
+    return`<tr><td>${s.n}</td><td style="text-align:right;font-variant-numeric:tabular-nums">${s.so}</td>
+      <td style="text-align:right"><span class="rk ${rkl}">${pr}%</span></td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${pe}%</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${s.s}</td></tr>`;
+  }).join('');
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Perímetro UAF · Fiscalización</h1><p>Sujetos obligados, brechas de inscripción, reportabilidad y supervisión · 55 actividades UAF</p></div>
+    <div class="gr"><strong>Guardrail:</strong> ACTECO SII ≠ condición jurídica de sujeto obligado. MATCH_FUERTE identifica candidatos a validación. ICR permanece nulo hasta validación con fuente regulatoria. Alerta de fiscalización ≠ señal AML.</div>
+    ${kpis}
+    <div class="g2">
+      <div class="card"><div class="ct">Cobertura ROS por sector</div>
+        ${hbar(SECT.slice(0,8).map(s=>({l:s.n.length>24?s.n.slice(0,24)+'…':s.n,v:Math.round(s.ros/s.so*100),c:s.ros/s.so>=.8?'var(--cl)':s.ros/s.so>=.6?'var(--cm)':'var(--cr)'})),W5,240,185)}
+      </div>
+      <div class="card"><div class="ct">SO por región · Top 6</div>
+        ${vbar([...REG].sort((a,b)=>b.so-a.so).slice(0,6).map(r=>({l:r.id,v:r.so,c:rcol(r.risk)})),W5,140)}
+      </div>
+    </div>
+    <div class="card"><div class="ct">Reportabilidad por sector</div>
+      <div style="overflow-x:auto"><table class="dtbl">
+        <thead><tr><th>Sector</th><th style="text-align:right">SO</th><th style="text-align:right">% ROS</th><th style="text-align:right">% ROE</th><th style="text-align:right">Sancionados</th></tr></thead>
+        <tbody>${table}</tbody>
+      </table></div>
+    </div>`;
+}
+
+function rSanciones(){
+  const alacft=SAN.filter(s=>s.mat.includes('ALA')).length;
+  const rein=SAN.filter(s=>s.r).length;
+  const pend=SAN.filter(s=>!s.ac).length;
+  const rows=SAN.map(s=>{
+    const rc2=s.r?'<span class="rk cr">Reincidente</span>':'<span class="rk lo">1ª vez</span>';
+    const ac2=s.ac?'<span style="color:var(--cl);font-size:11px;font-weight:600">✓ Resuelto</span>':'<span style="color:var(--ch);font-size:11px;font-weight:600">● Activo</span>';
+    const ala=s.mat.includes('ALA')?`<span style="font-size:10px;padding:1px 7px;border-radius:4px;background:var(--uaf-bg);color:var(--uaf-tx);font-weight:700">ALA/CFT</span>`:'';
+    return`<tr><td><strong>${s.e}</strong><br><code class="rut">${s.rut}</code></td>
+      <td>${s.aut}</td><td>${s.mat} ${ala}</td>
+      <td style="font-variant-numeric:tabular-nums">${s.f}</td>
+      <td style="font-variant-numeric:tabular-nums;font-weight:600">${s.m}</td>
+      <td>${rc2}</td><td>${ac2}</td></tr>`;
+  }).join('');
+  const autSegs=[{l:'CMF',v:3,c:'var(--cgr)'},{l:'UAF',v:1,c:'var(--uaf)'},{l:'SVS',v:1,c:'var(--sii)'},{l:'Otros',v:1,c:'var(--txm)'}];
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Registro de Sanciones</h1><p>Eventos adversos regulatorios por supervisor prudencial · Con resolución de identidad</p></div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="krow" style="grid-column:1/-1;margin-bottom:0">
+        <div class="kpi san"><div class="kl">Total sanciones</div><div class="kv">${SAN.length}</div><div class="ks">En período</div></div>
+        <div class="kpi cr"><div class="kl">Vinculadas ALA/CFT</div><div class="kv">${alacft}</div><div class="ks">${Math.round(alacft/SAN.length*100)}% del total</div></div>
+        <div class="kpi hi"><div class="kl">Reincidentes</div><div class="kv">${rein}</div><div class="ks">Con ≥2 eventos adversos</div></div>
+        <div class="kpi acc"><div class="kl">Procesos activos</div><div class="kv">${pend}</div><div class="ks">Sin resolución definitiva</div></div>
+      </div>
+    </div>
+    <div class="g21" style="margin-bottom:14px">
+      <div class="card"><div class="ct">Registro detallado</div>
+        <div style="overflow-x:auto"><table class="dtbl">
+          <thead><tr><th>Entidad</th><th>Autoridad</th><th>Materia</th><th>Fecha</th><th>Monto</th><th>Reincidencia</th><th>Estado</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="ct" style="width:100%">Por autoridad sancionadora</div>
+        ${donut(autSegs,150,150,'sanciones')}
+      </div>
+    </div>
+    <div class="gr"><strong>Guardrail:</strong> Sanción prudencial ≠ LA/FT. Una sanción puede elevar la plausibilidad de una hipótesis, no la confirma. Las identidades sin resolver se muestran como pendientes hasta confirmación con la fuente regulatoria competente.</div>`;
+}
+
+function rPerfil(){
+  const h=HA[0],cls=rc(h.score);
+  const W6=Math.min(360,280);
+  document.getElementById('ct').innerHTML=`
+    <div class="mh"><h1>Perfil por RUT</h1><p>Función secundaria · Para hipótesis sobre una entidad ya identificada · Use Motor de Hallazgos para exploración sin hipótesis previa</p></div>
+    <div class="gr">Para exploración sin hipótesis previa, use el <strong>Motor de Hallazgos</strong> o la vista <strong>Territorial</strong>. Esta vista es complementaria.</div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="fbr">
+        <input class="sinp" style="width:230px" placeholder="RUT: 76.123.456-7" value="${h.rut}"/>
+        <button class="btn btn-p">Buscar entidad</button>
+      </div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--cr)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <h2 style="font-size:16px;font-weight:800;letter-spacing:-.03em">${h.n}</h2>
+          <div style="font-size:12px;color:var(--tx2);margin-top:2px">RUT <code class="rut">${h.rut}</code> · ${h.tipo} · Región ${h.reg}</div>
+          <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">${[...new Set(h.sigs.map(s=>s.src))].map(s=>bds(s)).join('')}</div>
+        </div>
+        <div style="text-align:center">${gauge(h.score)}<div style="margin-top:4px"><span class="rk ${cls}">${rl(h.score)}</span></div></div>
+      </div>
+      <div class="g2">
+        <div>
+          <div class="ct">Contribución de señales al score</div>
+          ${hbar(h.sigs.map(s=>({l:SM[s.src]?.l||s.src,v:s.w,c:SM[s.src]?.c||'#888'})),W6,150,60)}
+        </div>
+        <div>
+          <div class="ct">Distribución por fuente</div>
+          ${donut(h.sigs.map(s=>({l:SM[s.src]?.l||s.src,v:s.w,c:SM[s.src]?.c||'#888'})),150,150,'pts')}
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="hyp"><div class="hyp-lbl">Hipótesis analítica</div><div class="hyp-tx">${h.hyp}</div></div>
+        <div style="margin-top:10px">
+          <div style="font-size:10px;font-weight:700;color:var(--tx2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px">Próximos pasos</div>
+          ${h.nxt.map(s=>`<div style="padding:6px 0;font-size:12px;border-bottom:1px solid var(--bd);color:var(--tx2)">→ ${s}</div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── NAV ────────────────────────────────────────────────────────
+const TITLES={hallazgos:'Motor de Hallazgos',territorio:'Análisis Territorial',actividad:'Actividad Sectorial',anomalias:'Anomalías',aml360:'AML 360°',red:'Red de Relaciones',evidencia:'Evidencia',fiscal:'Perímetro UAF',sanciones:'Sanciones',perfil:'Perfil por RUT'};
+const RENDERS={hallazgos:rHallazgos,territorio:rTerritorio,actividad:rActividad,anomalias:rAnomalias,aml360:rAml360,red:rRed,evidencia:rEvidencia,fiscal:rFiscal,sanciones:rSanciones,perfil:rPerfil};
+
+function sw(btn){
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const m=btn.dataset.m;
+  document.getElementById('tb-title').textContent=TITLES[m]||m;
+  const fn=RENDERS[m];if(fn)fn();
+}
+
+function toggleTheme(){
+  const r=document.documentElement;
+  const cur=r.getAttribute('data-theme');
+  r.setAttribute('data-theme',cur==='light'?'dark':'light');
+}
+
+rHallazgos();
+</script>
