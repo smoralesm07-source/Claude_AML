@@ -1,18 +1,18 @@
 {
   "contract_version": "1.0",
-  "generated_at": "2026-08-16T15:35:54+00:00",
+  "generated_at": "2026-08-16T16:03:10+00:00",
   "generator": "tools/build_cockpit_data.py",
   "period_id": "2024",
   "sources": [
     {
-      "territory_resolution_pct": null,
-      "territory_granularity": null,
+      "territory_resolution_pct": 100.0,
+      "territory_granularity": "REGION_PROVINCE_COMMUNE",
       "source_id": "sii",
       "radar_id": "RADAR_SII",
       "label": "Radar SII",
       "repository": "smoralesm07-source/Radar_SII",
       "implementation_stage": "FUSION_CONTRACT_READY_NATIVE_PARQUET",
-      "status": "WARN",
+      "status": "OK",
       "coverage": "Nacional",
       "update_cadence": "MENSUAL",
       "sla_days": 45,
@@ -20,7 +20,7 @@
       "freshness_days": null,
       "conformed_keys": {
         "entity_id": "NATIVE",
-        "territory_id": "PARTIAL",
+        "territory_id": "READY",
         "sector_id": null,
         "period_id": "READY"
       },
@@ -251,7 +251,7 @@
       "family": "KPI_PROGRAMA",
       "guardrail": "Nombre de comuna no es clave. Texto libre no resuelto no se promueve a CL-COM-*.",
       "scope": "GLOBAL",
-      "value": 75.0,
+      "value": 83.3,
       "unit": "%",
       "target": 95,
       "status": "WARN",
