@@ -216,6 +216,8 @@
       "direction": "LOWER_IS_BETTER",
       "source_of_truth": "nómina UAF de sujetos obligados + series ROS publicadas",
       "thresholds": {"ok": "<= 20", "warn": "<= 40", "crit": "> 40"},
+      "availability": "OUT_OF_SCOPE_PUBLIC_SOURCES",
+      "availability_note": "NO COMPUTABLE con las fuentes públicas disponibles. La métrica que la UAF publica como entidades_reportantes_total coincide exactamente con el universo inscrito (sujetos obligados privados 9.403 + entidades públicas 508 = 9.911 en 2025), de modo que no identifica quiénes efectivamente reportaron. Derivar de ella una tasa de cumplimiento produciría un indicador falso. Se mantiene en el catálogo con la definición correcta a la espera de una fuente que desagregue reportantes efectivos.",
       "guardrail": "No reportar no es infracción por sí solo: puede no haber operaciones sospechosas que reportar. Es indicador de perímetro, no de incumplimiento."
     },
     {
@@ -239,7 +241,34 @@
       "direction": "CONTEXT_ONLY",
       "source_of_truth": "señales IFL + series estadísticas ROS/ROE de UAF vía datos.gob.cl (CKAN)",
       "thresholds": {"sobre_representado": "> 1.5", "alineado": "0.67-1.5", "sub_representado": "< 0.67"},
+      "availability": "NATIONAL_ONLY",
+      "availability_note": "NO COMPUTABLE por sector. La UAF publica ROS y ROE como agregados nacionales, sin desagregación por actividad supervisada. El grano sectorial queda NO_DATA y el benchmark se ancla a nivel nacional. La desagregación sectorial disponible se limita al universo inscrito, que sí es un hecho registral por actividad.",
       "guardrail": "Equivalente chileno del benchmark FinCEN SAR Stats. Una razón alta NO significa más lavado en el sector: puede significar mejor cobertura de fuentes públicas en ese sector. Se usa para calibrar cobertura propia, no para calificar sectores."
+    },
+    {
+      "metric_id": "BMK_ROS_PER_OBLIGED",
+      "family": "BENCHMARK",
+      "name": "ROS por sujeto obligado inscrito",
+      "formula": "ros_recibidos_nacional / universo_inscrito",
+      "unit": "ROS/entidad",
+      "grain": "NACIONAL x PERIODO",
+      "direction": "CONTEXT_ONLY",
+      "availability": "REAL",
+      "source_of_truth": "Radar_UAF/data/gold/statistics.parquet (informes estadísticos UAF)",
+      "guardrail": "Intensidad de reporte del sistema completo. NO indica cumplimiento individual: un solo sujeto obligado puede concentrar la mayoría de los ROS de su actividad. No se reparte entre entidades ni se usa como expectativa por entidad."
+    },
+    {
+      "metric_id": "BMK_TAXONOMY_MATCH",
+      "family": "BENCHMARK",
+      "name": "Equivalencia exacta registro-taxonomía",
+      "formula": "entidades_cuya_actividad_cruza_exacto / entidades_del_registro",
+      "unit": "%",
+      "grain": "GLOBAL",
+      "direction": "HIGHER_IS_BETTER",
+      "availability": "REAL",
+      "source_of_truth": "registro UAF (entities.parquet) + taxonomía de 55 actividades del Context Hub",
+      "thresholds": {"ok": ">= 95", "warn": ">= 80", "crit": "< 80"},
+      "guardrail": "El cruce se hace por igualdad exacta sobre la forma normalizada (sin acentos, sin caso, sin puntuación). Las glosas que no cruzan NO se fuerzan por similitud: se reportan como brecha para resolución gobernada. Fuzzy matching nunca se promueve a verdad productiva."
     },
     {
       "metric_id": "BMK_COVERAGE_RATIO",

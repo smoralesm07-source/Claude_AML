@@ -20,6 +20,9 @@ import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import uaf_real  # noqa: E402  (requiere el sys.path anterior)
+
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "tools"
 OUT = ROOT / "app" / "data" / "cockpit_contract_v1.json"
@@ -297,6 +300,21 @@ def main() -> int:
     for name in missing:
         print(f"  - {name}: sin manifiesto, marcado NO_DATA")
 
+    # Secciones que ya tienen fuente real: se prefieren sobre la sobrecapa.
+    real = uaf_real.build(args.repos_root)
+    provenance = {k: "DEMO_SYNTHETIC" for k in
+                  ["cases", "anomalies", "territory", "sectors", "benchmark", "rules",
+                   "sanctions", "network"]}
+    if real:
+        p = real["provenance"]
+        print(f"  UAF real: {p['registry_entities']:,} sujetos obligados inscritos, "
+              f"{p['mapped_pct']}% con equivalencia exacta en la taxonomía")
+        print(f"  brechas de equivalencia: {len(real['sector_gaps'])} actividades del registro")
+        provenance["sectors"] = "REAL"
+        provenance["benchmark"] = "REAL"
+    else:
+        print("  UAF real: no disponible (falta pyarrow o los parquet); se usa la sobrecapa")
+
     cases = overlay["cases"]
     # La sobrecapa demostrativa es un corte de un período pasado: se mide contra su
     # propio cierre. Los datos reales de la capa de fusión se miden contra hoy.
@@ -315,8 +333,10 @@ def main() -> int:
         "cases": cases,
         "anomalies": overlay["anomalies"],
         "territory": overlay["territory"],
-        "sectors": overlay["sectors"],
-        "benchmark": overlay["benchmark"],
+        "sectors": real["sectors"] if real else overlay["sectors"],
+        "benchmark": real["benchmark"] if real else overlay["benchmark"],
+        "sector_gaps": real["sector_gaps"] if real else [],
+        "provenance": provenance,
         "rules": overlay["rules"],
         "sanctions": overlay["sanctions"],
         "network": overlay["network"],

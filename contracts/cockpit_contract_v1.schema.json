@@ -180,7 +180,12 @@
         "properties": {
           "sector_id": {"type": "string", "pattern": "^UAF-SEC-[0-9]{2}$"},
           "name": {"type": "string"},
-          "so_count": {"type": ["integer", "null"]},
+          "macrofamily": {"type": ["string", "null"]},
+          "so_count": {"type": ["integer", "null"], "description": "Universo inscrito según el registro UAF. null = la actividad no aparece en el registro publicado."},
+          "registry_label": {"type": ["string", "null"], "description": "Glosa exacta con que el registro nombra la actividad"},
+          "crosswalk_status": {"enum": ["VALIDATED_EXACT", "NO_REGISTRY_MATCH", null]},
+          "acteco_mappings": {"type": ["integer", "null"]},
+          "acteco_strong_mappings": {"type": ["integer", "null"], "description": "Equivalencias MATCH_FUERTE hacia ACTECO del SII"},
           "ros_reporters": {"type": ["integer", "null"]},
           "roe_reporters": {"type": ["integer", "null"]},
           "sanctioned": {"type": ["integer", "null"]},
@@ -190,21 +195,110 @@
     },
 
     "benchmark": {
-      "type": "array",
-      "description": "Contraste contra denominador público UAF. Equivalente del benchmark FinCEN SAR Stats.",
-      "items": {
-        "type": "object",
-        "required": ["sector_id", "coverage_ratio"],
-        "properties": {
-          "sector_id": {"type": "string"},
-          "ifl_signals": {"type": ["integer", "null"]},
-          "uaf_ros_published": {"type": ["integer", "null"]},
-          "uaf_roe_published": {"type": ["integer", "null"]},
-          "coverage_ratio": {"type": ["number", "null"], "description": "BMK_COVERAGE_RATIO. Si es bajo, la intensidad no es interpretable."},
-          "signal_intensity": {"type": ["number", "null"], "description": "BMK_SIGNAL_INTENSITY"},
-          "reading": {"enum": ["SOBRE_REPRESENTADO", "ALINEADO", "SUB_REPRESENTADO", "NO_INTERPRETABLE"]}
+      "type": "object",
+      "description": "Contraste contra el denominador público de la UAF. Equivalente del benchmark FinCEN SAR Stats. El nivel es NACIONAL porque la UAF no publica ROS/ROE desagregados por actividad.",
+      "required": ["level", "series", "caveats"],
+      "properties": {
+        "level": {"enum": ["NATIONAL", "SECTOR"]},
+        "series": {
+          "type": "array",
+          "description": "Series anuales oficiales, cada punto con su URL de origen.",
+          "items": {
+            "type": "object",
+            "required": ["metric", "label", "points"],
+            "properties": {
+              "metric": {"type": "string"},
+              "label": {"type": "string"},
+              "unit": {"type": "string"},
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["period", "value", "source_url"],
+                  "properties": {
+                    "period": {"type": "string"},
+                    "value": {"type": "number"},
+                    "source_url": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "derived": {
+          "type": "array",
+          "description": "Indicadores calculados sobre las series. Cada uno declara su nota de interpretación.",
+          "items": {
+            "type": "object",
+            "required": ["label", "value", "note"],
+            "properties": {
+              "label": {"type": "string"},
+              "value": {"type": ["number", "null"]},
+              "unit": {"type": "string"},
+              "period": {"type": "string"},
+              "note": {"type": "string"}
+            }
+          }
+        },
+        "quality_flags": {
+          "type": "array",
+          "description": "Anomalías detectadas en las series de la fuente. Se levantan para verificación; el cockpit no corrige a la fuente.",
+          "items": {
+            "type": "object",
+            "required": ["metric", "label", "severity", "text"],
+            "properties": {
+              "metric": {"type": "string"},
+              "label": {"type": "string"},
+              "periods": {"type": "array", "items": {"type": "string"}},
+              "severity": {"enum": ["WARN", "CRIT"]},
+              "text": {"type": "string"}
+            }
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "properties": {
+            "registry_entities": {"type": ["integer", "null"]},
+            "mapped_entities": {"type": ["integer", "null"]},
+            "mapped_pct": {"type": ["number", "null"]},
+            "unmapped_activities": {"type": ["integer", "null"]}
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Límites de interpretación que la fuente impone. No son opcionales.",
+          "items": {
+            "type": "object",
+            "required": ["id", "title", "text"],
+            "properties": {
+              "id": {"type": "string"},
+              "title": {"type": "string"},
+              "text": {"type": "string"}
+            }
+          }
         }
       }
+    },
+
+    "sector_gaps": {
+      "type": "array",
+      "description": "Actividades del registro UAF sin equivalencia exacta en la taxonomía del Context Hub. No se fuerzan: se reportan.",
+      "items": {
+        "type": "object",
+        "required": ["registry_label", "so_count", "status"],
+        "properties": {
+          "registry_label": {"type": "string"},
+          "so_count": {"type": "integer"},
+          "status": {"enum": ["AMBIGUOUS", "NO_EQUIVALENCE"]}
+        }
+      }
+    },
+
+    "provenance": {
+      "type": "object",
+      "description": "Origen de cada sección: REAL o DEMO_SYNTHETIC. La interfaz lo declara al usuario.",
+      "additionalProperties": {"enum": ["REAL", "DEMO_SYNTHETIC"]}
     },
 
     "rules": {

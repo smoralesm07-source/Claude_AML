@@ -1,6 +1,6 @@
 {
   "contract_version": "1.0",
-  "generated_at": "2026-08-16T00:12:11+00:00",
+  "generated_at": "2026-08-16T15:08:29+00:00",
   "generator": "tools/build_cockpit_data.py",
   "period_id": "2024",
   "sources": [
@@ -1244,187 +1244,1065 @@
   "sectors": [
     {
       "sector_id": "UAF-SEC-01",
-      "name": "Bancos e instituciones financieras",
-      "so_count": 45,
-      "ros_reporters": 44,
-      "roe_reporters": 43,
-      "sanctioned": 3,
-      "strong_match_unregistered": 2
+      "name": "Administradoras de Fondos de Inversión",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 168,
+      "registry_label": "Administradoras de fondos de inversión",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-02",
-      "name": "Corredoras de valores",
-      "so_count": 87,
-      "ros_reporters": 71,
-      "roe_reporters": 65,
-      "sanctioned": 8,
-      "strong_match_unregistered": 11
+      "name": "Administradoras de Fondos de Pensiones",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-03",
-      "name": "Compañías de seguros",
-      "so_count": 34,
-      "ros_reporters": 34,
-      "roe_reporters": 30,
-      "sanctioned": 2,
-      "strong_match_unregistered": 1
+      "name": "Administradoras de Fondos Mutuos",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-04",
-      "name": "Casas de cambio",
-      "so_count": 123,
-      "ros_reporters": 89,
-      "roe_reporters": 102,
-      "sanctioned": 14,
-      "strong_match_unregistered": 37
+      "name": "Administradoras de Mutuos Hipotecarios",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": 14,
+      "registry_label": "Administradoras de Mutuos Hipotecarios",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-05",
-      "name": "Cooperativas de ahorro y crédito",
-      "so_count": 56,
-      "ros_reporters": 48,
-      "roe_reporters": 41,
-      "sanctioned": 5,
-      "strong_match_unregistered": 6
+      "name": "Administradoras Generales de Fondos",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 57,
+      "registry_label": "Administradoras generales de fondos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-06",
-      "name": "Empresas de factoring",
-      "so_count": 78,
-      "ros_reporters": 52,
-      "roe_reporters": 44,
-      "sanctioned": 9,
-      "strong_match_unregistered": 24
+      "name": "Agentes de Aduana",
+      "macrofamily": "Comercio exterior y zonas francas",
+      "so_count": 277,
+      "registry_label": "Agentes de aduana",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-07",
-      "name": "Inmobiliarias y constructoras",
-      "so_count": 312,
-      "ros_reporters": 134,
-      "roe_reporters": 98,
-      "sanctioned": 23,
-      "strong_match_unregistered": 168
+      "name": "Agentes de Valores",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 8,
+      "registry_label": "Agentes de valores",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-08",
-      "name": "Notarios y conservadores",
-      "so_count": 445,
-      "ros_reporters": 312,
-      "roe_reporters": 178,
-      "sanctioned": 31,
-      "strong_match_unregistered": 12
+      "name": "Armas: Personas que se Dediquen a la Fabricación de Armas",
+      "macrofamily": "Armas y clubes",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-09",
-      "name": "Administradoras de fondos",
-      "so_count": 67,
-      "ros_reporters": 61,
-      "roe_reporters": 58,
-      "sanctioned": 4,
-      "strong_match_unregistered": 3
+      "name": "Armas: Personas que se Dediquen a la Venta de Armas",
+      "macrofamily": "Armas y clubes",
+      "so_count": 5,
+      "registry_label": "Armas: Personas que se Dediquen a la Venta de Armas",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     },
     {
       "sector_id": "UAF-SEC-10",
-      "name": "Casinos y juegos de azar",
-      "so_count": 23,
-      "ros_reporters": 22,
-      "roe_reporters": 22,
-      "sanctioned": 1,
-      "strong_match_unregistered": 0
+      "name": "Bancos",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": 18,
+      "registry_label": "Bancos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-11",
+      "name": "Bolsas de Productos",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 1,
+      "registry_label": "Bolsas de productos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-12",
+      "name": "Bolsas de Valores",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 2,
+      "registry_label": "Bolsas de valores",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-13",
+      "name": "Cajas de Compensación",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": 4,
+      "registry_label": "Cajas de Compensación",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-14",
+      "name": "Casas de Cambio",
+      "macrofamily": "Cambio, remesas y transporte de valores",
+      "so_count": 346,
+      "registry_label": "Casas de cambio",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-15",
+      "name": "Casas de Remate y Martillo",
+      "macrofamily": "Bienes de alto valor y remates",
+      "so_count": 290,
+      "registry_label": "Casas de remate y martillo",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-16",
+      "name": "Casinos de Juego",
+      "macrofamily": "Juegos, hípica y deporte profesional",
+      "so_count": 25,
+      "registry_label": "Casinos de Juego",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-17",
+      "name": "Casinos Flotantes de Juego",
+      "macrofamily": "Juegos, hípica y deporte profesional",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-18",
+      "name": "Clubes de Caza",
+      "macrofamily": "Armas y clubes",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-19",
+      "name": "Clubes de Pesca",
+      "macrofamily": "Armas y clubes",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-20",
+      "name": "Clubes de Tiro",
+      "macrofamily": "Armas y clubes",
+      "so_count": 1,
+      "registry_label": "Clubes de Tiro",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-21",
+      "name": "Comerciantes de Joyas y Piedras Preciosas",
+      "macrofamily": "Bienes de alto valor y remates",
+      "so_count": 31,
+      "registry_label": "Comerciantes de Joyas y Piedras Preciosas",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-22",
+      "name": "Comerciantes de Metales Preciosos",
+      "macrofamily": "Bienes de alto valor y remates",
+      "so_count": 12,
+      "registry_label": "Comerciantes de Metales Preciosos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-23",
+      "name": "Compañías de Seguros",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 2,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-24",
+      "name": "Conservadores",
+      "macrofamily": "Inmobiliario y ministros de fe",
+      "so_count": 92,
+      "registry_label": "Conservadores",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-25",
+      "name": "Cooperativas de Ahorro y Crédito",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-26",
+      "name": "Corredores de Bolsas de Productos",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 7,
+      "registry_label": "Corredores de bolsas de productos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-27",
+      "name": "Corredores de Bolsas de Valores",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-28",
+      "name": "Corredores de Propiedades",
+      "macrofamily": "Inmobiliario y ministros de fe",
+      "so_count": 1459,
+      "registry_label": "Corredores de propiedades",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-29",
+      "name": "Emisoras u Operadoras de Tarjetas de Crédito, Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-30",
+      "name": "Empresas de Arrendamiento Financiero (Leasing)",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": 64,
+      "registry_label": "Empresas de arrendamiento financiero (Leasing)",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-31",
+      "name": "Empresas de Depósitos de Valores regidas por la Ley N° 18.876",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-32",
+      "name": "Empresas de Factoraje (Factoring)",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": 195,
+      "registry_label": "Empresas de factoraje (Factoring)",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-33",
+      "name": "Empresas de Securitización",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 9,
+      "registry_label": "Empresas de securitización",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-34",
+      "name": "Empresas de Transferencia de Dinero",
+      "macrofamily": "Cambio, remesas y transporte de valores",
+      "so_count": 183,
+      "registry_label": "Empresas de transferencia de dinero",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-35",
+      "name": "Empresas de Transporte de Valores",
+      "macrofamily": "Cambio, remesas y transporte de valores",
+      "so_count": 5,
+      "registry_label": "Empresas de transporte de valores",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-36",
+      "name": "Empresas Dedicadas a la Gestión Inmobiliaria",
+      "macrofamily": "Inmobiliario y ministros de fe",
+      "so_count": 2244,
+      "registry_label": "Empresas dedicadas a la gestión inmobiliaria",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-37",
+      "name": "Fintec: Prestadores del servicio de Custodia de Instrumentos Financieros",
+      "macrofamily": "Fintec y finanzas digitales",
+      "so_count": 1,
+      "registry_label": "Fintec: Prestadores del servicio de Custodia de Instrumentos Financieros",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-38",
+      "name": "Fintec: Prestadores del servicio de Intermediación de Instrumentos Financieros",
+      "macrofamily": "Fintec y finanzas digitales",
+      "so_count": 4,
+      "registry_label": "Fintec: Prestadores del servicio de Intermediación de Instrumentos Financieros",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-39",
+      "name": "Fintec: Prestadores del servicio de Plataforma de Financiamiento Colectivo",
+      "macrofamily": "Fintec y finanzas digitales",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-40",
+      "name": "Fintec: Prestadores del servicio de Sistemas Alternativos de Transacción",
+      "macrofamily": "Fintec y finanzas digitales",
+      "so_count": 2,
+      "registry_label": "Fintec: Prestadores del servicio de Sistemas Alternativos de Transacción",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-41",
+      "name": "Fintec: Proveedores del servicio de Iniciación de Pagos",
+      "macrofamily": "Fintec y finanzas digitales",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-42",
+      "name": "Fintec: Otros fiscalizados por la Comisión para el Mercado Financiero (CMF)",
+      "macrofamily": "Fintec y finanzas digitales",
+      "so_count": 5,
+      "registry_label": "Fintec: Otros fiscalizados por la Comisión para el Mercado Financiero (CMF)",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-43",
+      "name": "Hipódromos",
+      "macrofamily": "Juegos, hípica y deporte profesional",
+      "so_count": 6,
+      "registry_label": "Hipódromos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-44",
+      "name": "Instituciones Financieras",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 5,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-45",
+      "name": "Notarios",
+      "macrofamily": "Inmobiliario y ministros de fe",
+      "so_count": 483,
+      "registry_label": "Notarios",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-46",
+      "name": "Operadores de Mercados de Futuro y de Opciones",
+      "macrofamily": "Gestión de activos, seguros y mercados",
+      "so_count": 1,
+      "registry_label": "Operadores de mercados de futuro y de opciones",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-47",
+      "name": "Organizaciones Deportivas Profesionales regidas por la Ley N° 20.019",
+      "macrofamily": "Juegos, hípica y deporte profesional",
+      "so_count": null,
+      "registry_label": null,
+      "crosswalk_status": "NO_REGISTRY_MATCH",
+      "acteco_mappings": 3,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-48",
+      "name": "Otras Entidades Facultadas para Recibir Moneda Extranjera",
+      "macrofamily": "Cambio, remesas y transporte de valores",
+      "so_count": 19,
+      "registry_label": "Otras entidades facultadas para recibir moneda extranjera",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-49",
+      "name": "Personas que se Dediquen a la Compraventa de Equinos de Raza Pura",
+      "macrofamily": "Bienes de alto valor y remates",
+      "so_count": 1,
+      "registry_label": "Personas que se Dediquen a la Compraventa de Equinos de Raza Pura",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-50",
+      "name": "Representaciones de Bancos Extranjeros",
+      "macrofamily": "Banca, crédito y medios de pago",
+      "so_count": 21,
+      "registry_label": "Representaciones de Bancos Extranjeros",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-51",
+      "name": "Sociedades Administradoras de Zonas Francas",
+      "macrofamily": "Comercio exterior y zonas francas",
+      "so_count": 2,
+      "registry_label": "Sociedades administradoras de zonas francas",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-52",
+      "name": "Usuarios de Zonas Francas",
+      "macrofamily": "Comercio exterior y zonas francas",
+      "so_count": 2840,
+      "registry_label": "Usuarios de zonas francas",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": null,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-53",
+      "name": "Vehículos: Automotoras",
+      "macrofamily": "Vehículos",
+      "so_count": 20,
+      "registry_label": "Vehículos: Automotoras",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 2,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-54",
+      "name": "Vehículos: Comercializadoras de Vehículos Nuevos o Usados",
+      "macrofamily": "Vehículos",
+      "so_count": 538,
+      "registry_label": "Vehículos: Comercializadoras de Vehículos Nuevos o Usados",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 2,
+      "acteco_strong_mappings": 2,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
+    },
+    {
+      "sector_id": "UAF-SEC-55",
+      "name": "Vehículos: Empresas de Arriendo de Vehículos",
+      "macrofamily": "Vehículos",
+      "so_count": 48,
+      "registry_label": "Vehículos: Empresas de Arriendo de Vehículos",
+      "crosswalk_status": "VALIDATED_EXACT",
+      "acteco_mappings": 1,
+      "acteco_strong_mappings": 1,
+      "ros_reporters": null,
+      "roe_reporters": null,
+      "sanctioned": null,
+      "strong_match_unregistered": null
     }
   ],
-  "benchmark": [
+  "benchmark": {
+    "level": "NATIONAL",
+    "series": [
+      {
+        "metric": "ros_recibidos",
+        "label": "ROS recibidos",
+        "unit": "reportes",
+        "points": [
+          {
+            "period": "2021",
+            "value": 9738.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2022",
+            "value": 11400.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2023",
+            "value": 12900.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2024",
+            "value": 17417.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2025",
+            "value": 21828.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          }
+        ]
+      },
+      {
+        "metric": "roe_recibidos_miles",
+        "label": "ROE recibidos",
+        "unit": "miles de reportes",
+        "points": [
+          {
+            "period": "2021",
+            "value": 2966.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2022",
+            "value": 2848.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2023",
+            "value": 2458.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2024",
+            "value": 1817.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2025",
+            "value": 1620.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          }
+        ]
+      },
+      {
+        "metric": "entidades_reportantes_total",
+        "label": "Universo inscrito",
+        "unit": "entidades",
+        "points": [
+          {
+            "period": "2021",
+            "value": 8137.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2022",
+            "value": 8379.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2023",
+            "value": 8729.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2024",
+            "value": 9136.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2025",
+            "value": 9911.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          }
+        ]
+      },
+      {
+        "metric": "acciones_supervision",
+        "label": "Acciones de supervisión",
+        "unit": "acciones",
+        "points": [
+          {
+            "period": "2021",
+            "value": 233.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2022",
+            "value": 157.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2023",
+            "value": 159.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2024",
+            "value": 163.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2025",
+            "value": 172.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          }
+        ]
+      },
+      {
+        "metric": "procesos_sancionatorios_iniciados",
+        "label": "Procesos sancionatorios iniciados",
+        "unit": "procesos",
+        "points": [
+          {
+            "period": "2021",
+            "value": 0.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2022",
+            "value": 51.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2023",
+            "value": 117.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2024",
+            "value": 61.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          },
+          {
+            "period": "2025",
+            "value": 0.0,
+            "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"
+          }
+        ]
+      }
+    ],
+    "derived": [
+      {
+        "label": "ROS por sujeto obligado inscrito",
+        "value": 2.2,
+        "unit": "ROS/entidad",
+        "period": "2025",
+        "note": "Intensidad de reporte del sistema completo. No indica cumplimiento individual: un solo sujeto obligado puede concentrar muchos ROS."
+      },
+      {
+        "label": "ROE por sujeto obligado inscrito",
+        "value": 163.5,
+        "unit": "ROE/entidad",
+        "period": "2025",
+        "note": "El ROE es reporte de operación en efectivo sobre umbral; su volumen responde al giro del sector, no al riesgo de la entidad."
+      },
+      {
+        "label": "Variación de ROS 2021–2025",
+        "value": 124.2,
+        "unit": "%",
+        "period": "2021–2025",
+        "note": "Un alza de ROS puede reflejar mayor detección, mayor actividad ilícita o cambios de instrucción del supervisor. No es interpretable por sí sola."
+      }
+    ],
+    "quality_flags": [
+      {
+        "metric": "procesos_sancionatorios_iniciados",
+        "label": "Procesos sancionatorios iniciados",
+        "periods": [
+          "2021",
+          "2025"
+        ],
+        "severity": "WARN",
+        "text": "La serie «Procesos sancionatorios iniciados» registra 0 en 2021, 2025 mientras el resto del período va de 51 a 117. El radar los publica como hecho oficial con confianza 1.0. Verificar contra el informe de origen si se trata de un cero real o de una ausencia de dato."
+      }
+    ],
+    "coverage": {
+      "registry_entities": 9782,
+      "mapped_entities": 9508,
+      "mapped_pct": 97.2,
+      "unmapped_activities": 12
+    },
+    "caveats": [
+      {
+        "id": "BMK_NO_SECTOR_BREAKDOWN",
+        "title": "La UAF no publica ROS/ROE por actividad",
+        "text": "Las estadísticas oficiales son agregados nacionales. La intensidad de señal por sector (BMK_SIGNAL_INTENSITY) no es computable con las fuentes públicas disponibles y se serializa NO_DATA. El benchmark se ancla a nivel nacional y la desagregación sectorial se limita al universo inscrito."
+      },
+      {
+        "id": "BMK_REPORTANTES_ES_UNIVERSO",
+        "title": "«Entidades reportantes» no son quienes reportaron",
+        "text": "La métrica publicada entidades_reportantes_total coincide exactamente con la suma de sujetos obligados del sector privado más entidades públicas inscritas (9.403 + 508 = 9.911 en 2025). Es el universo inscrito, no el conjunto que efectivamente presentó reportes. No se deriva de ella ninguna tasa de cumplimiento: KRI_ROS_GAP queda fuera de alcance con estas fuentes."
+      }
+    ]
+  },
+  "sector_gaps": [
     {
-      "sector_id": "UAF-SEC-01",
-      "ifl_signals": 31,
-      "uaf_ros_published": 1840,
-      "uaf_roe_published": 4210,
-      "coverage_ratio": 97.8,
-      "signal_intensity": 0.81,
-      "reading": "ALINEADO"
+      "registry_label": "Compañías de Seguro",
+      "so_count": 65,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-02",
-      "ifl_signals": 44,
-      "uaf_ros_published": 612,
-      "uaf_roe_published": 1180,
-      "coverage_ratio": 91.2,
-      "signal_intensity": 1.34,
-      "reading": "ALINEADO"
+      "registry_label": "Institución Financiera",
+      "so_count": 54,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-03",
-      "ifl_signals": 12,
-      "uaf_ros_published": 380,
-      "uaf_roe_published": 640,
-      "coverage_ratio": 94.1,
-      "signal_intensity": 0.72,
-      "reading": "ALINEADO"
+      "registry_label": "Cooperativas (instituciones financieras)",
+      "so_count": 47,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-04",
-      "ifl_signals": 128,
-      "uaf_ros_published": 890,
-      "uaf_roe_published": 2340,
-      "coverage_ratio": 76.4,
-      "signal_intensity": 2.11,
-      "reading": "SOBRE_REPRESENTADO"
+      "registry_label": "Organizaciones Deportivas Profesionales",
+      "so_count": 30,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-05",
-      "ifl_signals": 21,
-      "uaf_ros_published": 310,
-      "uaf_roe_published": 520,
-      "coverage_ratio": 88.0,
-      "signal_intensity": 0.94,
-      "reading": "ALINEADO"
+      "registry_label": "Corredores de bolsa de valores",
+      "so_count": 26,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-06",
-      "ifl_signals": 96,
-      "uaf_ros_published": 240,
-      "uaf_roe_published": 410,
-      "coverage_ratio": 69.2,
-      "signal_intensity": 1.88,
-      "reading": "SOBRE_REPRESENTADO"
+      "registry_label": "Operadoras de tarjetas de crédito",
+      "so_count": 15,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-07",
-      "ifl_signals": 214,
-      "uaf_ros_published": 520,
-      "uaf_roe_published": 780,
-      "coverage_ratio": 42.6,
-      "signal_intensity": null,
-      "reading": "NO_INTERPRETABLE"
+      "registry_label": "Emisoras de tarjetas de crédito",
+      "so_count": 13,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-08",
-      "ifl_signals": 58,
-      "uaf_ros_published": 1420,
-      "uaf_roe_published": 2980,
-      "coverage_ratio": 95.5,
-      "signal_intensity": 0.38,
-      "reading": "SUB_REPRESENTADO"
+      "registry_label": "Emisores de Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago",
+      "so_count": 12,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-09",
-      "ifl_signals": 9,
-      "uaf_ros_published": 410,
-      "uaf_roe_published": 890,
-      "coverage_ratio": 92.7,
-      "signal_intensity": 0.44,
-      "reading": "SUB_REPRESENTADO"
+      "registry_label": "Administradores de Fondos de Pensiones (AFP)",
+      "so_count": 7,
+      "status": "AMBIGUOUS"
     },
     {
-      "sector_id": "UAF-SEC-10",
-      "ifl_signals": 4,
-      "uaf_ros_published": 210,
-      "uaf_roe_published": 380,
-      "coverage_ratio": 100.0,
-      "signal_intensity": 0.29,
-      "reading": "SUB_REPRESENTADO"
+      "registry_label": "Operadores de Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago",
+      "so_count": 3,
+      "status": "AMBIGUOUS"
+    },
+    {
+      "registry_label": "Casinos flotantes de Juegos",
+      "so_count": 1,
+      "status": "AMBIGUOUS"
+    },
+    {
+      "registry_label": "Depósitos de Valores",
+      "so_count": 1,
+      "status": "AMBIGUOUS"
     }
   ],
+  "provenance": {
+    "cases": "DEMO_SYNTHETIC",
+    "anomalies": "DEMO_SYNTHETIC",
+    "territory": "DEMO_SYNTHETIC",
+    "sectors": "REAL",
+    "benchmark": "REAL",
+    "rules": "DEMO_SYNTHETIC",
+    "sanctions": "DEMO_SYNTHETIC",
+    "network": "DEMO_SYNTHETIC"
+  },
   "rules": [
     {
       "rule_id": "PRE.R04_FRACCIONAMIENTO",
@@ -1797,8 +2675,7 @@
       "guardrail_id": "GR_ACTECO",
       "scope": [
         "sectorial",
-        "fiscal",
-        "benchmark"
+        "fiscal"
       ],
       "title": "ACTECO ≠ sujeto obligado",
       "text": "El código ACTECO del SII no acredita condición jurídica de sujeto obligado UAF. MATCH_FUERTE identifica candidatos a validación; la condición sólo la confirma la fuente regulatoria competente."
@@ -1833,8 +2710,8 @@
       "scope": [
         "benchmark"
       ],
-      "title": "Intensidad ≠ prevalencia",
-      "text": "Una intensidad alta frente al denominador público UAF puede reflejar mejor cobertura de fuentes públicas en ese sector, no más lavado. Con cobertura del universo bajo 50% la lectura es NO_INTERPRETABLE."
+      "title": "Volumen de reporte ≠ prevalencia de lavado",
+      "text": "Un alza de ROS puede reflejar mejor detección, cambios de instrucción del supervisor o mayor actividad ilícita, y las tres explicaciones son compatibles con la misma curva. El benchmark calibra la cobertura propia frente al sistema; no mide cuánto lavado hay ni califica sectores."
     },
     {
       "guardrail_id": "GR_TERRITORIO",

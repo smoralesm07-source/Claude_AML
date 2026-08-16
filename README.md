@@ -90,10 +90,33 @@ produce hallazgos de operación:
 - **4 métricas en `NO_DATA`** porque exigen que los radares publiquen
   `fusion_interop_status_v1.json` en su rama de datos. Se muestran como `—`, nunca como `0`.
 
-Las secciones `cases`, `benchmark`, `rules`, `sanctions` y `network` provienen de
-`tools/demo_overlay.json`, una **sobrecapa demostrativa con entidades y cifras sintéticas** que
-ejercita todos los módulos mientras la capa de fusión no las materialice. El archivo está marcado
-`"_synthetic": true` y las entidades no representan personas ni organizaciones reales.
+**Fase F4 adelantada: Benchmark y Sectorial con datos reales.** Las secciones `sectors` y
+`benchmark` se construyen desde `Radar_UAF/data/gold/` y la taxonomía del Context Hub:
+
+- **9.782 sujetos obligados inscritos** en 52 actividades del registro UAF
+- **97,2%** cruza de forma exacta contra las 55 actividades de la taxonomía; las 12 glosas
+  restantes se reportan como brecha y **no se fuerzan** por similitud
+- Series oficiales **ROS/ROE 2021–2025** con URL de origen por punto: los ROS crecen **+124,2%**
+  mientras el universo inscrito crece 21,8%
+- **2 actividades acumulan la mitad del universo**: Usuarios de Zonas Francas (2.840) y Gestión
+  Inmobiliaria (2.244)
+
+Construir esto contra datos reales invalidó dos métricas de mi propio catálogo, y ambas quedaron
+declaradas como no computables en vez de aproximadas:
+
+- `BMK_SIGNAL_INTENSITY` → `NATIONAL_ONLY`: la UAF no publica ROS/ROE por actividad.
+- `KRI_ROS_GAP` → `OUT_OF_SCOPE_PUBLIC_SOURCES`: `entidades_reportantes_total` **no** son quienes
+  reportaron; su valor coincide exactamente con el universo inscrito (9.403 + 508 = 9.911 en 2025).
+  Derivar de ahí una tasa de cumplimiento habría producido un indicador falso.
+
+El constructor además levanta una bandera de calidad sobre la fuente: la serie
+`procesos_sancionatorios_iniciados` registra 0 en 2021 y 2025 entre valores de 51 a 117, publicados
+con confianza 1,0. El cockpit no corrige a la fuente; lo marca para verificación.
+
+Las secciones `cases`, `anomalies`, `territory`, `rules`, `sanctions` y `network` siguen viniendo de
+`tools/demo_overlay.json`, una **sobrecapa demostrativa con entidades y cifras sintéticas**. El
+archivo está marcado `"_synthetic": true`, las entidades no representan personas ni organizaciones
+reales, y **la propia interfaz lo declara** con un aviso en cada módulo afectado.
 
 El roadmap por fases está en [`docs/02-arquitectura.md`](docs/02-arquitectura.md) §9.
 

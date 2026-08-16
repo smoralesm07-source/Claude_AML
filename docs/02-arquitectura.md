@@ -49,7 +49,7 @@ escribe a mano.
 | | v0.6 (`cockpit.html`) | v1 (`app/`) |
 |---|---|---|
 | Datos | 6 arreglos JS incrustados | `data/cockpit_contract_v1.json` validado contra esquema |
-| Módulos | 10 | 13 (+ Salud, + Casos, + Benchmark) |
+| Módulos | 10 | 14 (+ Salud, + Casos, + Benchmark, + Calibración) |
 | Hallazgo | Tarjeta sin estado | Caso con estado, SLA, responsable y disposición |
 | Personas | 1 modo | 4 perfiles que reordenan la navegación |
 | Autoobservación | ninguna | 14 KPI de programa con umbral y tendencia |
@@ -62,7 +62,7 @@ escribe a mano.
 ### Grupo A — Exploración *(qué mirar primero)*
 1. **Motor de Hallazgos** — cola de prioridad por convergencia de señales independientes.
 2. **Territorio** — mapa de 16 regiones, capas conmutables, detalle por región.
-3. **Actividad Sectorial** — 55 actividades UAF, crosswalk UAF↔ACTECO, brechas de reportabilidad.
+3. **Actividad Sectorial** — 55 actividades UAF, universo inscrito real y crosswalk UAF↔ACTECO.
 4. **Anomalías** — patrones contextuales que aún **no** son señal AML gobernada.
 
 ### Grupo B — Investigación *(qué hacer con lo que miro)* — **nuevo**
@@ -73,7 +73,7 @@ escribe a mano.
 
 ### Grupo C — Supervisión *(cómo funciona el sistema)* — **nuevo**
 9. **Salud del Programa** — frescura, cobertura, integridad, cuarentena, deriva.
-10. **Benchmark Sectorial** — producción propia vs. denominador público UAF.
+10. **Benchmark Nacional** — series oficiales ROS/ROE de la UAF como denominador público.
 11. **Calibración de Reglas** — tasa de no corroboración por regla, reglas mudas.
 
 ### Grupo D — Fiscalización y búsqueda
@@ -121,7 +121,7 @@ disposición es un objeto del cockpit, no una mutación de la fuente.
 
 `contracts/cockpit_contract_v1.schema.json` define el artefacto único que consume la app.
 Secciones: `sources`, `program_health`, `cases`, `anomalies`, `territory`, `sectors`,
-`benchmark`, `rules`, `sanctions`, `network`, `guardrails`.
+`sector_gaps`, `benchmark`, `rules`, `sanctions`, `network`, `guardrails`, `provenance`.
 
 Invariantes exigidos por el esquema:
 
@@ -133,7 +133,9 @@ Invariantes exigidos por el esquema:
 - Los códigos territoriales y sectoriales son claves CUT/UAF; los nombres son atributos.
 
 `tools/build_cockpit_data.py` ensambla el artefacto leyendo los `interop/` reales de los
-repositorios hermanos.
+repositorios hermanos, y `tools/uaf_real.py` construye `sectors` y `benchmark` desde el gold de
+Radar UAF. `provenance` declara por sección si el origen es `REAL` o `DEMO_SYNTHETIC`, y la
+interfaz lo muestra al usuario en cada módulo alimentado por la sobrecapa.
 
 ## 8. Stack
 
@@ -146,13 +148,28 @@ maneja análisis de riesgo.
 
 ## 9. Roadmap
 
-| Fase | Alcance | Depende de |
-|---|---|---|
-| **F1** — Contrato y esqueleto | Esquema, catálogo de métricas, app data-driven, fixture | nada (entregado) |
-| **F2** — Salud real | `build_cockpit_data.py` contra los 7 `interop/` reales | acceso a los repos |
-| **F3** — Casos persistentes | Estado en repositorio, no en memoria | decidir backend de estado |
-| **F4** — Benchmark | Series ROS/ROE UAF desde `datos.gob.cl` | export CKAN en Radar UAF |
-| **F5** — Calibración | Cierre del ciclo disposición → regla | F3 con volumen suficiente |
+| Fase | Alcance | Depende de | Estado |
+|---|---|---|---|
+| **F1** — Contrato y esqueleto | Esquema, catálogo de métricas, app data-driven, fixture | — | **entregada** |
+| **F4** — Benchmark y Sectorial reales | Registro UAF, taxonomía y series ROS/ROE oficiales | gold de Radar UAF | **entregada** |
+| **F2** — Frescura real por fuente | `fusion_interop_status_v1.json` en la rama de datos de cada radar | 8 repos | pendiente |
+| **F3** — Casos persistentes | Estado fuera de memoria | decidir backend | pendiente |
+| **F5** — Calibración | Cierre del ciclo disposición → regla | F3 con volumen | pendiente |
 
-La F1 está implementada en este repositorio. F2 requiere que los radares publiquen
-`fusion_interop_status_v1.json` en sus ramas de datos, que ya está declarado en sus manifiestos.
+**Estado real.** `sources` y `program_health` se derivan de los ocho `interop/` (F1). `sectors` y
+`benchmark` se derivan del gold de Radar UAF y de la taxonomía del Context Hub (F4). Las cuatro
+métricas que siguen en `NO_DATA` —frescura, disponibilidad, cuarentena y deriva— dependen de F2,
+que es trabajo en los repositorios de los radares, no aquí.
+
+### Lo que F4 enseñó sobre el diseño
+
+Construir el benchmark contra datos reales invalidó dos métricas del catálogo propuesto en F1:
+
+- La UAF publica ROS/ROE **sólo como agregados nacionales**, de modo que la intensidad por sector
+  no es computable y el módulo se ancló a nivel nacional.
+- `entidades_reportantes_total` resultó ser el universo inscrito, no quienes reportaron, lo que
+  dejó `KRI_ROS_GAP` fuera de alcance con fuentes públicas.
+
+Ambas se conservan en el catálogo con un campo `availability` que declara la limitación. Es el
+comportamiento que el contrato exige: preferir un `NO_DATA` explícito a una aproximación que se
+lea como hecho.

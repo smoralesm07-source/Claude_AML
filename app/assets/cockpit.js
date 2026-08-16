@@ -40,7 +40,7 @@ const MODULES = {
   red:         { t: 'Red de Relaciones',     ic: '🔗', g: 'Investigación' },
   evidencia:   { t: 'Evidencia',             ic: '📋', g: 'Investigación' },
   salud:       { t: 'Salud del Programa',    ic: '💓', g: 'Supervisión' },
-  benchmark:   { t: 'Benchmark Sectorial',   ic: '⚖️', g: 'Supervisión' },
+  benchmark:   { t: 'Benchmark Nacional',    ic: '⚖️', g: 'Supervisión' },
   calibracion: { t: 'Calibración de Reglas', ic: '🎚', g: 'Supervisión' },
   fiscal:      { t: 'Perímetro UAF',         ic: '🏛',  g: 'Fiscalización' },
   sanciones:   { t: 'Sanciones',             ic: '⚖️', g: 'Fiscalización' },
@@ -82,6 +82,27 @@ function guardrails(moduleId) {
     .filter((g) => g.scope.includes('*') || g.scope.includes(moduleId))
     .map((g) => `<div class="gr"><strong>${esc(g.title)}:</strong> ${esc(g.text)}</div>`)
     .join('');
+}
+
+/* Qué sección del contrato alimenta cada módulo, para declarar su procedencia. */
+const MODULE_SECTION = {
+  hallazgos: 'cases', casos: 'cases', aml360: 'cases', perfil: 'cases',
+  red: 'network', anomalias: 'anomalies', territorio: 'territory',
+  sectorial: 'sectors', fiscal: 'sectors', benchmark: 'benchmark',
+  calibracion: 'rules', sanciones: 'sanctions',
+};
+
+/** Declara en pantalla si el módulo se alimenta de datos reales o de la demo. */
+function provenanceBanner(moduleId) {
+  const section = MODULE_SECTION[moduleId];
+  const origin = (app.data.provenance || {})[section];
+  if (!section || origin === 'REAL') return '';
+  if (!origin) return '';
+  return `<div class="banner demo"><strong>Datos demostrativos.</strong>
+    La sección <code class="mono">${section}</code> proviene de
+    <code class="mono">tools/demo_overlay.json</code>: entidades, RUT y cifras
+    <strong>sintéticos</strong>, para ejercitar el módulo hasta que la capa de fusión la
+    materialice. No representan personas ni organizaciones reales.</div>`;
 }
 
 /** Valor de una métrica del catálogo. `null` se muestra '—', nunca 0. */
@@ -299,64 +320,90 @@ function rSalud() {
 }
 
 function rBenchmark() {
-  const sectorName = Object.fromEntries(app.data.sectors.map((s) => [s.sector_id, s.name]));
-  const readLabel = {
-    SOBRE_REPRESENTADO: ['Sobre-representado', 'hi'],
-    ALINEADO: ['Alineado', 'lo'],
-    SUB_REPRESENTADO: ['Sub-representado', 'md'],
-    NO_INTERPRETABLE: ['No interpretable', 'nd'],
-  };
-  const rows = app.data.benchmark.map((b) => {
-    const [lbl, rk] = readLabel[b.reading];
-    return `<tr>
-      <td>${esc(sectorName[b.sector_id] || b.sector_id)}<br><code class="rut">${esc(b.sector_id)}</code></td>
-      <td class="num">${fmt(b.ifl_signals)}</td>
-      <td class="num">${fmt(b.uaf_ros_published)}</td>
-      <td class="num">${fmt(b.uaf_roe_published)}</td>
-      <td class="num">${b.coverage_ratio === null ? '—' : `${b.coverage_ratio}%`}</td>
-      <td class="num">${b.signal_intensity === null ? '<span class="nodata-cell">—</span>' : b.signal_intensity.toFixed(2)}</td>
-      <td><span class="rk ${rk}">${lbl}</span></td>
-    </tr>`;
-  }).join('');
-
-  const interpretable = app.data.benchmark.filter((b) => b.reading !== 'NO_INTERPRETABLE');
-  const over = interpretable.filter((b) => b.reading === 'SOBRE_REPRESENTADO');
-  const under = interpretable.filter((b) => b.reading === 'SUB_REPRESENTADO');
+  const b = app.data.benchmark;
   const W = contentWidth();
+  const cov = b.coverage || {};
+  const ser = (m) => b.series.find((s) => s.metric === m);
+  const last = (m) => { const s = ser(m); return s ? s.points[s.points.length - 1] : null; };
+
+  const labels = (ser('ros_recibidos')?.points || []).map((p) => p.period);
+  const lines = [
+    { m: 'ros_recibidos', c: 'var(--uaf)' },
+    { m: 'entidades_reportantes_total', c: 'var(--sii)' },
+  ].filter((l) => ser(l.m)).map((l) => ({ data: ser(l.m).points.map((p) => p.value), c: l.c }));
+
+  const derived = (b.derived || []).map((d) => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--bd)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+        <span style="font-size:12px;font-weight:600">${esc(d.label)}</span>
+        <span style="font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap">
+          ${d.value === null ? '—' : fmt(d.value)} <span style="font-size:11px;color:var(--tx2);font-weight:600">${esc(d.unit || '')}</span></span>
+      </div>
+      <div style="font-size:11px;color:var(--txm);margin-top:4px;line-height:1.55">${esc(d.note)}</div>
+    </div>`).join('');
+
+  const caveats = (b.caveats || []).map((c) => `
+    <div class="gr" style="border-left-color:var(--cm)"><strong>${esc(c.title)}:</strong> ${esc(c.text)}</div>`).join('');
+
+  const flags = (b.quality_flags || []).map((f) => `
+    <div class="banner demo"><strong>Control de calidad · ${esc(f.label)}:</strong> ${esc(f.text)}</div>`).join('');
+
+  const seriesRows = b.series.map((s) => `<tr>
+    <td><strong>${esc(s.label)}</strong><br><code class="rut">${esc(s.metric)}</code></td>
+    ${s.points.map((p) => `<td class="num">${fmt(p.value)}</td>`).join('')}
+    <td><a href="${esc(s.points[s.points.length - 1].source_url)}" target="_blank" rel="noopener"
+      style="color:var(--ac);font-size:11px">fuente ↗</a></td>
+  </tr>`).join('');
+
+  const topSectors = [...app.data.sectors]
+    .filter((s) => s.so_count).sort((a, b2) => b2.so_count - a.so_count).slice(0, 12);
+
+  const gaps = (app.data.sector_gaps || []).map((g) => `<tr>
+    <td>${esc(g.registry_label)}</td><td class="num">${fmt(g.so_count)}</td>
+    <td><span class="rk md">${esc(g.status)}</span></td></tr>`).join('');
 
   return `
-    <div class="mh"><h1>Benchmark Sectorial</h1>
+    <div class="mh"><h1>Benchmark Nacional</h1>
       <p>Producción propia contrastada con el denominador público de la UAF · Equivalente chileno del benchmark contra estadísticas de industria</p></div>
     ${guardrails('benchmark')}
+    ${caveats}${flags}
     <div class="krow">
-      ${kpi('Sectores evaluados', fmt(app.data.benchmark.length), `${interpretable.length} interpretables`, 'uaf')}
-      ${kpi('Sobre-representados', fmt(over.length), 'Intensidad > 1,5x', 'warn')}
-      ${kpi('Sub-representados', fmt(under.length), 'Intensidad < 0,67x — posible brecha de cobertura', 'crit')}
-      ${kpi('No interpretables', fmt(app.data.benchmark.length - interpretable.length), 'Cobertura del universo bajo 50%', 'nodata')}
+      ${kpi('Universo inscrito', fmt(last('entidades_reportantes_total')?.value), `Sujetos obligados · ${last('entidades_reportantes_total')?.period || ''}`, 'uaf')}
+      ${kpi('ROS recibidos', fmt(last('ros_recibidos')?.value), `Nacional · ${last('ros_recibidos')?.period || ''}`, 'acc')}
+      ${kpi('Equivalencia de taxonomía', cov.mapped_pct === null ? '—' : `${cov.mapped_pct}%`,
+        `${fmt(cov.mapped_entities)} de ${fmt(cov.registry_entities)} entidades`, 'sii')}
+      ${kpi('Actividades sin equivalencia', fmt(cov.unmapped_activities), 'Del registro, no forzadas', 'warn')}
     </div>
     <div class="g2">
-      <div class="card"><div class="ct">Cobertura del universo sectorial</div>
-        ${hbar(app.data.benchmark.slice(0, 10).map((b) => ({
-          l: (sectorName[b.sector_id] || '').slice(0, 22),
-          v: b.coverage_ratio,
-          suffix: '%',
-          c: b.coverage_ratio >= 80 ? 'var(--cl)' : b.coverage_ratio >= 50 ? 'var(--cm)' : 'var(--cr)',
-        })), Math.min(W / 2 - 40, 400), 250, 170)}
+      <div class="card"><div class="ct">ROS recibidos frente al universo inscrito</div>
+        ${lines.length ? linechart(lines, labels, Math.min(W / 2 - 40, 420), 170) : ''}
+        <div style="display:flex;gap:14px;margin-top:8px;font-size:11px">
+          <span style="color:var(--uaf)">■ ROS recibidos</span>
+          <span style="color:var(--sii)">■ Universo inscrito</span></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--txm)">
+          El universo crece 21,8% entre 2021 y 2025; los ROS, 124,2%. La brecha entre ambas
+          pendientes es el hecho a explicar, y admite lecturas opuestas.</div>
       </div>
-      <div class="card"><div class="ct">Intensidad de señal frente al denominador UAF</div>
-        ${hbar(interpretable.map((b) => ({
-          l: (sectorName[b.sector_id] || '').slice(0, 22),
-          v: Number(b.signal_intensity.toFixed(2)),
-          c: b.signal_intensity > 1.5 ? 'var(--ch)' : b.signal_intensity < 0.67 ? 'var(--cm)' : 'var(--cl)',
-        })), Math.min(W / 2 - 40, 400), 250, 170)}
-        <div style="margin-top:8px;font-size:11px;color:var(--txm)">1,00 = la producción propia sigue exactamente la proporción de ROS publicados del sector.</div>
-      </div>
+      <div class="card"><div class="ct">Indicadores derivados</div>${derived}</div>
     </div>
-    <div class="card"><div class="ct">Detalle por sector</div>
+    <div class="card"><div class="ct">Series oficiales publicadas por la UAF</div>
       <div class="scroll-x"><table class="dtbl">
-        <thead><tr><th>Sector UAF</th><th class="num">Señales IFL</th><th class="num">ROS publicados</th>
-          <th class="num">ROE publicados</th><th class="num">Cobertura</th><th class="num">Intensidad</th><th>Lectura</th></tr></thead>
-        <tbody>${rows}</tbody></table></div>
+        <thead><tr><th>Métrica</th>${labels.map((l) => `<th class="num">${l}</th>`).join('')}<th>Origen</th></tr></thead>
+        <tbody>${seriesRows}</tbody></table></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Universo inscrito por actividad · top 12</div>
+        ${hbar(topSectors.map((s) => ({ l: s.name.slice(0, 26), v: s.so_count, c: 'var(--uaf)' })),
+          Math.min(W / 2 - 40, 420), 300, 200)}
+      </div>
+      <div class="card"><div class="ct">Actividades del registro sin equivalencia exacta</div>
+        <div class="scroll-x"><table class="dtbl">
+          <thead><tr><th>Glosa del registro</th><th class="num">Entidades</th><th>Estado</th></tr></thead>
+          <tbody>${gaps}</tbody></table></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--txm)">
+          El cruce con la taxonomía se hace por igualdad exacta sobre la forma normalizada.
+          Estas glosas no se fuerzan a un sector: se reportan como brecha para resolución gobernada.</div>
+      </div>
     </div>`;
 }
 
@@ -490,50 +537,63 @@ function rTerritorio() {
 
 function rSectorial() {
   const sectors = app.data.sectors;
-  const totalSO = sectors.reduce((a, s) => a + (s.so_count || 0), 0);
-  const totalROS = sectors.reduce((a, s) => a + (s.ros_reporters || 0), 0);
-  const gapPct = Math.round((1 - totalROS / totalSO) * 100);
+  const present = sectors.filter((s) => s.so_count);
+  const absent = sectors.filter((s) => !s.so_count);
+  const totalSO = present.reduce((a, s) => a + s.so_count, 0);
+  const mapped = sectors.filter((s) => s.acteco_strong_mappings).length;
   const W = contentWidth();
 
-  const rows = sectors.map((s) => {
-    const pr = Math.round((s.ros_reporters / s.so_count) * 100);
-    const pe = Math.round((s.roe_reporters / s.so_count) * 100);
-    return `<tr><td>${esc(s.name)}<br><code class="rut">${esc(s.sector_id)}</code></td>
-      <td class="num">${fmt(s.so_count)}</td>
-      <td class="num"><span class="rk ${pr < 60 ? 'cr' : pr < 80 ? 'hi' : 'lo'}">${pr}%</span></td>
-      <td class="num">${pe}%</td>
-      <td class="num">${fmt(s.sanctioned)}</td>
-      <td class="num">${fmt(s.strong_match_unregistered)}</td></tr>`;
-  }).join('');
+  // Concentración: cuántas actividades acumulan la mitad del universo inscrito.
+  const ranked = [...present].sort((a, b) => b.so_count - a.so_count);
+  let acc = 0;
+  const half = ranked.findIndex((s) => (acc += s.so_count) >= totalSO / 2) + 1;
+
+  const rows = sectors.map((s) => `<tr>
+    <td>${esc(s.name)}<br><code class="rut">${esc(s.sector_id)}</code></td>
+    <td style="font-size:11px;color:var(--tx2)">${esc(s.macrofamily || '—')}</td>
+    <td class="num">${s.so_count === null ? '<span class="nodata-cell">no inscritas</span>' : fmt(s.so_count)}</td>
+    <td class="num">${s.so_count ? `${(s.so_count / totalSO * 100).toFixed(1)}%` : '<span class="nodata-cell">—</span>'}</td>
+    <td class="num">${s.acteco_mappings === null ? '<span class="nodata-cell">—</span>' : fmt(s.acteco_mappings)}</td>
+    <td class="num">${s.acteco_strong_mappings === null ? '<span class="nodata-cell">—</span>' : fmt(s.acteco_strong_mappings)}</td>
+    <td class="num nodata-cell">—</td></tr>`).join('');
+
+  const byFamily = Object.entries(present.reduce((m, s) => {
+    const k = s.macrofamily || 'Sin familia';
+    return { ...m, [k]: (m[k] || 0) + s.so_count };
+  }, {})).sort((a, b) => b[1] - a[1]);
+  const famColors = ['var(--uaf)', 'var(--sii)', 'var(--cgr)', 'var(--pre)', 'var(--san)', 'var(--osl)', 'var(--del)', 'var(--ctx)'];
 
   return `
     <div class="mh"><h1>Actividad Sectorial</h1>
-      <p>55 actividades supervisadas UAF · Crosswalk UAF–ACTECO del Context Hub · Universo y brechas</p></div>
+      <p>Universo inscrito por actividad UAF · Registro real cruzado con la taxonomía del Context Hub</p></div>
     ${guardrails('sectorial')}
+    <div class="gr" style="border-left-color:var(--cm)"><strong>Alcance de esta vista:</strong>
+      muestra el <strong>universo inscrito</strong>, que es un hecho registral. La UAF no publica ROS,
+      ROE ni sanciones desagregados por actividad, de modo que las columnas de reportabilidad se
+      serializan NO_DATA y se muestran «—». El contraste disponible es nacional y vive en
+      <strong>Benchmark</strong>.</div>
     <div class="krow">
-      ${kpi('SO observados', fmt(totalSO), 'En nómina vigente', 'uaf')}
-      ${kpi('Actividades UAF', '55', 'Con crosswalk versionado', 'acc')}
-      ${kpi('Cobertura sectorial', metricValue('PRG_SECTOR_COVERAGE'), 'Claves sector_id conformadas', 'sii')}
-      ${kpi('Brecha ROS', `${gapPct}%`, 'Del universo sin reporte en el período', 'crit')}
+      ${kpi('Sujetos obligados inscritos', fmt(totalSO), `En ${present.length} actividades del registro`, 'uaf')}
+      ${kpi('Actividades en la taxonomía', fmt(sectors.length), `${absent.length} sin entidades inscritas`, 'acc')}
+      ${kpi('Concentración', `${half} act.`, 'Acumulan la mitad del universo', 'crit')}
+      ${kpi('Con crosswalk MATCH_FUERTE', fmt(mapped), 'Actividades con equivalencia ACTECO fuerte', 'sii')}
     </div>
     <div class="g2">
-      <div class="card"><div class="ct">Universo SO por sector</div>
-        ${hbar(sectors.map((s) => ({ l: s.name.slice(0, 24), v: s.so_count, c: 'var(--uaf)' })),
-          Math.min(W / 2 - 40, 380), 250, 175)}
+      <div class="card"><div class="ct">Universo inscrito por actividad · top 12</div>
+        ${hbar(ranked.slice(0, 12).map((s) => ({ l: s.name.slice(0, 26), v: s.so_count, c: 'var(--uaf)' })),
+          Math.min(W / 2 - 40, 420), 300, 195)}
       </div>
-      <div class="card"><div class="ct">Entidades sin reporte ROS</div>
-        ${hbar(sectors.map((s) => ({ l: s.name.slice(0, 24), v: s.so_count - s.ros_reporters, c: 'var(--cr)' })),
-          Math.min(W / 2 - 40, 380), 250, 175)}
+      <div class="card" style="display:flex;flex-direction:column;align-items:center">
+        <div class="ct" style="width:100%">Universo por macrofamilia</div>
+        ${donut(byFamily.map(([l, v], i) => ({ l: l.length > 26 ? `${l.slice(0, 26)}…` : l, v, c: famColors[i % famColors.length] })), 180, 180, 'SO')}
       </div>
     </div>
-    <div class="card"><div class="ct">Reportabilidad y perímetro por sector</div>
+    <div class="card"><div class="ct">Detalle por actividad UAF</div>
       <div class="scroll-x"><table class="dtbl">
-        <thead><tr><th>Sector</th><th class="num">SO</th><th class="num">% ROS</th><th class="num">% ROE</th>
-          <th class="num">Sancionados</th><th class="num">MATCH_FUERTE sin inscripción</th></tr></thead>
+        <thead><tr><th>Actividad</th><th>Macrofamilia</th><th class="num">SO inscritos</th>
+          <th class="num">Share</th><th class="num">Mapeos ACTECO</th><th class="num">MATCH_FUERTE</th>
+          <th class="num">% ROS</th></tr></thead>
         <tbody>${rows}</tbody></table></div>
-      <div style="margin-top:12px;font-size:11px;color:var(--txm)">
-        La última columna cuenta <strong>candidatos a validación</strong>, no sujetos obligados.
-      </div>
     </div>`;
 }
 
@@ -714,34 +774,42 @@ function rEvidencia() {
 
 function rFiscal() {
   const sectors = app.data.sectors;
-  const totalSO = sectors.reduce((a, s) => a + s.so_count, 0);
-  const totalROS = sectors.reduce((a, s) => a + s.ros_reporters, 0);
-  const candidates = sectors.reduce((a, s) => a + (s.strong_match_unregistered || 0), 0);
-  const sanctioned = sectors.reduce((a, s) => a + s.sanctioned, 0);
+  const present = sectors.filter((s) => s.so_count);
+  const totalSO = present.reduce((a, s) => a + s.so_count, 0);
+  const strongMaps = sectors.reduce((a, s) => a + (s.acteco_strong_mappings || 0), 0);
+  const b = app.data.benchmark;
+  const supervision = b.series?.find((s) => s.metric === 'acciones_supervision');
+  const lastSup = supervision?.points[supervision.points.length - 1];
   const W = contentWidth();
 
   return `
     <div class="mh"><h1>Perímetro UAF · Fiscalización</h1>
-      <p>Sujetos obligados, brechas de inscripción y reportabilidad · 55 actividades UAF</p></div>
+      <p>Universo inscrito y equivalencias hacia ACTECO · Registro real de sujetos obligados</p></div>
     ${guardrails('fiscal')}
     <div class="krow">
-      ${kpi('SO observados', fmt(totalSO), 'En nómina vigente', 'uaf')}
-      ${kpi('MATCH_FUERTE sin inscripción', fmt(candidates), 'Candidatos a validación regulatoria', 'crit')}
-      ${kpi('Sin ROS en el período', fmt(totalSO - totalROS), `${Math.round((1 - totalROS / totalSO) * 100)}% del universo`, 'warn')}
-      ${kpi('Sancionados por supervisor', fmt(sanctioned), 'Con evento adverso registrado', 'san')}
+      ${kpi('Sujetos obligados inscritos', fmt(totalSO), `${present.length} actividades con registro`, 'uaf')}
+      ${kpi('Equivalencias MATCH_FUERTE', fmt(strongMaps), 'Hacia ACTECO del SII · candidatas a validación', 'sii')}
+      ${kpi('Acciones de supervisión', fmt(lastSup?.value), `Nacional · ${lastSup?.period || ''}`, 'cgr')}
+      ${kpi('MATCH_FUERTE sin inscripción', '—', 'Requiere cruzar el padrón SII completo', 'nodata')}
     </div>
+    <div class="gr" style="border-left-color:var(--cm)"><strong>Pendiente de la fase F2:</strong>
+      detectar entidades con actividad ACTECO de MATCH_FUERTE que <em>no</em> figuran en el registro
+      UAF exige cruzar el padrón completo del SII contra la nómina, y hoy Radar SII declara
+      <code class="mono">sector</code> sin bloque conformado. Hasta entonces el indicador es NO_DATA
+      y no se estima.</div>
     <div class="g2">
-      <div class="card"><div class="ct">Cobertura ROS por sector</div>
-        ${hbar(sectors.map((s) => {
-          const pct = Math.round((s.ros_reporters / s.so_count) * 100);
-          return { l: s.name.slice(0, 24), v: pct, suffix: '%',
-            c: pct >= 80 ? 'var(--cl)' : pct >= 60 ? 'var(--cm)' : 'var(--cr)' };
-        }), Math.min(W / 2 - 40, 380), 250, 175)}
+      <div class="card"><div class="ct">Densidad de equivalencias ACTECO por actividad</div>
+        ${hbar(sectors.filter((s) => s.acteco_mappings)
+          .sort((a, c) => c.acteco_mappings - a.acteco_mappings).slice(0, 12)
+          .map((s) => ({ l: s.name.slice(0, 26), v: s.acteco_mappings, c: 'var(--sii)' })),
+          Math.min(W / 2 - 40, 420), 290, 195)}
       </div>
-      <div class="card"><div class="ct">SO por región · top 6</div>
-        ${vbar([...app.data.territory].sort((a, b) => b.so_count - a.so_count).slice(0, 6)
-          .map((r) => ({ l: r.code, v: r.so_count, c: levelVar(r.exposure) })),
-          Math.min(W / 2 - 40, 340), 190)}
+      <div class="card"><div class="ct">Acciones de supervisión · serie nacional</div>
+        ${supervision ? vbar(supervision.points.map((p) => ({ l: p.period, v: p.value, c: 'var(--cgr)' })),
+          Math.min(W / 2 - 40, 380), 210) : ''}
+        <div style="margin-top:8px;font-size:11px;color:var(--txm)">
+          La capacidad de supervisión se mantiene plana mientras el universo inscrito crece:
+          172 acciones en 2025 sobre 9.911 entidades. Es un hecho de contexto, no un juicio.</div>
       </div>
     </div>`;
 }
@@ -839,7 +907,12 @@ function renderNav() {
 function render() {
   renderNav();
   $('tb-title').textContent = MODULES[app.module].t;
-  $('ct').innerHTML = (RENDERERS[app.module] || rHallazgos)();
+  const body = (RENDERERS[app.module] || rHallazgos)();
+  // El aviso de procedencia va tras el encabezado, antes de cualquier cifra.
+  const banner = provenanceBanner(app.module);
+  $('ct').innerHTML = banner
+    ? body.replace(/(<\/div>)/, `$1${banner}`)
+    : body;
   $('ct').scrollTop = 0;
 }
 

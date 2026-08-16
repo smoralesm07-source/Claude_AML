@@ -77,22 +77,53 @@ impedir que se degrade a `ENTITY_RISK` por descuido.
 ## BENCHMARK — contraste contra denominador público
 
 El referente compara los SAR del cliente contra las estadísticas de industria de FinCEN. El
-equivalente chileno existe: las **series ROS/ROE que la UAF publica**, ya recolectadas por Radar
-UAF vía la API CKAN de `datos.gob.cl`.
+equivalente chileno existe y **ya está implementado con datos reales** desde
+`Radar_UAF/data/gold/statistics.parquet`.
 
-| Métrica | Fórmula | Lectura |
+### Lo que la fuente sí sostiene
+
+| Métrica | Disponibilidad | Valor real (2025) |
 |---|---|---|
-| Intensidad de señal | (señales propias / universo SO) ÷ (ROS publicados / universo SO) | >1,5 sobre-representado · 0,67–1,5 alineado · <0,67 sub-representado |
-| Cobertura del universo | entidades observadas / universo SO publicado | ≥80 / ≥50 / <50 |
+| ROS por sujeto obligado inscrito | `REAL` | 2,2 ROS/entidad |
+| ROE por sujeto obligado inscrito | `REAL` | 163,5 ROE/entidad |
+| Variación de ROS 2021–2025 | `REAL` | +124,2% |
+| Equivalencia exacta registro-taxonomía | `REAL` | 97,2% (9.508 de 9.782) |
 
-**Las dos se muestran siempre juntas.** Con cobertura bajo 50% la intensidad se marca
-`NO_INTERPRETABLE` y no se dibuja: leer intensidad sobre un universo mal observado produce
-conclusiones invertidas. En la sobrecapa demostrativa, «Inmobiliarias y constructoras» ilustra
-justamente ese caso.
+Series completas 2021–2025 de ROS, ROE, universo inscrito, acciones de supervisión y procesos
+sancionatorios, cada punto con su URL de origen.
 
-Una intensidad alta **no significa más lavado en el sector**: lo más probable es que signifique
-mejor cobertura de fuentes públicas en ese sector. La métrica calibra la cobertura propia; no
-califica sectores.
+### Dos métricas que el diseño original daba por hechas y la fuente no sostiene
+
+Al construir el módulo contra datos reales, dos métricas del catálogo resultaron no computables.
+Se conservan con su definición correcta y un campo `availability` que lo declara, en vez de
+borrarlas o —peor— aproximarlas.
+
+**`BMK_SIGNAL_INTENSITY` → `NATIONAL_ONLY`.** La UAF publica ROS y ROE como **agregados
+nacionales**, sin desagregación por actividad supervisada. La intensidad por sector no existe como
+dato público. El benchmark se ancla a nivel nacional; la desagregación sectorial se limita al
+universo inscrito, que sí es un hecho registral por actividad.
+
+**`KRI_ROS_GAP` → `OUT_OF_SCOPE_PUBLIC_SOURCES`.** La métrica publicada
+`entidades_reportantes_total` **no identifica a quienes reportaron**: su valor coincide
+exactamente con el universo inscrito.
+
+```
+sujetos_obligados_sector_privado  2025 = 9.403
+entidades_publicas_registradas    2025 =   508
+                                  suma = 9.911
+entidades_reportantes_total       2025 = 9.911   ← idéntico
+```
+
+Derivar de ahí una «tasa de cumplimiento» habría producido un indicador falso con apariencia de
+rigor. Es exactamente el error que el principio `missing ≠ zero` existe para evitar, aplicado un
+nivel más arriba: no basta con no inventar ceros, hay que no inventar denominadores.
+
+### Control de calidad sobre la fuente
+
+El constructor marca ceros rodeados de valores distintos de cero dentro de una misma serie.
+`procesos_sancionatorios_iniciados` registra 0 en 2021 y 2025 mientras el resto del período va de
+51 a 117, y el radar los publica como hecho oficial con confianza 1,0. El cockpit **no corrige a la
+fuente**: levanta la bandera para que el Data Steward la verifique contra el informe original.
 
 ---
 
