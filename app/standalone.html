@@ -1,0 +1,1545 @@
+<title>IFL Cockpit</title>
+<meta name="description" content="Cockpit analítico del ecosistema de radares OSINT con enfoque AML/LA-FT · corte 2024.">
+<style>
+/* IFL Cockpit v1 · sistema de diseño
+   Tema oscuro por defecto; claro por preferencia del sistema o por selector.
+   Toda la paleta se define en :root; los bloques de tema sólo la redefinen. */
+
+:root {
+  --bg:#070d1a; --s1:#0c1525; --s2:#101c30; --s3:#162540;
+  --bd:rgba(255,255,255,.07); --bds:#1e3050;
+  --tx:#ddeafc; --tx2:#7090bc; --txm:#354f78;
+  --ac:#3b82f6; --ac2:#1d4ed8; --acg:linear-gradient(135deg,#1d4ed8,#3b82f6);
+
+  /* Semáforo de estado y nivel */
+  --cr:#ef4444; --cr-bg:rgba(239,68,68,.12);
+  --ch:#f97316; --ch-bg:rgba(249,115,22,.12);
+  --cm:#eab308; --cm-bg:rgba(234,179,8,.12);
+  --cl:#22c55e; --cl-bg:rgba(34,197,94,.12);
+  --nd:#64748b; --nd-bg:rgba(100,116,139,.12);
+
+  /* Color propio por fuente: la identidad visual del ecosistema */
+  --sii:#10b981; --sii-bg:rgba(16,185,129,.15); --sii-tx:#34d399;
+  --uaf:#a78bfa; --uaf-bg:rgba(167,139,250,.15); --uaf-tx:#c4b5fd;
+  --cgr:#38bdf8; --cgr-bg:rgba(56,189,248,.15); --cgr-tx:#7dd3fc;
+  --del:#f87171; --del-bg:rgba(248,113,113,.15); --del-tx:#fca5a5;
+  --pre:#fbbf24; --pre-bg:rgba(251,191,36,.15); --pre-tx:#fcd34d;
+  --san:#818cf8; --san-bg:rgba(129,140,248,.15); --san-tx:#a5b4fc;
+  --osl:#22d3ee; --osl-bg:rgba(34,211,238,.15); --osl-tx:#67e8f9;
+  --ctx:#94a3b8; --ctx-bg:rgba(148,163,184,.15); --ctx-tx:#cbd5e1;
+
+  --sid:236px; --top:56px; --rad:10px; --rad-sm:7px;
+  --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme=dark]) {
+    --bg:#f0f4fb; --s1:#fff; --s2:#f5f8fe; --s3:#eaf0fb;
+    --bd:rgba(0,0,0,.07); --bds:#d0daea;
+    --tx:#0d1e3a; --tx2:#3d5278; --txm:#8098b8;
+    --ac:#1d4ed8; --ac2:#1e40af;
+    --cr:#dc2626; --cr-bg:rgba(220,38,38,.09);
+    --ch:#ea580c; --ch-bg:rgba(234,88,12,.09);
+    --cm:#ca8a04; --cm-bg:rgba(202,138,4,.09);
+    --cl:#16a34a; --cl-bg:rgba(22,163,74,.09);
+    --nd:#64748b; --nd-bg:rgba(100,116,139,.09);
+    --sii:#059669; --sii-bg:rgba(5,150,105,.1);  --sii-tx:#047857;
+    --uaf:#7c3aed; --uaf-bg:rgba(124,58,237,.1); --uaf-tx:#6d28d9;
+    --cgr:#0284c7; --cgr-bg:rgba(2,132,199,.1);  --cgr-tx:#0369a1;
+    --del:#dc2626; --del-bg:rgba(220,38,38,.1);  --del-tx:#b91c1c;
+    --pre:#b45309; --pre-bg:rgba(180,83,9,.1);   --pre-tx:#92400e;
+    --san:#4338ca; --san-bg:rgba(67,56,202,.1);  --san-tx:#3730a3;
+    --osl:#0e7490; --osl-bg:rgba(14,116,144,.1); --osl-tx:#155e75;
+    --ctx:#475569; --ctx-bg:rgba(71,85,105,.1);  --ctx-tx:#334155;
+  }
+}
+
+:root[data-theme=light] {
+  --bg:#f0f4fb; --s1:#fff; --s2:#f5f8fe; --s3:#eaf0fb;
+  --bd:rgba(0,0,0,.07); --bds:#d0daea;
+  --tx:#0d1e3a; --tx2:#3d5278; --txm:#8098b8;
+  --ac:#1d4ed8; --ac2:#1e40af;
+  --cr:#dc2626; --cr-bg:rgba(220,38,38,.09);
+  --ch:#ea580c; --ch-bg:rgba(234,88,12,.09);
+  --cm:#ca8a04; --cm-bg:rgba(202,138,4,.09);
+  --cl:#16a34a; --cl-bg:rgba(22,163,74,.09);
+  --nd:#64748b; --nd-bg:rgba(100,116,139,.09);
+  --sii:#059669; --sii-bg:rgba(5,150,105,.1);  --sii-tx:#047857;
+  --uaf:#7c3aed; --uaf-bg:rgba(124,58,237,.1); --uaf-tx:#6d28d9;
+  --cgr:#0284c7; --cgr-bg:rgba(2,132,199,.1);  --cgr-tx:#0369a1;
+  --del:#dc2626; --del-bg:rgba(220,38,38,.1);  --del-tx:#b91c1c;
+  --pre:#b45309; --pre-bg:rgba(180,83,9,.1);   --pre-tx:#92400e;
+  --san:#4338ca; --san-bg:rgba(67,56,202,.1);  --san-tx:#3730a3;
+  --osl:#0e7490; --osl-bg:rgba(14,116,144,.1); --osl-tx:#155e75;
+  --ctx:#475569; --ctx-bg:rgba(71,85,105,.1);  --ctx-tx:#334155;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+
+body {
+  font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg); color:var(--tx);
+  display:flex; height:100vh; overflow:hidden; font-size:13px; line-height:1.5;
+}
+
+/* ── Barra lateral ─────────────────────────────────────────── */
+#sb { width:var(--sid); background:var(--s1); display:flex; flex-direction:column;
+      flex-shrink:0; overflow-y:auto; z-index:50; border-right:1px solid var(--bd) }
+.brand { padding:18px 16px 14px; border-bottom:1px solid var(--bd) }
+.brand-tag { font-size:9px; letter-spacing:3px; color:var(--ac); font-weight:800;
+             text-transform:uppercase; margin-bottom:6px }
+.brand-name { font-size:16px; font-weight:800; line-height:1.15; letter-spacing:-.03em }
+.brand-ver { font-size:10px; color:var(--txm); margin-top:5px; font-variant-numeric:tabular-nums }
+
+.persona-box { padding:12px 14px; border-bottom:1px solid var(--bd) }
+.persona-lbl { font-size:9px; font-weight:700; letter-spacing:1.5px; color:var(--txm);
+               text-transform:uppercase; margin-bottom:6px }
+.persona-sel { width:100%; border:1px solid var(--bd); border-radius:var(--rad-sm);
+               padding:6px 9px; font-size:12px; color:var(--tx); background:var(--s2);
+               cursor:pointer; font-family:inherit; font-weight:600 }
+
+.nav-sec { padding:4px 0 }
+.nav-lbl { padding:9px 16px 3px; font-size:9px; font-weight:700; letter-spacing:1.5px;
+           color:var(--txm); text-transform:uppercase }
+.ni { display:flex; align-items:center; gap:9px; padding:8px 14px 8px 12px; cursor:pointer;
+      border:none; background:0 0; color:var(--tx2); width:100%; text-align:left;
+      font-size:12.5px; transition:.12s; border-left:3px solid transparent;
+      font-family:inherit; font-weight:500 }
+.ni:hover { background:rgba(59,130,246,.07); color:var(--tx) }
+.ni.on { background:rgba(59,130,246,.1); color:var(--ac); border-left-color:var(--ac) }
+.ni-ic { font-size:14px; width:18px; text-align:center; flex-shrink:0 }
+.ni-bd { margin-left:auto; background:var(--cr); color:#fff; font-size:9px; font-weight:800;
+         padding:1px 5px; border-radius:99px; min-width:18px; text-align:center }
+.ni-bd.warn { background:var(--ch) }
+
+.sb-foot { margin-top:auto; padding:12px 14px; border-top:1px solid var(--bd) }
+
+/* ── Estructura principal ──────────────────────────────────── */
+#main { flex:1; display:flex; flex-direction:column; overflow:hidden }
+#tb { height:var(--top); background:var(--s1); border-bottom:1px solid var(--bd);
+      display:flex; align-items:center; padding:0 20px; gap:10px; flex-shrink:0 }
+#tb-title { font-size:14px; font-weight:700; letter-spacing:-.02em }
+#tb-sep { color:var(--bds); font-size:16px }
+#ct { flex:1; overflow-y:auto; padding:22px }
+
+.mh { margin-bottom:18px }
+.mh h1 { font-size:22px; font-weight:800; letter-spacing:-.03em; line-height:1.1 }
+.mh p { font-size:12px; color:var(--tx2); margin-top:4px }
+
+/* ── Controles ─────────────────────────────────────────────── */
+.fsel, .sinp { border:1px solid var(--bd); border-radius:var(--rad-sm); padding:6px 10px;
+               font-size:12px; color:var(--tx); background:var(--s2); font-family:inherit }
+.fsel { cursor:pointer; color:var(--tx2); font-weight:500 }
+.sinp:focus { outline:none; border-color:rgba(59,130,246,.5); box-shadow:0 0 0 3px rgba(59,130,246,.1) }
+.fbr { display:flex; align-items:center; gap:7px; flex-wrap:wrap }
+.tb-acts { margin-left:auto; display:flex; gap:6px }
+.btn { padding:5px 13px; border-radius:var(--rad-sm); font-size:12px; font-weight:600;
+       cursor:pointer; border:1px solid var(--bd); background:var(--s2); color:var(--tx2);
+       font-family:inherit; transition:.12s }
+.btn:hover { border-color:rgba(59,130,246,.3); color:var(--ac) }
+.btn-p { background:var(--acg); color:#fff; border-color:transparent }
+.btn-p:hover { opacity:.9; color:#fff }
+.fbtn { border:1px solid var(--bd); border-radius:var(--rad-sm); padding:5px 12px; font-size:12px;
+        cursor:pointer; background:var(--s2); color:var(--tx2); font-family:inherit;
+        transition:.12s; font-weight:500 }
+.fbtn.on, .fbtn:hover { background:rgba(59,130,246,.12); border-color:rgba(59,130,246,.3); color:var(--ac) }
+
+/* ── Rejillas y tarjetas ───────────────────────────────────── */
+.krow { display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:11px; margin-bottom:18px }
+.kpi { background:var(--s1); border-radius:var(--rad); padding:14px 16px; border:1px solid var(--bd);
+       position:relative; overflow:hidden }
+.kpi::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--kc,var(--ac)) }
+.kpi.sii{--kc:var(--sii)} .kpi.uaf{--kc:var(--uaf)} .kpi.cgr{--kc:var(--cgr)}
+.kpi.del{--kc:var(--del)} .kpi.pre{--kc:var(--pre)} .kpi.san{--kc:var(--san)}
+.kpi.osl{--kc:var(--osl)} .kpi.ctx{--kc:var(--ctx)} .kpi.acc{--kc:var(--ac)}
+.kpi.ok{--kc:var(--cl)} .kpi.warn{--kc:var(--ch)} .kpi.crit{--kc:var(--cr)} .kpi.nodata{--kc:var(--nd)}
+.kl { font-size:10px; color:var(--tx2); font-weight:600; text-transform:uppercase; letter-spacing:.5px }
+.kv { font-size:28px; font-weight:800; margin:4px 0 2px; font-variant-numeric:tabular-nums;
+      letter-spacing:-.03em; line-height:1 }
+.kv.nodata { color:var(--nd) }
+.ks { font-size:11px; color:var(--txm) }
+.ksp { position:absolute; bottom:10px; right:12px; opacity:.7 }
+
+.card { background:var(--s1); border-radius:var(--rad); border:1px solid var(--bd); padding:16px; margin-bottom:14px }
+.ct { font-size:12px; font-weight:700; margin-bottom:12px; letter-spacing:-.01em }
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px }
+.g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px }
+.g12 { display:grid; grid-template-columns:1fr 2fr; gap:14px; margin-bottom:14px }
+.g21 { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px }
+
+/* ── Insignias ─────────────────────────────────────────────── */
+.bd { display:inline-flex; align-items:center; padding:2px 8px; border-radius:5px;
+      font-size:10px; font-weight:700 }
+.bd.sii{background:var(--sii-bg);color:var(--sii-tx)} .bd.uaf{background:var(--uaf-bg);color:var(--uaf-tx)}
+.bd.cgr{background:var(--cgr-bg);color:var(--cgr-tx)} .bd.del{background:var(--del-bg);color:var(--del-tx)}
+.bd.pre{background:var(--pre-bg);color:var(--pre-tx)} .bd.san{background:var(--san-bg);color:var(--san-tx)}
+.bd.osl{background:var(--osl-bg);color:var(--osl-tx)} .bd.ctx{background:var(--ctx-bg);color:var(--ctx-tx)}
+
+.rk { display:inline-flex; align-items:center; gap:3px; padding:2px 9px; border-radius:5px;
+      font-size:11px; font-weight:700 }
+.rk.cr{background:var(--cr-bg);color:var(--cr)} .rk.hi{background:var(--ch-bg);color:var(--ch)}
+.rk.md{background:var(--cm-bg);color:var(--cm)} .rk.lo{background:var(--cl-bg);color:var(--cl)}
+.rk.nd{background:var(--nd-bg);color:var(--nd)}
+
+/* Estado del caso */
+.st { display:inline-flex; padding:2px 9px; border-radius:5px; font-size:10px; font-weight:700;
+      text-transform:uppercase; letter-spacing:.4px }
+.st.DETECTADO{background:var(--nd-bg);color:var(--nd)}
+.st.EN_REVISION{background:var(--cgr-bg);color:var(--cgr-tx)}
+.st.CORROBORADO{background:var(--ch-bg);color:var(--ch)}
+.st.ESCALADO{background:var(--cr-bg);color:var(--cr)}
+.st.DESCARTADO{background:var(--cl-bg);color:var(--cl)}
+
+/* ── Tablas ────────────────────────────────────────────────── */
+.dtbl { width:100%; border-collapse:collapse; font-size:12px }
+.dtbl th { padding:8px 10px; text-align:left; font-size:10px; font-weight:700; color:var(--tx2);
+           text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--bd);
+           background:var(--s2); white-space:nowrap }
+.dtbl td { padding:9px 10px; border-bottom:1px solid var(--bd) }
+.dtbl tr:last-child td { border-bottom:none }
+.dtbl tbody tr:hover td { background:var(--s2) }
+.num { text-align:right; font-variant-numeric:tabular-nums }
+.scroll-x { overflow-x:auto }
+
+/* ── Tarjeta de caso ───────────────────────────────────────── */
+.hcard { background:var(--s1); border-radius:var(--rad); border:1px solid var(--bd); padding:16px;
+         margin-bottom:13px; transition:box-shadow .18s,transform .18s }
+.hcard:hover { box-shadow:0 4px 24px rgba(0,0,0,.18); transform:translateY(-1px) }
+.hcard.cr{border-top:2px solid var(--cr)} .hcard.hi{border-top:2px solid var(--ch)}
+.hcard.md{border-top:2px solid var(--cm)} .hcard.lo{border-top:2px solid var(--cl)}
+.htop { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:11px }
+.hid h3 { font-size:14px; font-weight:700; letter-spacing:-.02em }
+.hid .rut { font-size:11px; color:var(--txm); margin-top:2px; font-family:var(--mono) }
+.hid .metas { margin-top:7px; display:flex; gap:5px; flex-wrap:wrap; align-items:center }
+.hscore { text-align:center; flex-shrink:0; margin-left:14px }
+.sigs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:11px }
+.sc { display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:5px;
+      font-size:11px; font-weight:500; border:1px solid }
+.sc .rid { font-family:var(--mono); font-size:9.5px; opacity:.75 }
+.hyp { background:var(--s2); border-radius:var(--rad-sm); padding:10px 13px; margin-bottom:9px;
+       border-left:3px solid var(--ac) }
+.hyp-lbl { font-size:9px; font-weight:800; color:var(--ac); text-transform:uppercase;
+           letter-spacing:1px; margin-bottom:4px }
+.hyp-tx { font-size:12px; color:var(--tx2); line-height:1.6 }
+.nxt { display:flex; flex-wrap:wrap; gap:4px }
+.nxt-s { background:var(--s2); padding:3px 9px; border-radius:5px; font-size:11px;
+         color:var(--tx2); border:1px solid var(--bd) }
+
+/* ── Guardrail ─────────────────────────────────────────────── */
+.gr { background:var(--s2); border:1px solid var(--bd); border-left:3px solid var(--ac);
+      border-radius:var(--rad-sm); padding:10px 14px; font-size:11px; color:var(--tx2);
+      margin-bottom:14px; line-height:1.6 }
+.gr strong { color:var(--tx) }
+
+/* ── Varios ────────────────────────────────────────────────── */
+.pb { height:5px; background:var(--bd); border-radius:99px; overflow:hidden }
+.pf { height:100%; border-radius:99px }
+.rrow { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--bd) }
+.rrow:last-child { border-bottom:none }
+.rname { width:160px; font-size:12px; flex-shrink:0; font-weight:500 }
+.rbw { flex:1 } .rval { width:52px; text-align:right; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums }
+.rct { width:56px; text-align:right; font-size:11px; color:var(--txm) }
+
+.ac { background:var(--s1); border-radius:var(--rad); border:1px solid var(--bd); padding:14px; margin-bottom:10px }
+.ah { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px }
+.at { font-size:13px; font-weight:700; letter-spacing:-.01em }
+.adesc { font-size:12px; color:var(--tx2); margin-bottom:8px; line-height:1.6 }
+.aev { font-size:11px; color:var(--txm); font-family:var(--mono) }
+
+code.rut, code.mono { font-family:var(--mono); font-size:11.5px; color:var(--tx2) }
+.chip { display:inline-block; padding:2px 7px; border-radius:4px; background:var(--s2);
+        border:1px solid var(--bd); font-family:var(--mono); font-size:10.5px; color:var(--ac) }
+.nodata-cell { color:var(--nd) }
+
+.banner { border-radius:var(--rad-sm); padding:10px 14px; font-size:11.5px; line-height:1.6;
+          margin-bottom:14px; border:1px solid }
+.banner.demo { background:var(--cm-bg); border-color:rgba(234,179,8,.35); color:var(--tx2) }
+.banner.demo strong { color:var(--cm) }
+.banner.err { background:var(--cr-bg); border-color:rgba(239,68,68,.35); color:var(--tx2) }
+.banner.err strong { color:var(--cr) }
+
+@media (max-width:900px) {
+  .g2,.g3,.g12,.g21 { grid-template-columns:1fr }
+  #sb { width:200px }
+}
+
+</style>
+
+<aside id="sb">
+    <div class="brand">
+      <div class="brand-tag">IFL · v1.0</div>
+      <div class="brand-name">Intelligence<br>Fusion Layer</div>
+      <div class="brand-ver" id="brand-ver">Cargando contrato…</div>
+    </div>
+
+    <div class="persona-box">
+      <div class="persona-lbl">Perfil de uso</div>
+      <select class="persona-sel" id="persona" aria-label="Perfil de uso"></select>
+    </div>
+
+    <nav id="nav" aria-label="Módulos"></nav>
+
+    <div class="sb-foot">
+      <button class="fbtn" id="theme" style="width:100%;display:flex;justify-content:center;gap:6px">
+        ☀ Cambiar tema
+      </button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header id="tb">
+      <span id="tb-title">Motor de Hallazgos</span>
+      <span id="tb-sep">|</span>
+      <div class="fbr">
+        <select class="fsel" aria-label="Período"><option>2024</option><option>2023</option><option>2022–2024</option></select>
+        <select class="fsel" aria-label="Nivel"><option>Todos los niveles</option><option>Crítico ≥80</option><option>Alto 60–79</option><option>Medio 40–59</option></select>
+      </div>
+      <div class="tb-acts">
+        <button class="btn">↓ Exportar</button>
+        <button class="btn btn-p">↻ Actualizar</button>
+      </div>
+    </header>
+    <div id="ct"></div>
+  </main>
+
+<script type="module">
+const CONTRACT_DATA = {"contract_version": "1.0", "generated_at": "2026-08-16T16:03:10+00:00", "generator": "tools/build_cockpit_data.py", "period_id": "2024", "sources": [{"territory_resolution_pct": 100.0, "territory_granularity": "REGION_PROVINCE_COMMUNE", "source_id": "sii", "radar_id": "RADAR_SII", "label": "Radar SII", "repository": "smoralesm07-source/Radar_SII", "implementation_stage": "FUSION_CONTRACT_READY_NATIVE_PARQUET", "status": "OK", "coverage": "Nacional", "update_cadence": "MENSUAL", "sla_days": 45, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "NATIVE", "territory_id": "READY", "sector_id": null, "period_id": "READY"}, "exports": ["docs/data/fusion_contract_v1.json", "docs/data/evidence_fusion_v1.jsonl", "docs/data/fusion_interop_status_v1.json", "GitHub Actions artifact radar-sii-fusion-parquet-*"], "signal_count": null}, {"territory_resolution_pct": null, "territory_granularity": null, "source_id": "uaf", "radar_id": "RADAR_UAF", "label": "Radar UAF", "repository": "smoralesm07-source/Radar_UAF", "implementation_stage": "FUSION_EXPORT_READY", "status": "OK", "coverage": "Nacional", "update_cadence": "ANUAL", "sla_days": 400, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "READY", "territory_id": "NOT_PRIMARY", "sector_id": "NATIVE", "period_id": "READY"}, "exports": ["data/silver/entity_hub_v1.jsonl", "data/silver/entities_fusion_v1.jsonl", "data/silver/events_fusion_v1.jsonl", "data/silver/evidence_v1.jsonl", "docs/data/fusion_interop_status_v1.json", "docs/data/interop_catalog_v1.json"], "signal_count": null}, {"territory_resolution_pct": 97.3, "territory_granularity": "REGION_ONLY", "source_id": "cgr", "radar_id": "RADAR_CGR", "label": "Radar CGR", "repository": "smoralesm07-source/Radar-CGR", "implementation_stage": "FUSION_EXPORT_READY_TERRITORY_PARTIAL", "status": "WARN", "coverage": "Nacional", "update_cadence": "VARIABLE", "sla_days": 90, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "READY", "territory_id": "READY", "sector_id": "PARTIAL", "period_id": "READY"}, "exports": ["data/silver/entities_fusion_v1.jsonl", "data/silver/events_fusion_v1.jsonl", "data/silver/relationships_fusion_v1.jsonl", "data/silver/evidence_fusion_v1.jsonl", "docs/data/fusion_interop_status_v1.json"], "signal_count": null}, {"territory_resolution_pct": null, "territory_granularity": null, "source_id": "del", "radar_id": "RADAR_DELICTUAL", "label": "Radar Delictual", "repository": "smoralesm07-source/Radar_delictual", "implementation_stage": "FUSION_EXPORT_READY_TERRITORY_CONTEXT", "status": "OK", "coverage": "Nacional", "update_cadence": "MENSUAL", "sla_days": 60, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "NOT_PRIMARY", "territory_id": "READY", "sector_id": null, "period_id": "READY"}, "exports": ["data/processed/territory_interop_v1.jsonl", "data/processed/territory_events_fusion_v1.jsonl", "data/processed/evidence_fusion_v1.jsonl", "data/processed/fusion_interop_status_v1.json"], "signal_count": null}, {"territory_resolution_pct": null, "territory_granularity": null, "source_id": "pre", "radar_id": "RADAR_PRESUPUESTO", "label": "Presupuesto Abierto", "repository": "smoralesm07-source/Rada_Presupuesto_Abierto", "implementation_stage": "ADAPTER_PARTIAL", "status": "WARN", "coverage": "Nacional", "update_cadence": "DIARIA", "sla_days": 7, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "NATIVE", "territory_id": "PARTIAL", "sector_id": "PARTIAL", "period_id": "PARTIAL"}, "exports": ["docs/data/interop_catalog_v1.json", "data/processed/transactions_*.parquet", "docs/data/", "GitHub Actions artifacts"], "signal_count": null}, {"territory_resolution_pct": null, "territory_granularity": null, "source_id": "san", "radar_id": "RADAR_SANCIONES", "label": "Radar Sanciones", "repository": "smoralesm07-source/Radar_sanciones", "implementation_stage": "FUSION_EXPORT_READY", "status": "WARN", "coverage": "Parcial", "update_cadence": "VARIABLE", "sla_days": 90, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "READY", "territory_id": "NOT_PRIMARY", "sector_id": "PARTIAL", "period_id": "READY"}, "exports": ["docs/data/entity_hub_v1.json", "docs/data/entities_fusion_v1.jsonl", "docs/data/events_fusion_v1.jsonl", "docs/data/evidence_v1.jsonl", "docs/data/fusion_interop_status_v1.json", "docs/data/interop_catalog_v1.json"], "signal_count": null}, {"territory_resolution_pct": null, "territory_granularity": null, "source_id": "osl", "radar_id": "RADAR_OSFL", "label": "Radar OSFL", "repository": "smoralesm07-source/Radar_OSFL", "implementation_stage": "ADAPTER_READY_WITH_TERRITORY_PARTIAL", "status": "WARN", "coverage": "Nacional", "update_cadence": "ANUAL", "sla_days": 400, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": "READY", "territory_id": "PARTIAL", "sector_id": null, "period_id": "READY"}, "exports": ["docs/data/entity_hub_v1.jsonl", "docs/data/evidence_v1.jsonl", "docs/data/interop_catalog_v1.json", "docs/data/interop_status_v1.json", "docs/data/source_catalog.json", "docs/data/osfl_universe_core.csv", "GitHub Actions artifacts"], "signal_count": null}, {"territory_resolution_pct": null, "territory_granularity": null, "source_id": "ctx", "radar_id": null, "label": "Context Hub", "repository": "smoralesm07-source/Context-Hub", "implementation_stage": "OPERATIONAL_V0_2_1", "status": "OK", "coverage": "Nacional", "update_cadence": "ANUAL", "sla_days": 400, "last_snapshot_at": null, "freshness_days": null, "conformed_keys": {"entity_id": null, "territory_id": "NATIVE", "sector_id": "NATIVE", "period_id": null}, "exports": [], "signal_count": null}], "program_health": [{"metric_id": "PRG_IDENTITY_RESOLUTION", "name": "Resolución de identidad canónica", "family": "KPI_PROGRAMA", "guardrail": "El resto NO es error: es ENTITY_ID_NULL_CANDIDATE_ONLY por política. Un RUT sin dígito verificador válido nunca se promueve a identidad.", "scope": "GLOBAL", "value": 100.0, "unit": "%", "target": 90, "status": "OK", "trend": []}, {"metric_id": "PRG_TERRITORY_COVERAGE", "name": "Cobertura territorial canónica", "family": "KPI_PROGRAMA", "guardrail": "Nombre de comuna no es clave. Texto libre no resuelto no se promueve a CL-COM-*.", "scope": "GLOBAL", "value": 83.3, "unit": "%", "target": 95, "status": "WARN", "trend": []}, {"metric_id": "PRG_SECTOR_COVERAGE", "name": "Cobertura sectorial UAF", "family": "KPI_PROGRAMA", "guardrail": "ACTECO SII no acredita condición de sujeto obligado UAF. Sólo VALIDATED_EXACT y VALIDATED_RULE habilitan pertenencia fuerte.", "scope": "GLOBAL", "value": 70.0, "unit": "%", "target": 80, "status": "WARN", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "sii", "value": null, "unit": "días", "target": 45, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "uaf", "value": null, "unit": "días", "target": 400, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "cgr", "value": null, "unit": "días", "target": 90, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "del", "value": null, "unit": "días", "target": 60, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "pre", "value": null, "unit": "días", "target": 7, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "san", "value": null, "unit": "días", "target": 90, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "osl", "value": null, "unit": "días", "target": 400, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_FRESHNESS_DAYS", "name": "Frescura por fuente", "family": "KPI_PROGRAMA", "guardrail": "El SLA es propio de cada fuente: Presupuesto Abierto publica diario, UAF publica anual. Comparar frescura entre fuentes con cadencias distintas no tiene sentido.", "scope": "ctx", "value": null, "unit": "días", "target": 400, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_QUEUE_BACKLOG", "name": "Backlog de la cola analítica", "family": "KPI_PROGRAMA", "guardrail": "Backlog alto puede indicar buena detección o poca capacidad. No se interpreta solo: se lee junto a PRG_QUEUE_AGING.", "scope": "GLOBAL", "value": 4.0, "unit": "casos", "target": null, "status": "OK", "trend": []}, {"metric_id": "PRG_QUEUE_AGING", "name": "Antigüedad de la cola", "family": "KPI_PROGRAMA", "guardrail": "Se usa p90, no promedio: el promedio oculta las colas largas, que son justamente el problema.", "scope": "GLOBAL", "value": 47.0, "unit": "días", "target": null, "status": "CRIT", "trend": []}, {"metric_id": "PRG_MTTD", "name": "Tiempo medio a disposición", "family": "KPI_PROGRAMA", "guardrail": "Nunca se desagrega por analista. La métrica evalúa reglas y fuentes, no personas.", "scope": "GLOBAL", "value": 13.0, "unit": "días", "target": null, "status": "WARN", "trend": []}, {"metric_id": "PRG_SLA_COMPLIANCE", "name": "Cumplimiento de SLA de revisión", "family": "KPI_PROGRAMA", "guardrail": "El SLA depende del nivel: un caso Crítico tiene 5 días, uno Medio 30. Un agregado sin desglose por nivel es engañoso.", "scope": "GLOBAL", "value": 100.0, "unit": "%", "target": 90, "status": "OK", "trend": []}, {"metric_id": "PRG_SOURCE_CONVERGENCE", "name": "Convergencia multifuente efectiva", "family": "KPI_PROGRAMA", "guardrail": "Convergencia mide capacidad de cruce del sistema, no gravedad del caso. Baja convergencia suele ser brecha de identidad, no ausencia de riesgo.", "scope": "GLOBAL", "value": 71.4, "unit": "%", "target": 15, "status": "OK", "trend": []}, {"metric_id": "PRG_EVIDENCE_INTEGRITY", "name": "Integridad de evidencia", "family": "KPI_PROGRAMA", "guardrail": "Invariante duro. Una señal sin evidencia trazable no se muestra en el cockpit: se cuarentena.", "scope": "GLOBAL", "value": 100.0, "unit": "%", "target": 100, "status": "OK", "trend": []}, {"metric_id": "PRG_SOURCE_AVAILABILITY", "name": "Disponibilidad de fuente", "family": "KPI_PROGRAMA", "guardrail": "Una caída de disponibilidad NO se rellena con el último valor conocido en las vistas de conteo. missing != zero.", "scope": "GLOBAL", "value": null, "unit": "%", "target": null, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_QUARANTINE_BATCHES", "name": "Lotes en cuarentena", "family": "KPI_PROGRAMA", "guardrail": "Un lote en cuarentena nunca alimenta el maestro. La cuarentena es señal de que el control funcionó, no de que el dato es falso.", "scope": "GLOBAL", "value": null, "unit": "lotes", "target": null, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_SIGNAL_DRIFT", "name": "Deriva de volumen de señales", "family": "KPI_PROGRAMA", "guardrail": "Una deriva fuerte suele indicar cambio en la publicación de la fuente, no cambio en el fenómeno. Se investiga la fuente antes que el mundo.", "scope": "GLOBAL", "value": null, "unit": "%", "target": null, "status": "NO_DATA", "trend": []}, {"metric_id": "PRG_MUTE_RULES", "name": "Reglas sin producción", "family": "KPI_PROGRAMA", "guardrail": "Una regla muda puede estar bien calibrada o rota. Requiere revisión, no desactivación automática.", "scope": "GLOBAL", "value": null, "unit": "reglas", "target": null, "status": "NO_DATA", "trend": []}], "cases": [{"case_id": "CASO-2024-0001", "entity_id": "ENT-RUT-761234567", "name": "Corporación Agro-Sur Limitada", "rut": "76.123.456-7", "entity_type": "Persona Jurídica", "territory_id": "CL-REG-13", "region_label": "Metropolitana", "score": {"score_name": "ifl_priority_score", "score_value": 94, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "ESCALADO", "assignee_role": "INVESTIGADOR", "opened_at": "2024-10-02", "sla_due_at": "2024-10-07", "disposed_at": "2024-10-06", "disposition_reason": null, "signals": [{"source_id": "san", "rule_id": "SAN.R03_REINCIDENCIA_ALACFT", "text": "3 sanciones ALA/CFT (SVS, CMF) — reincidencia confirmada", "weight": 30, "period_id": "2022-2024", "evidence_refs": ["san:res/2023-04-CMF#p3", "san:res/2022-06-SVS#p1"]}, {"source_id": "pre", "rule_id": "PRE.R11_CONCENTRACION_ORGANISMO", "text": "Pagos del Estado +782% en 24 meses; concentración 94% en un organismo", "weight": 28, "period_id": "2022-2024", "evidence_refs": ["pre:tx/2024-Q3#agg-7712"]}, {"source_id": "cgr", "rule_id": "CGR.R07_PROVEEDOR_OBSERVADO", "text": "Hallazgo CGR: proveedor recurrente con observaciones contables", "weight": 18, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-1842#h4"]}, {"source_id": "uaf", "rule_id": "UAF.R02_MATCH_FUERTE_SIN_INSCRIPCION", "text": "MATCH_FUERTE: actividad SII coincide con sector UAF sin inscripción verificada", "weight": 14, "period_id": "2024", "evidence_refs": ["ctx:crosswalk/UAF-SEC-07#acteco-46201"]}, {"source_id": "del", "rule_id": "DEL.R01_CONTEXTO_ART27", "text": "Comuna de operación: +67% delitos vinculados a Ley 19.913", "weight": 10, "period_id": "2023", "evidence_refs": ["del:cead/2023#CL-COM-13101"]}], "hypothesis": "Posible uso de persona jurídica como vehículo de captación y canalización de fondos hacia el sector público. La concentración extrema de pagos en un organismo, junto a sanciones ALA/CFT previas y ausencia de inscripción UAF, configura un perfil de revisión prioritaria.", "next_steps": ["Verificar inscripción UAF con la fuente regulatoria", "Revisar cadena de beneficiario final (DDC)", "Cruzar con licitaciones en ChileCompra"]}, {"case_id": "CASO-2024-0002", "entity_id": "ENT-RUT-772345678", "name": "Inmobiliaria del Pacífico SpA", "rut": "77.234.567-8", "entity_type": "Persona Jurídica", "territory_id": "CL-REG-05", "region_label": "Valparaíso", "score": {"score_name": "ifl_priority_score", "score_value": 87, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "EN_REVISION", "assignee_role": "INVESTIGADOR", "opened_at": "2024-11-14", "sla_due_at": "2024-11-19", "disposed_at": null, "disposition_reason": null, "signals": [{"source_id": "pre", "rule_id": "PRE.R04_FRACCIONAMIENTO", "text": "Fraccionamiento: 14 pagos similares en 6 días bajo el umbral de orden de compra", "weight": 32, "period_id": "2024", "evidence_refs": ["pre:tx/2024-08#frag-2291"]}, {"source_id": "uaf", "rule_id": "UAF.R05_SIN_ROE_PERIODO", "text": "CANDIDATO: actividad inmobiliaria sin reporte ROE en el período anual", "weight": 25, "period_id": "2023", "evidence_refs": ["uaf:roe/2023#sector-07"]}, {"source_id": "sii", "rule_id": "SII.R09_DOTACION_VS_TRAMO", "text": "2 trabajadores dependientes con tramo de ventas superior a UF 100.000", "weight": 20, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-772345678"]}, {"source_id": "cgr", "rule_id": "CGR.R02_ORGANISMO_OBSERVADO", "text": "Organismo pagador con 2 observaciones CGR en el período", "weight": 15, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-0977#h2"]}, {"source_id": "san", "rule_id": "SAN.R01_SANCION_ACTIVA", "text": "Sanción UAF por incumplimiento DDC (2023)", "weight": 8, "period_id": "2023", "evidence_refs": ["san:res/2023-08-UAF#p2"]}], "hypothesis": "El patrón de fraccionamiento en pagos públicos, junto a baja dotación y ausencia de ROE, sugiere posible estructuración para eludir umbrales de reporte. Requiere verificar si los pagos son económicamente idénticos.", "next_steps": ["Analizar si los pagos son económicamente idénticos", "Verificar órdenes de compra asociadas", "Revisar relación con funcionarios del organismo"]}, {"case_id": "CASO-2024-0003", "entity_id": "ENT-RUT-783456789", "name": "Consultora Delta Asesores Ltda.", "rut": "78.345.678-9", "entity_type": "Persona Jurídica", "territory_id": "CL-REG-13", "region_label": "Metropolitana", "score": {"score_name": "ifl_priority_score", "score_value": 81, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "CORROBORADO", "assignee_role": "INVESTIGADOR", "opened_at": "2024-11-28", "sla_due_at": "2024-12-03", "disposed_at": null, "disposition_reason": null, "signals": [{"source_id": "sii", "rule_id": "SII.R03_CRECIMIENTO_ATIPICO", "text": "Constitución 2021. Ventas 2023: +8.100% respecto del año anterior", "weight": 28, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-783456789"]}, {"source_id": "osl", "rule_id": "OSL.R06_REPRESENTANTE_COMPARTIDO", "text": "OSFL relacionada: mismos representantes con antecedentes registrales adversos", "weight": 24, "period_id": "2023", "evidence_refs": ["osl:reg/2023#osfl-4412"]}, {"source_id": "pre", "rule_id": "PRE.R08_PRIMER_PAGO_ATIPICO", "text": "Primer pago estatal 2022 por $890M (top 3% de proveedores nuevos)", "weight": 22, "period_id": "2022", "evidence_refs": ["pre:tx/2022-11#first-8841"]}, {"source_id": "cgr", "rule_id": "CGR.R12_MULTIREGION", "text": "Presencia en 3 regiones simultáneamente en 18 meses", "weight": 14, "period_id": "2022-2023", "evidence_refs": ["cgr:inf/2023-1120#h7"]}, {"source_id": "del", "rule_id": "DEL.R01_CONTEXTO_ART27", "text": "Comuna de domicilio con densidad art. 27 sobre el percentil 90", "weight": 12, "period_id": "2023", "evidence_refs": ["del:cead/2023#CL-COM-13114"]}], "hypothesis": "Sociedad de constitución reciente con crecimiento exponencial y vínculos societarios con una OSFL. Patrón compatible con persona jurídica instrumental; requiere mapeo completo de la red antes de escalar.", "next_steps": ["Mapear la red completa de personas relacionadas", "Verificar si la OSFL registra inicio de actividades ante SII", "Revisar beneficiario final en CMF"]}, {"case_id": "CASO-2024-0004", "entity_id": "ENT-RUT-794567890", "name": "Transportes del Norte SA", "rut": "79.456.789-0", "entity_type": "Persona Jurídica", "territory_id": "CL-REG-02", "region_label": "Antofagasta", "score": {"score_name": "ifl_priority_score", "score_value": 74, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "DETECTADO", "assignee_role": null, "opened_at": "2024-12-09", "sla_due_at": "2024-12-24", "disposed_at": null, "disposition_reason": null, "signals": [{"source_id": "uaf", "rule_id": "UAF.R07_SO_SIN_ROS", "text": "Sujeto obligado inscrito sin ROS desde 2021 y sin ROE en el último período", "weight": 26, "period_id": "2021-2024", "evidence_refs": ["uaf:nomina/2024#so-1183"]}, {"source_id": "san", "rule_id": "SAN.R04_PROCESO_ACTIVO", "text": "Proceso regulatorio activo ante CMF en materia ALA/CFT (2024)", "weight": 24, "period_id": "2024", "evidence_refs": ["san:res/2024-03-CMF#p1"]}, {"source_id": "sii", "rule_id": "SII.R14_DOMICILIO_DIVERGENTE", "text": "Domicilio tributario distinto del operacional; múltiples códigos ACTECO", "weight": 20, "period_id": "2024", "evidence_refs": ["sii:dir/2024#rut-794567890"]}, {"source_id": "pre", "rule_id": "PRE.R15_MIGRACION_ORGANISMOS", "text": "Migración entre 4 organismos distintos en 3 años", "weight": 18, "period_id": "2021-2024", "evidence_refs": ["pre:tx/2024#mig-3310"]}, {"source_id": "del", "rule_id": "DEL.R01_CONTEXTO_ART27", "text": "Antofagasta: +43% en delitos de tráfico en período solapado", "weight": 12, "period_id": "2023", "evidence_refs": ["del:cead/2023#CL-REG-02"]}], "hypothesis": "Sujeto obligado que no cumple obligaciones de reportabilidad mientras mantiene relaciones con múltiples organismos. La migración entre organismos admite explicación comercial legítima y debe descartarse antes de escalar.", "next_steps": ["Confirmar estado del proceso ante CMF", "Verificar si el incumplimiento ROS es persistente", "Revisar historial de licitaciones por organismo"]}, {"case_id": "CASO-2024-0005", "entity_id": "ENT-RUT-765678901", "name": "Minera Atacama Holdings SpA", "rut": "76.567.890-1", "entity_type": "Persona Jurídica", "territory_id": "CL-REG-03", "region_label": "Atacama", "score": {"score_name": "ifl_priority_score", "score_value": 69, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "DETECTADO", "assignee_role": null, "opened_at": "2024-12-18", "sla_due_at": "2025-01-02", "disposed_at": null, "disposition_reason": null, "signals": [{"source_id": "pre", "rule_id": "PRE.R09_CRECIMIENTO_MULTIINSTITUCION", "text": "Proveedor que crece simultáneamente en 5 instituciones distintas", "weight": 30, "period_id": "2023-2024", "evidence_refs": ["pre:tx/2024#multi-5521"]}, {"source_id": "cgr", "rule_id": "CGR.R05_TRATO_DIRECTO", "text": "Auditorías CGR en 2 organismos con observaciones por trato directo", "weight": 27, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-2044#h1"]}, {"source_id": "uaf", "rule_id": "UAF.R02_MATCH_FUERTE_SIN_INSCRIPCION", "text": "MATCH_FUERTE: minería coincide con sector UAF sin inscripción verificada", "weight": 25, "period_id": "2024", "evidence_refs": ["ctx:crosswalk/UAF-SEC-21#acteco-07100"]}, {"source_id": "sii", "rule_id": "SII.R09_DOTACION_VS_TRAMO", "text": "Ventas 2023/2022 = 12,4x sin variación en la dotación de trabajadores", "weight": 18, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-765678901"]}], "hypothesis": "Crecimiento exponencial simultáneo en múltiples instituciones con hallazgos CGR en los contratantes. La ausencia de crecimiento en dotación sugiere que el aumento de facturación no responde a mayor capacidad productiva propia.", "next_steps": ["Correlacionar organismos con funcionarios presentes en hallazgos CGR", "Verificar si los contratos fueron licitación o trato directo"]}, {"case_id": "CASO-2024-0006", "entity_id": "ENT-RUT-770123456", "name": "Servicios Australes SpA", "rut": "77.012.345-6", "entity_type": "Persona Jurídica", "territory_id": "CL-REG-10", "region_label": "Los Lagos", "score": {"score_name": "ifl_priority_score", "score_value": 58, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "DESCARTADO", "assignee_role": "INVESTIGADOR", "opened_at": "2024-09-11", "sla_due_at": "2024-10-11", "disposed_at": "2024-09-30", "disposition_reason": "EXPLICACION_LEGITIMA", "signals": [{"source_id": "pre", "rule_id": "PRE.R04_FRACCIONAMIENTO", "text": "9 pagos consecutivos bajo el umbral de orden de compra", "weight": 26, "period_id": "2024", "evidence_refs": ["pre:tx/2024-06#frag-1104"]}, {"source_id": "sii", "rule_id": "SII.R03_CRECIMIENTO_ATIPICO", "text": "Ventas 2023 con variación de +240%", "weight": 18, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-770123456"]}], "hypothesis": "El fraccionamiento correspondía a hitos contractuales de un convenio marco documentado; el crecimiento se explica por la incorporación de una nueva línea de servicio con respaldo registral.", "next_steps": []}, {"case_id": "CASO-2024-0007", "entity_id": null, "name": "Comercial Andes y Cía. (identidad no resuelta)", "rut": null, "entity_type": "Persona Jurídica", "territory_id": null, "region_label": "—", "score": {"score_name": "ifl_priority_score", "score_value": 52, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"}, "state": "DESCARTADO", "assignee_role": "STEWARD", "opened_at": "2024-08-20", "sla_due_at": "2024-09-19", "disposed_at": "2024-09-02", "disposition_reason": "ERROR_IDENTIDAD", "signals": [{"source_id": "san", "rule_id": "SAN.R09_MATCH_POR_NOMBRE", "text": "Coincidencia por razón social sin RUT en la resolución de origen", "weight": 22, "period_id": "2024", "evidence_refs": ["san:res/2024-05-SP#p4"]}, {"source_id": "cgr", "rule_id": "CGR.R07_PROVEEDOR_OBSERVADO", "text": "Proveedor homónimo mencionado en informe de auditoría", "weight": 16, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-1533#h9"]}], "hypothesis": "La convergencia se apoyaba en coincidencia de nombre entre dos entidades distintas. Sin RUT en la fuente de origen, la identidad permanece ENTITY_ID_NULL_CANDIDATE_ONLY y el caso no puede sostenerse.", "next_steps": []}], "anomalies": [{"anomaly_id": "ANM-01", "title": "Concentración anormal de pagos en noviembre–diciembre", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["pre"], "rule_id": "PRE.R21_ESTACIONALIDAD", "affected_count": 14, "corroborated": false, "description": "14 organismos concentran más del 68% de sus pagos anuales en noviembre–diciembre, con montos superiores al promedio mensual en factor 8,3x. Patrón de ejecución presupuestaria de fin de año con dispersión atípica hacia proveedores de constitución reciente.", "evidence": "Presupuesto Abierto 2024 · Umbral: razón nov–dic sobre promedio mensual > 5x"}, {"anomaly_id": "ANM-02", "title": "Grupos de proveedores con comportamiento temporal sincronizado", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["pre", "sii"], "rule_id": "PRE.R23_SINCRONIA", "affected_count": 17, "corroborated": false, "description": "3 grupos de 4 a 6 proveedores inician y terminan contratos en organismos distintos dentro de ventanas de 30 días, con montos similares y tipos de gasto equivalentes.", "evidence": "Presupuesto Abierto + ACTECO SII · Correlación temporal de series de pago"}, {"anomaly_id": "ANM-03", "title": "OSFL sin registro SII con actividad económica activa", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["osl", "sii"], "rule_id": "OSL.R11_SIN_INICIO_ACTIVIDADES", "affected_count": 38, "corroborated": true, "description": "38 organizaciones sin fines de lucro constituidas entre 2020 y 2023 no registran inicio de actividades ante SII pese a tener RUT asignado y movimiento en el sistema. 12 aparecen vinculadas a personas jurídicas con pagos estatales.", "evidence": "Radar OSFL + Radar SII · Cruce por RUT exacto"}, {"anomaly_id": "ANM-04", "title": "SO con término de giro SII no reflejado en la nómina UAF", "kind": "ALERTA_FISCALIZACION", "source_ids": ["uaf", "sii"], "rule_id": "UAF.R13_TERMINO_GIRO", "affected_count": 8, "corroborated": true, "description": "23 entidades clasificadas como sujetos obligados en el corte UAF registran término de giro ante SII en el período. 8 muestran término SII con actividad UAF residual aparente sin baja del registro.", "evidence": "Radar SII (término de giro) + corte UAF · Cruce RUT exacto"}, {"anomaly_id": "ANM-05", "title": "Movimiento ROE por comuna sin masa societaria correspondiente", "kind": "SENAL_AML", "source_ids": ["uaf", "sii"], "rule_id": "UAF.R17_ROE_ZSCORE", "affected_count": 6, "corroborated": true, "description": "6 comunas registran volumen ROE que supera en más de 3σ lo esperable según la masa de personas jurídicas domiciliadas y su rango de ventas.", "evidence": "Serie estadística ROE UAF + entity_search SII · Z-score por comuna"}, {"anomaly_id": "ANM-06", "title": "Explosión de constitución societaria en comunas con alta densidad art. 27", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["sii", "del"], "rule_id": "SII.R22_CONSTITUCION_TERRITORIAL", "affected_count": 6, "corroborated": false, "description": "4 comunas de la RM y 2 de Valparaíso registran +150% en constitución de SpA y SRL entre 2021 y 2023, coincidiendo con el período de mayor densidad de delitos vinculados a la Ley 19.913.", "evidence": "Radar SII (fecha de inicio de actividades) + Radar Delictual · Umbral: +150% sobre base 2018–2020"}, {"anomaly_id": "ANM-07", "title": "Proveedores con historial adverso que ingresan a nuevos organismos", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["pre", "san", "cgr"], "rule_id": "PRE.R27_HISTORIAL_ADVERSO", "affected_count": 9, "corroborated": false, "description": "9 proveedores con al menos una sanción prudencial o presencia en hallazgos CGR en organismos anteriores aparecen por primera vez en nuevos organismos contratantes en 2024.", "evidence": "Presupuesto Abierto + Radar Sanciones + Radar CGR · Cruce RUT exacto"}], "territory": [{"territory_id": "CL-REG-15", "code": "XV", "name": "Arica y Parinacota", "exposure": 62, "open_cases": 8, "so_count": 23, "crime_art27": 145, "public_spend_mm": 48200, "osfl_count": 12, "cgr_audits": 3}, {"territory_id": "CL-REG-01", "code": "I", "name": "Tarapacá", "exposure": 71, "open_cases": 14, "so_count": 41, "crime_art27": 287, "public_spend_mm": 125000, "osfl_count": 18, "cgr_audits": 5}, {"territory_id": "CL-REG-02", "code": "II", "name": "Antofagasta", "exposure": 58, "open_cases": 19, "so_count": 89, "crime_art27": 412, "public_spend_mm": 289000, "osfl_count": 34, "cgr_audits": 9}, {"territory_id": "CL-REG-03", "code": "III", "name": "Atacama", "exposure": 44, "open_cases": 7, "so_count": 31, "crime_art27": 198, "public_spend_mm": 87000, "osfl_count": 9, "cgr_audits": 4}, {"territory_id": "CL-REG-04", "code": "IV", "name": "Coquimbo", "exposure": 51, "open_cases": 12, "so_count": 67, "crime_art27": 334, "public_spend_mm": 156000, "osfl_count": 21, "cgr_audits": 6}, {"territory_id": "CL-REG-05", "code": "V", "name": "Valparaíso", "exposure": 68, "open_cases": 31, "so_count": 178, "crime_art27": 891, "public_spend_mm": 478000, "osfl_count": 87, "cgr_audits": 18}, {"territory_id": "CL-REG-13", "code": "RM", "name": "Metropolitana", "exposure": 82, "open_cases": 127, "so_count": 1243, "crime_art27": 3456, "public_spend_mm": 4820000, "osfl_count": 432, "cgr_audits": 67}, {"territory_id": "CL-REG-06", "code": "VI", "name": "O'Higgins", "exposure": 41, "open_cases": 9, "so_count": 54, "crime_art27": 267, "public_spend_mm": 134000, "osfl_count": 27, "cgr_audits": 7}, {"territory_id": "CL-REG-07", "code": "VII", "name": "Maule", "exposure": 48, "open_cases": 11, "so_count": 62, "crime_art27": 312, "public_spend_mm": 145000, "osfl_count": 31, "cgr_audits": 8}, {"territory_id": "CL-REG-16", "code": "XVI", "name": "Ñuble", "exposure": 39, "open_cases": 6, "so_count": 28, "crime_art27": 178, "public_spend_mm": 78000, "osfl_count": 14, "cgr_audits": 3}, {"territory_id": "CL-REG-08", "code": "VIII", "name": "Biobío", "exposure": 61, "open_cases": 24, "so_count": 134, "crime_art27": 678, "public_spend_mm": 345000, "osfl_count": 73, "cgr_audits": 14}, {"territory_id": "CL-REG-09", "code": "IX", "name": "La Araucanía", "exposure": 73, "open_cases": 28, "so_count": 87, "crime_art27": 534, "public_spend_mm": 212000, "osfl_count": 56, "cgr_audits": 12}, {"territory_id": "CL-REG-14", "code": "XIV", "name": "Los Ríos", "exposure": 45, "open_cases": 8, "so_count": 39, "crime_art27": 234, "public_spend_mm": 98000, "osfl_count": 22, "cgr_audits": 5}, {"territory_id": "CL-REG-10", "code": "X", "name": "Los Lagos", "exposure": 55, "open_cases": 17, "so_count": 91, "crime_art27": 389, "public_spend_mm": 198000, "osfl_count": 43, "cgr_audits": 9}, {"territory_id": "CL-REG-11", "code": "XI", "name": "Aisén", "exposure": 32, "open_cases": 3, "so_count": 14, "crime_art27": 87, "public_spend_mm": 45000, "osfl_count": 7, "cgr_audits": 2}, {"territory_id": "CL-REG-12", "code": "XII", "name": "Magallanes", "exposure": 37, "open_cases": 5, "so_count": 21, "crime_art27": 98, "public_spend_mm": 67000, "osfl_count": 10, "cgr_audits": 3}], "sectors": [{"sector_id": "UAF-SEC-01", "name": "Administradoras de Fondos de Inversión", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 168, "registry_label": "Administradoras de fondos de inversión", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-02", "name": "Administradoras de Fondos de Pensiones", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-03", "name": "Administradoras de Fondos Mutuos", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-04", "name": "Administradoras de Mutuos Hipotecarios", "macrofamily": "Banca, crédito y medios de pago", "so_count": 14, "registry_label": "Administradoras de Mutuos Hipotecarios", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-05", "name": "Administradoras Generales de Fondos", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 57, "registry_label": "Administradoras generales de fondos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-06", "name": "Agentes de Aduana", "macrofamily": "Comercio exterior y zonas francas", "so_count": 277, "registry_label": "Agentes de aduana", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-07", "name": "Agentes de Valores", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 8, "registry_label": "Agentes de valores", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-08", "name": "Armas: Personas que se Dediquen a la Fabricación de Armas", "macrofamily": "Armas y clubes", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-09", "name": "Armas: Personas que se Dediquen a la Venta de Armas", "macrofamily": "Armas y clubes", "so_count": 5, "registry_label": "Armas: Personas que se Dediquen a la Venta de Armas", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-10", "name": "Bancos", "macrofamily": "Banca, crédito y medios de pago", "so_count": 18, "registry_label": "Bancos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-11", "name": "Bolsas de Productos", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 1, "registry_label": "Bolsas de productos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-12", "name": "Bolsas de Valores", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 2, "registry_label": "Bolsas de valores", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-13", "name": "Cajas de Compensación", "macrofamily": "Banca, crédito y medios de pago", "so_count": 4, "registry_label": "Cajas de Compensación", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-14", "name": "Casas de Cambio", "macrofamily": "Cambio, remesas y transporte de valores", "so_count": 346, "registry_label": "Casas de cambio", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-15", "name": "Casas de Remate y Martillo", "macrofamily": "Bienes de alto valor y remates", "so_count": 290, "registry_label": "Casas de remate y martillo", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-16", "name": "Casinos de Juego", "macrofamily": "Juegos, hípica y deporte profesional", "so_count": 25, "registry_label": "Casinos de Juego", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-17", "name": "Casinos Flotantes de Juego", "macrofamily": "Juegos, hípica y deporte profesional", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-18", "name": "Clubes de Caza", "macrofamily": "Armas y clubes", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-19", "name": "Clubes de Pesca", "macrofamily": "Armas y clubes", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-20", "name": "Clubes de Tiro", "macrofamily": "Armas y clubes", "so_count": 1, "registry_label": "Clubes de Tiro", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-21", "name": "Comerciantes de Joyas y Piedras Preciosas", "macrofamily": "Bienes de alto valor y remates", "so_count": 31, "registry_label": "Comerciantes de Joyas y Piedras Preciosas", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-22", "name": "Comerciantes de Metales Preciosos", "macrofamily": "Bienes de alto valor y remates", "so_count": 12, "registry_label": "Comerciantes de Metales Preciosos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-23", "name": "Compañías de Seguros", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 2, "acteco_strong_mappings": 2, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-24", "name": "Conservadores", "macrofamily": "Inmobiliario y ministros de fe", "so_count": 92, "registry_label": "Conservadores", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-25", "name": "Cooperativas de Ahorro y Crédito", "macrofamily": "Banca, crédito y medios de pago", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 2, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-26", "name": "Corredores de Bolsas de Productos", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 7, "registry_label": "Corredores de bolsas de productos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-27", "name": "Corredores de Bolsas de Valores", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-28", "name": "Corredores de Propiedades", "macrofamily": "Inmobiliario y ministros de fe", "so_count": 1459, "registry_label": "Corredores de propiedades", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-29", "name": "Emisoras u Operadoras de Tarjetas de Crédito, Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago", "macrofamily": "Banca, crédito y medios de pago", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 2, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-30", "name": "Empresas de Arrendamiento Financiero (Leasing)", "macrofamily": "Banca, crédito y medios de pago", "so_count": 64, "registry_label": "Empresas de arrendamiento financiero (Leasing)", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-31", "name": "Empresas de Depósitos de Valores regidas por la Ley N° 18.876", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-32", "name": "Empresas de Factoraje (Factoring)", "macrofamily": "Banca, crédito y medios de pago", "so_count": 195, "registry_label": "Empresas de factoraje (Factoring)", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-33", "name": "Empresas de Securitización", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 9, "registry_label": "Empresas de securitización", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-34", "name": "Empresas de Transferencia de Dinero", "macrofamily": "Cambio, remesas y transporte de valores", "so_count": 183, "registry_label": "Empresas de transferencia de dinero", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-35", "name": "Empresas de Transporte de Valores", "macrofamily": "Cambio, remesas y transporte de valores", "so_count": 5, "registry_label": "Empresas de transporte de valores", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-36", "name": "Empresas Dedicadas a la Gestión Inmobiliaria", "macrofamily": "Inmobiliario y ministros de fe", "so_count": 2244, "registry_label": "Empresas dedicadas a la gestión inmobiliaria", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-37", "name": "Fintec: Prestadores del servicio de Custodia de Instrumentos Financieros", "macrofamily": "Fintec y finanzas digitales", "so_count": 1, "registry_label": "Fintec: Prestadores del servicio de Custodia de Instrumentos Financieros", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-38", "name": "Fintec: Prestadores del servicio de Intermediación de Instrumentos Financieros", "macrofamily": "Fintec y finanzas digitales", "so_count": 4, "registry_label": "Fintec: Prestadores del servicio de Intermediación de Instrumentos Financieros", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-39", "name": "Fintec: Prestadores del servicio de Plataforma de Financiamiento Colectivo", "macrofamily": "Fintec y finanzas digitales", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 2, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-40", "name": "Fintec: Prestadores del servicio de Sistemas Alternativos de Transacción", "macrofamily": "Fintec y finanzas digitales", "so_count": 2, "registry_label": "Fintec: Prestadores del servicio de Sistemas Alternativos de Transacción", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-41", "name": "Fintec: Proveedores del servicio de Iniciación de Pagos", "macrofamily": "Fintec y finanzas digitales", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 2, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-42", "name": "Fintec: Otros fiscalizados por la Comisión para el Mercado Financiero (CMF)", "macrofamily": "Fintec y finanzas digitales", "so_count": 5, "registry_label": "Fintec: Otros fiscalizados por la Comisión para el Mercado Financiero (CMF)", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-43", "name": "Hipódromos", "macrofamily": "Juegos, hípica y deporte profesional", "so_count": 6, "registry_label": "Hipódromos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-44", "name": "Instituciones Financieras", "macrofamily": "Banca, crédito y medios de pago", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 5, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-45", "name": "Notarios", "macrofamily": "Inmobiliario y ministros de fe", "so_count": 483, "registry_label": "Notarios", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-46", "name": "Operadores de Mercados de Futuro y de Opciones", "macrofamily": "Gestión de activos, seguros y mercados", "so_count": 1, "registry_label": "Operadores de mercados de futuro y de opciones", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-47", "name": "Organizaciones Deportivas Profesionales regidas por la Ley N° 20.019", "macrofamily": "Juegos, hípica y deporte profesional", "so_count": null, "registry_label": null, "crosswalk_status": "NO_REGISTRY_MATCH", "acteco_mappings": 3, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-48", "name": "Otras Entidades Facultadas para Recibir Moneda Extranjera", "macrofamily": "Cambio, remesas y transporte de valores", "so_count": 19, "registry_label": "Otras entidades facultadas para recibir moneda extranjera", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-49", "name": "Personas que se Dediquen a la Compraventa de Equinos de Raza Pura", "macrofamily": "Bienes de alto valor y remates", "so_count": 1, "registry_label": "Personas que se Dediquen a la Compraventa de Equinos de Raza Pura", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-50", "name": "Representaciones de Bancos Extranjeros", "macrofamily": "Banca, crédito y medios de pago", "so_count": 21, "registry_label": "Representaciones de Bancos Extranjeros", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-51", "name": "Sociedades Administradoras de Zonas Francas", "macrofamily": "Comercio exterior y zonas francas", "so_count": 2, "registry_label": "Sociedades administradoras de zonas francas", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-52", "name": "Usuarios de Zonas Francas", "macrofamily": "Comercio exterior y zonas francas", "so_count": 2840, "registry_label": "Usuarios de zonas francas", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": null, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-53", "name": "Vehículos: Automotoras", "macrofamily": "Vehículos", "so_count": 20, "registry_label": "Vehículos: Automotoras", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": 2, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-54", "name": "Vehículos: Comercializadoras de Vehículos Nuevos o Usados", "macrofamily": "Vehículos", "so_count": 538, "registry_label": "Vehículos: Comercializadoras de Vehículos Nuevos o Usados", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 2, "acteco_strong_mappings": 2, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}, {"sector_id": "UAF-SEC-55", "name": "Vehículos: Empresas de Arriendo de Vehículos", "macrofamily": "Vehículos", "so_count": 48, "registry_label": "Vehículos: Empresas de Arriendo de Vehículos", "crosswalk_status": "VALIDATED_EXACT", "acteco_mappings": 1, "acteco_strong_mappings": 1, "ros_reporters": null, "roe_reporters": null, "sanctioned": null, "strong_match_unregistered": null}], "benchmark": {"level": "NATIONAL", "series": [{"metric": "ros_recibidos", "label": "ROS recibidos", "unit": "reportes", "points": [{"period": "2021", "value": 9738.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2022", "value": 11400.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2023", "value": 12900.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2024", "value": 17417.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2025", "value": 21828.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}]}, {"metric": "roe_recibidos_miles", "label": "ROE recibidos", "unit": "miles de reportes", "points": [{"period": "2021", "value": 2966.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2022", "value": 2848.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2023", "value": 2458.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2024", "value": 1817.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2025", "value": 1620.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}]}, {"metric": "entidades_reportantes_total", "label": "Universo inscrito", "unit": "entidades", "points": [{"period": "2021", "value": 8137.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2022", "value": 8379.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2023", "value": 8729.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2024", "value": 9136.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2025", "value": 9911.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}]}, {"metric": "acciones_supervision", "label": "Acciones de supervisión", "unit": "acciones", "points": [{"period": "2021", "value": 233.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2022", "value": 157.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2023", "value": 159.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2024", "value": 163.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2025", "value": 172.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}]}, {"metric": "procesos_sancionatorios_iniciados", "label": "Procesos sancionatorios iniciados", "unit": "procesos", "points": [{"period": "2021", "value": 0.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2022", "value": 51.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2023", "value": 117.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2024", "value": 61.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}, {"period": "2025", "value": 0.0, "source_url": "https://www.uaf.cl/media/documentos/Informe_Estadistico_2025.pdf"}]}], "derived": [{"label": "ROS por sujeto obligado inscrito", "value": 2.2, "unit": "ROS/entidad", "period": "2025", "note": "Intensidad de reporte del sistema completo. No indica cumplimiento individual: un solo sujeto obligado puede concentrar muchos ROS."}, {"label": "ROE por sujeto obligado inscrito", "value": 163.5, "unit": "ROE/entidad", "period": "2025", "note": "El ROE es reporte de operación en efectivo sobre umbral; su volumen responde al giro del sector, no al riesgo de la entidad."}, {"label": "Variación de ROS 2021–2025", "value": 124.2, "unit": "%", "period": "2021–2025", "note": "Un alza de ROS puede reflejar mayor detección, mayor actividad ilícita o cambios de instrucción del supervisor. No es interpretable por sí sola."}], "quality_flags": [{"metric": "procesos_sancionatorios_iniciados", "label": "Procesos sancionatorios iniciados", "periods": ["2021", "2025"], "severity": "WARN", "text": "La serie «Procesos sancionatorios iniciados» registra 0 en 2021, 2025 mientras el resto del período va de 51 a 117. El radar los publica como hecho oficial con confianza 1.0. Verificar contra el informe de origen si se trata de un cero real o de una ausencia de dato."}], "coverage": {"registry_entities": 9782, "mapped_entities": 9508, "mapped_pct": 97.2, "unmapped_activities": 12}, "caveats": [{"id": "BMK_NO_SECTOR_BREAKDOWN", "title": "La UAF no publica ROS/ROE por actividad", "text": "Las estadísticas oficiales son agregados nacionales. La intensidad de señal por sector (BMK_SIGNAL_INTENSITY) no es computable con las fuentes públicas disponibles y se serializa NO_DATA. El benchmark se ancla a nivel nacional y la desagregación sectorial se limita al universo inscrito."}, {"id": "BMK_REPORTANTES_ES_UNIVERSO", "title": "«Entidades reportantes» no son quienes reportaron", "text": "La métrica publicada entidades_reportantes_total coincide exactamente con la suma de sujetos obligados del sector privado más entidades públicas inscritas (9.403 + 508 = 9.911 en 2025). Es el universo inscrito, no el conjunto que efectivamente presentó reportes. No se deriva de ella ninguna tasa de cumplimiento: KRI_ROS_GAP queda fuera de alcance con estas fuentes."}]}, "sector_gaps": [{"registry_label": "Compañías de Seguro", "so_count": 65, "status": "AMBIGUOUS"}, {"registry_label": "Institución Financiera", "so_count": 54, "status": "AMBIGUOUS"}, {"registry_label": "Cooperativas (instituciones financieras)", "so_count": 47, "status": "AMBIGUOUS"}, {"registry_label": "Organizaciones Deportivas Profesionales", "so_count": 30, "status": "AMBIGUOUS"}, {"registry_label": "Corredores de bolsa de valores", "so_count": 26, "status": "AMBIGUOUS"}, {"registry_label": "Operadoras de tarjetas de crédito", "so_count": 15, "status": "AMBIGUOUS"}, {"registry_label": "Emisoras de tarjetas de crédito", "so_count": 13, "status": "AMBIGUOUS"}, {"registry_label": "Emisores de Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago", "so_count": 12, "status": "AMBIGUOUS"}, {"registry_label": "Administradores de Fondos de Pensiones (AFP)", "so_count": 7, "status": "AMBIGUOUS"}, {"registry_label": "Operadores de Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago", "so_count": 3, "status": "AMBIGUOUS"}, {"registry_label": "Casinos flotantes de Juegos", "so_count": 1, "status": "AMBIGUOUS"}, {"registry_label": "Depósitos de Valores", "so_count": 1, "status": "AMBIGUOUS"}], "provenance": {"cases": "DEMO_SYNTHETIC", "anomalies": "DEMO_SYNTHETIC", "territory": "DEMO_SYNTHETIC", "sectors": "REAL", "benchmark": "REAL", "rules": "DEMO_SYNTHETIC", "sanctions": "DEMO_SYNTHETIC", "network": "DEMO_SYNTHETIC"}, "rules": [{"rule_id": "PRE.R04_FRACCIONAMIENTO", "source_id": "pre", "label": "Fraccionamiento bajo umbral de OC", "dispositions": 84, "non_corroboration_rate": 61.9, "escalation_contribution": 22.4, "status": "WARN", "reason_mix": {"EXPLICACION_LEGITIMA": 38, "EVIDENCIA_INSUFICIENTE": 12, "DUPLICADO": 2}}, {"rule_id": "SII.R03_CRECIMIENTO_ATIPICO", "source_id": "sii", "label": "Crecimiento de ventas atípico", "dispositions": 142, "non_corroboration_rate": 71.8, "escalation_contribution": 18.1, "status": "CRIT", "reason_mix": {"EXPLICACION_LEGITIMA": 79, "DATO_DESACTUALIZADO": 18, "EVIDENCIA_INSUFICIENTE": 5}}, {"rule_id": "SAN.R09_MATCH_POR_NOMBRE", "source_id": "san", "label": "Coincidencia por razón social sin RUT", "dispositions": 47, "non_corroboration_rate": 89.4, "escalation_contribution": 2.1, "status": "CRIT", "reason_mix": {"ERROR_IDENTIDAD": 39, "DUPLICADO": 3}}, {"rule_id": "UAF.R02_MATCH_FUERTE_SIN_INSCRIPCION", "source_id": "uaf", "label": "MATCH_FUERTE sin inscripción verificada", "dispositions": 63, "non_corroboration_rate": 33.3, "escalation_contribution": 41.7, "status": "OK", "reason_mix": {"FUERA_DE_PERIMETRO": 14, "EVIDENCIA_INSUFICIENTE": 7}}, {"rule_id": "SAN.R03_REINCIDENCIA_ALACFT", "source_id": "san", "label": "Reincidencia en materia ALA/CFT", "dispositions": 28, "non_corroboration_rate": 17.9, "escalation_contribution": 58.3, "status": "OK", "reason_mix": {"DUPLICADO": 3, "EVIDENCIA_INSUFICIENTE": 2}}, {"rule_id": "CGR.R05_TRATO_DIRECTO", "source_id": "cgr", "label": "Observación por trato directo", "dispositions": 51, "non_corroboration_rate": 45.1, "escalation_contribution": 27.8, "status": "WARN", "reason_mix": {"EXPLICACION_LEGITIMA": 16, "FUERA_DE_PERIMETRO": 7}}, {"rule_id": "OSL.R11_SIN_INICIO_ACTIVIDADES", "source_id": "osl", "label": "OSFL sin inicio de actividades SII", "dispositions": 22, "non_corroboration_rate": 40.9, "escalation_contribution": 12.5, "status": "OK", "reason_mix": {"DATO_DESACTUALIZADO": 6, "EXPLICACION_LEGITIMA": 3}}, {"rule_id": "DEL.R04_HOMICIDIO_TERRITORIAL", "source_id": "del", "label": "Densidad de homicidios por comuna", "dispositions": 0, "non_corroboration_rate": null, "escalation_contribution": null, "status": "MUDA", "reason_mix": {}}, {"rule_id": "PRE.R27_HISTORIAL_ADVERSO", "source_id": "pre", "label": "Proveedor con historial adverso previo", "dispositions": 12, "non_corroboration_rate": null, "escalation_contribution": null, "status": "INSUFICIENTE", "reason_mix": {}}], "sanctions": [{"entity_name": "Inmobiliaria del Pacífico SpA", "entity_id": "ENT-RUT-772345678", "rut": "77.234.567-8", "authority": "UAF", "matter": "DDC / ALA-CFT", "alacft": true, "date": "2023-08", "amount": "UF 2.800", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2023-08-UAF#p2"]}, {"entity_name": "Banco Comercial Regional SA", "entity_id": "ENT-RUT-970012345", "rut": "97.001.234-5", "authority": "CMF", "matter": "ALA/CFT — reportabilidad", "alacft": true, "date": "2024-01", "amount": "UF 15.000", "repeat_offender": false, "resolved": true, "evidence_refs": ["san:res/2024-01-CMF#p1"]}, {"entity_name": "Transportes del Norte SA", "entity_id": "ENT-RUT-794567890", "rut": "79.456.789-0", "authority": "CMF", "matter": "ALA/CFT", "alacft": true, "date": "2024-03", "amount": null, "repeat_offender": false, "resolved": false, "evidence_refs": ["san:res/2024-03-CMF#p1"]}, {"entity_name": "Corredora de Valores Sur Ltda.", "entity_id": "ENT-RUT-767890123", "rut": "76.789.012-3", "authority": "CMF", "matter": "ALA/CFT — beneficiario final", "alacft": true, "date": "2023-11", "amount": "UF 8.500", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2023-11-CMF#p2"]}, {"entity_name": "Corporación Agro-Sur Limitada", "entity_id": "ENT-RUT-761234567", "rut": "76.123.456-7", "authority": "SVS", "matter": "ALA/CFT", "alacft": true, "date": "2022-06", "amount": "UF 4.200", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2022-06-SVS#p1"]}, {"entity_name": "Corporación Agro-Sur Limitada", "entity_id": "ENT-RUT-761234567", "rut": "76.123.456-7", "authority": "CMF", "matter": "ALA/CFT — DDC", "alacft": true, "date": "2023-04", "amount": "UF 6.100", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2023-04-CMF#p3"]}, {"entity_name": "Comercial Andes y Cía. (sin RUT en la fuente)", "entity_id": null, "rut": null, "authority": "SP", "matter": "Reportabilidad", "alacft": false, "date": "2024-05", "amount": null, "repeat_offender": false, "resolved": false, "evidence_refs": ["san:res/2024-05-SP#p4"]}], "network": {"nodes": [{"node_id": "N1", "label": "Corporación Agro-Sur", "sublabel": "Prioridad 94", "kind": "ENTITY", "source_id": "pre", "focus": true}, {"node_id": "N2", "label": "Representante legal", "sublabel": "Sanciones previas", "kind": "PERSON", "source_id": "san", "focus": false}, {"node_id": "N3", "label": "Organismo contratante", "sublabel": "Observaciones CGR", "kind": "PUBLIC_BODY", "source_id": "cgr", "focus": false}, {"node_id": "N4", "label": "OSFL relacionada", "sublabel": "Representante común", "kind": "OSFL", "source_id": "osl", "focus": false}, {"node_id": "N5", "label": "Proveedor compartido", "sublabel": "Mismo organismo", "kind": "SUPPLIER", "source_id": "pre", "focus": false}, {"node_id": "N6", "label": "Sociedad matriz", "sublabel": "Beneficiario final candidato", "kind": "HOLDING", "source_id": "sii", "focus": false}], "edges": [{"from": "N1", "to": "N2", "relation": "REPRESENTANTE_LEGAL", "confirmed": true, "evidence_refs": ["sii:soc/2025-11#rut-761234567"]}, {"from": "N1", "to": "N3", "relation": "ORGANISMO_CONTRATANTE", "confirmed": true, "evidence_refs": ["pre:tx/2024-Q3#agg-7712"]}, {"from": "N1", "to": "N4", "relation": "DOMICILIO_COMPARTIDO", "confirmed": true, "evidence_refs": ["sii:dir/2024#rut-761234567"]}, {"from": "N1", "to": "N5", "relation": "PROVEEDOR_COMUN", "confirmed": true, "evidence_refs": ["pre:tx/2024#multi-5521"]}, {"from": "N1", "to": "N6", "relation": "CANDIDATO_BF", "confirmed": false, "evidence_refs": ["sii:soc/2025-11#cand-0912"]}, {"from": "N2", "to": "N4", "relation": "REPRESENTANTE_LEGAL", "confirmed": true, "evidence_refs": ["osl:reg/2023#osfl-4412"]}]}, "guardrails": [{"guardrail_id": "GR_SEMANTICA", "scope": ["hallazgos", "casos"], "title": "Distinción semántica", "text": "Hecho ≠ Anomalía ≠ Señal AML ≠ Hipótesis. Las tarjetas muestran convergencia de señales independientes, no acusaciones. Toda evidencia se traza a su fuente y regla. Una anomalía de fiscalización no propaga riesgo AML."}, {"guardrail_id": "GR_SCORE", "scope": ["hallazgos", "casos", "aml360", "perfil", "territorio"], "title": "Naturaleza del score", "text": "ifl_priority_score es orden de revisión (INVESTIGATION_PRIORITY), no medida de riesgo de la entidad ni probabilidad de ilicitud. Los siete radares declaran common_risk_score=false; este score existe sólo en el cockpit y expone su contribución desagregada."}, {"guardrail_id": "GR_ANOMALIA", "scope": ["anomalias"], "title": "Anomalía ≠ señal AML", "text": "Una anomalía contextual requiere corroboración antes de elevarse a señal gobernada. No se propaga riesgo entre contrapartes. Toda anomalía expone su regla y su evidencia."}, {"guardrail_id": "GR_RED", "scope": ["red"], "title": "Relación ≠ herencia de riesgo", "text": "Relación, proximidad o actividad económica compartida NO crean ni propagan riesgo AML. La red muestra vínculos observados; el borde punteado indica vínculo candidato no confirmado. El analista determina la relevancia investigativa."}, {"guardrail_id": "GR_ACTECO", "scope": ["sectorial", "fiscal"], "title": "ACTECO ≠ sujeto obligado", "text": "El código ACTECO del SII no acredita condición jurídica de sujeto obligado UAF. MATCH_FUERTE identifica candidatos a validación; la condición sólo la confirma la fuente regulatoria competente."}, {"guardrail_id": "GR_EVIDENCIA", "scope": ["evidencia", "salud"], "title": "missing ≠ zero", "text": "La ausencia de dato en una fuente no equivale a ausencia del hecho. Se serializa NO_DATA y se renderiza '—'. Cada señal está trazada a su fuente, regla y período."}, {"guardrail_id": "GR_SANCION", "scope": ["sanciones"], "title": "Sanción prudencial ≠ LA/FT", "text": "Una sanción puede elevar la plausibilidad de una hipótesis; no la confirma. Las identidades sin resolver se muestran pendientes hasta confirmación con la fuente regulatoria."}, {"guardrail_id": "GR_CALIBRACION", "scope": ["calibracion"], "title": "No corroborado ≠ falso", "text": "Una señal no corroborada no era falsa: era insuficiente. Las métricas de calibración evalúan reglas y fuentes, nunca personas. Una regla se omite con menos de 20 disposiciones."}, {"guardrail_id": "GR_BENCHMARK", "scope": ["benchmark"], "title": "Volumen de reporte ≠ prevalencia de lavado", "text": "Un alza de ROS puede reflejar mejor detección, cambios de instrucción del supervisor o mayor actividad ilícita, y las tres explicaciones son compatibles con la misma curva. El benchmark calibra la cobertura propia frente al sistema; no mide cuánto lavado hay ni califica sectores."}, {"guardrail_id": "GR_TERRITORIO", "scope": ["territorio"], "title": "Territorio no atribuye", "text": "Criminalidad general no equivale a riesgo LA/FT: sólo entran categorías con vínculo suficientemente preciso al art. 27 de la Ley 19.913. Un territorio expuesto no transfiere riesgo a las entidades domiciliadas en él."}], "signal_series": {"labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"], "series": [{"key": "aml", "label": "Señal AML", "source_id": "uaf", "data": [4, 3, 5, 6, 8, 7, 9, 11, 10, 12, 14, 16]}, {"key": "fis", "label": "Fiscalización", "source_id": "cgr", "data": [8, 6, 9, 7, 11, 10, 12, 14, 13, 15, 17, 19]}, {"key": "ano", "label": "Anomalía", "source_id": "pre", "data": [6, 5, 7, 8, 9, 12, 10, 11, 13, 14, 18, 22]}]}};
+
+/* Primitivas de visualización en SVG puro, sin dependencias externas.
+   Todas devuelven cadenas de marcado y toman color desde las custom properties,
+   de modo que el cambio de tema no exige volver a dibujar. */
+
+let seq = 0;
+const uid = () => `g${(seq += 1)}`;
+
+const fmt = (n) =>
+  n === null || n === undefined || Number.isNaN(n) ? '—' : n.toLocaleString('es-CL');
+
+/** Nivel del score de prioridad. Ver KRI_PRIORITY_SCORE en el catálogo. */
+const level = (s) => (s >= 80 ? 'cr' : s >= 60 ? 'hi' : s >= 40 ? 'md' : 'lo');
+const levelLabel = (s) => (s >= 80 ? 'Crítico' : s >= 60 ? 'Alto' : s >= 40 ? 'Medio' : 'Bajo');
+const levelVar = (s) => `var(--${s >= 80 ? 'cr' : s >= 60 ? 'ch' : s >= 40 ? 'cm' : 'cl'})`;
+
+/** Color resuelto en tiempo real, para atributos SVG que no aceptan var(). */
+function cssColor(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
+}
+
+function gauge(score, size = 56) {
+  const col = levelVar(score);
+  const r = size / 2 - 6;
+  const c = size / 2;
+  const perim = 2 * Math.PI * r;
+  const dash = (score / 100) * perim;
+  return `<svg width="${size}" height="${size}" role="img" aria-label="Prioridad ${score} de 100">
+<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--bd)" stroke-width="4.5"/>
+<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${col}" stroke-width="4.5"
+  stroke-dasharray="${dash.toFixed(1)} ${perim.toFixed(1)}"
+  stroke-dashoffset="${(perim * 0.25).toFixed(1)}" stroke-linecap="round"
+  transform="rotate(-90 ${c} ${c})"/>
+<text x="${c}" y="${c + 5}" text-anchor="middle" font-size="13" font-weight="800"
+  fill="${col}" font-family="system-ui,sans-serif">${score}</text></svg>`;
+}
+
+function sparkline(data, w, h, color) {
+  const clean = data.filter((v) => v !== null && v !== undefined);
+  if (clean.length < 2) return '';
+  const max = Math.max(...clean);
+  const min = Math.min(...clean);
+  const range = max - min || 1;
+  const pts = clean
+    .map((v, i) => `${(i / (clean.length - 1)) * w},${h - ((v - min) / range) * (h - 4) - 2}`)
+    .join(' ');
+  const id = uid();
+  return `<svg width="${w}" height="${h}" style="display:block" aria-hidden="true">
+<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="${color}" stop-opacity=".25"/>
+<stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+<polyline points="${pts} ${w},${h} 0,${h}" fill="url(#${id})" stroke="none"/>
+<polyline points="${pts}" stroke="${color}" stroke-width="1.5" fill="none"
+  stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function donut(segs, W, H, label) {
+  const usable = segs.filter((s) => s.v > 0);
+  if (!usable.length) return `<div class="nodata-cell" style="padding:20px">Sin datos</div>`;
+  const cx = W / 2;
+  const cy = H / 2;
+  const r = Math.min(W, H) / 2 - 6;
+  const ri = r * 0.58;
+  const total = usable.reduce((a, s) => a + s.v, 0);
+  const gap = 0.04;
+  let angle = -Math.PI / 2;
+  let paths = '';
+  let legend = '';
+  usable.forEach((s) => {
+    const slice = (s.v / total) * (2 * Math.PI - gap * usable.length);
+    const a1 = angle + gap / 2;
+    const a2 = a1 + slice;
+    const p = (rad, a) => [cx + rad * Math.cos(a), cy + rad * Math.sin(a)];
+    const [x1, y1] = p(r, a1);
+    const [x2, y2] = p(r, a2);
+    const [x3, y3] = p(ri, a2);
+    const [x4, y4] = p(ri, a1);
+    const lg = slice > Math.PI ? 1 : 0;
+    paths += `<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${lg},1 ${x2.toFixed(1)},${y2.toFixed(1)} L${x3.toFixed(1)},${y3.toFixed(1)} A${ri},${ri} 0 ${lg},0 ${x4.toFixed(1)},${y4.toFixed(1)} Z" fill="${s.c}"/>`;
+    angle += slice + gap;
+    legend += `<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--tx2)">
+<span style="width:8px;height:8px;border-radius:2px;background:${s.c};display:inline-block;flex-shrink:0"></span>${s.l}</span>`;
+  });
+  return `<div style="display:flex;flex-direction:column;align-items:center">
+<svg width="${W}" height="${H}">${paths}
+<text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="20" font-weight="800" fill="var(--tx)" font-family="system-ui,sans-serif">${total}</text>
+<text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="10" fill="var(--tx2)" font-family="system-ui,sans-serif">${label}</text></svg>
+<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:6px">${legend}</div></div>`;
+}
+
+function hbar(data, w, h, lw = 140) {
+  if (!data.length) return '';
+  const maxV = Math.max(...data.map((d) => d.v)) || 1;
+  const rh = h / data.length;
+  let s = '';
+  data.forEach((d, i) => {
+    const y = i * rh;
+    const bw = Math.max(2, (d.v / maxV) * (w - lw - 52));
+    s += `<text x="0" y="${y + rh * 0.65}" font-size="11" fill="var(--tx2)" font-family="system-ui,sans-serif">${d.l}</text>`;
+    s += `<rect x="${lw}" y="${y + rh * 0.25}" width="${bw}" height="${rh * 0.5}" fill="${d.c || 'var(--ac)'}" rx="3"/>`;
+    s += `<text x="${lw + bw + 5}" y="${y + rh * 0.65}" font-size="10" fill="var(--tx)" font-weight="700" font-variant-numeric="tabular-nums" font-family="system-ui,sans-serif">${fmt(d.v)}${d.suffix || ''}</text>`;
+  });
+  return `<svg width="${w}" height="${h}" style="overflow:visible;display:block">${s}</svg>`;
+}
+
+function vbar(data, w, h) {
+  if (!data.length) return '';
+  const pad = 20;
+  const iW = w - pad * 2;
+  const iH = h - 28;
+  const maxV = Math.max(...data.map((d) => d.v)) * 1.08 || 1;
+  const bw = Math.max(8, iW / data.length - 6);
+  let s = '';
+  [0.33, 0.66, 1].forEach((f) => {
+    const y = 8 + iH - f * iH;
+    s += `<line x1="${pad}" y1="${y}" x2="${pad + iW}" y2="${y}" stroke="var(--bd)" stroke-width="1"/>`;
+  });
+  data.forEach((d, i) => {
+    const bh = Math.max(2, (d.v / maxV) * iH);
+    const x = pad + i * (iW / data.length) + (iW / data.length - bw) / 2;
+    const y = 8 + iH - bh;
+    const id = uid();
+    s += `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="${d.c || 'var(--ac)'}" stop-opacity="1"/>
+<stop offset="100%" stop-color="${d.c || 'var(--ac)'}" stop-opacity=".5"/></linearGradient></defs>`;
+    s += `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="url(#${id})" rx="4"/>`;
+    s += `<text x="${x + bw / 2}" y="${8 + iH + 16}" text-anchor="middle" font-size="9" fill="var(--tx2)" font-family="system-ui,sans-serif">${d.l}</text>`;
+    s += `<text x="${x + bw / 2}" y="${y - 4}" text-anchor="middle" font-size="9" fill="var(--tx)" font-weight="700" font-family="system-ui,sans-serif">${d.v}</text>`;
+  });
+  return `<svg width="${w}" height="${h}" style="display:block">${s}</svg>`;
+}
+
+function linechart(datasets, labels, w, h) {
+  const pl = 32;
+  const pr = 8;
+  const pt = 10;
+  const pb = 22;
+  const iW = w - pl - pr;
+  const iH = h - pt - pb;
+  const allV = datasets.flatMap((d) => d.data).filter((v) => v !== null);
+  const maxV = Math.max(...allV) * 1.12 || 1;
+  const n = labels.length;
+  const px = (i) => pl + (i / (n - 1)) * iW;
+  const py = (v) => pt + iH - (v / maxV) * iH;
+  let s = '';
+  [0.25, 0.5, 0.75, 1].forEach((f) => {
+    const y = py(maxV * f);
+    s += `<line x1="${pl}" y1="${y}" x2="${pl + iW}" y2="${y}" stroke="var(--bd)" stroke-width="1" stroke-dasharray="3,4"/>`;
+    s += `<text x="${pl - 5}" y="${y + 4}" text-anchor="end" font-size="8" fill="var(--txm)" font-family="system-ui,sans-serif">${Math.round(maxV * f)}</text>`;
+  });
+  datasets.forEach((ds) => {
+    const pts = ds.data.map((v, i) => ({ x: px(i), y: py(v) }));
+    const line = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const area = `${line} L${px(n - 1).toFixed(1)},${(pt + iH).toFixed(1)} L${px(0).toFixed(1)},${(pt + iH).toFixed(1)} Z`;
+    const id = uid();
+    s += `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="${ds.c}" stop-opacity=".2"/>
+<stop offset="100%" stop-color="${ds.c}" stop-opacity="0"/></linearGradient></defs>`;
+    s += `<path d="${area}" fill="url(#${id})"/>`;
+    s += `<path d="${line}" stroke="${ds.c}" stroke-width="2" fill="none" stroke-linejoin="round"/>`;
+    const last = pts[pts.length - 1];
+    s += `<circle cx="${last.x}" cy="${last.y}" r="3.5" fill="${ds.c}"/>`;
+  });
+  labels.forEach((l, i) => {
+    s += `<text x="${px(i).toFixed(1)}" y="${h - 4}" text-anchor="middle" font-size="8.5" fill="var(--txm)" font-family="system-ui,sans-serif">${l}</text>`;
+  });
+  return `<svg width="${w}" height="${h}" style="display:block">${s}</svg>`;
+}
+
+/* Mapa de Chile. Las alturas aproximan la proporción norte-sur real de cada
+   región, de modo que la lectura visual no distorsione el territorio. */
+const CGEO = [
+  { id: 'CL-REG-15', y: 0,   h: 30,  xl: 48, xr: 118 },
+  { id: 'CL-REG-01', y: 30,  h: 40,  xl: 44, xr: 122 },
+  { id: 'CL-REG-02', y: 70,  h: 107, xl: 36, xr: 128 },
+  { id: 'CL-REG-03', y: 177, h: 50,  xl: 28, xr: 122 },
+  { id: 'CL-REG-04', y: 227, h: 62,  xl: 22, xr: 114 },
+  { id: 'CL-REG-05', y: 289, h: 42,  xl: 15, xr: 104 },
+  { id: 'CL-REG-13', y: 331, h: 26,  xl: 13, xr: 96 },
+  { id: 'CL-REG-06', y: 357, h: 28,  xl: 12, xr: 98 },
+  { id: 'CL-REG-07', y: 385, h: 34,  xl: 10, xr: 102 },
+  { id: 'CL-REG-16', y: 419, h: 19,  xl: 8,  xr: 104 },
+  { id: 'CL-REG-08', y: 438, h: 25,  xl: 6,  xr: 110 },
+  { id: 'CL-REG-09', y: 463, h: 34,  xl: 4,  xr: 116 },
+  { id: 'CL-REG-14', y: 497, h: 19,  xl: 2,  xr: 112 },
+  { id: 'CL-REG-10', y: 516, h: 72,  xl: 0,  xr: 128 },
+  { id: 'CL-REG-11', y: 588, h: 98,  xl: 0,  xr: 152 },
+  { id: 'CL-REG-12', y: 686, h: 93,  xl: 0,  xr: 178 },
+];
+
+function chileMap(regions, layerKey, selectedId) {
+  const byId = new Map(regions.map((r) => [r.territory_id, r]));
+  const vals = CGEO.map((g) => byId.get(g.id)?.[layerKey] ?? null);
+  const known = vals.filter((v) => v !== null);
+  const maxV = known.length ? Math.max(...known) : 1;
+  let s = '';
+  CGEO.forEach((g, i) => {
+    const nxt = CGEO[i + 1] || g;
+    const reg = byId.get(g.id);
+    const v = vals[i];
+    // Sin dato no se pinta como cero: se pinta neutro y se rotula.
+    const intensity = v === null ? null : layerKey === 'exposure' ? v : (v / maxV) * 100;
+    const col =
+      intensity === null ? 'var(--nd)'
+      : intensity >= 75 ? 'var(--cr)'
+      : intensity >= 55 ? 'var(--ch)'
+      : intensity >= 35 ? 'var(--cm)' : 'var(--cl)';
+    const sel = g.id === selectedId;
+    const pts = `${g.xl},${g.y} ${g.xr},${g.y} ${nxt.xr},${g.y + g.h} ${nxt.xl},${g.y + g.h}`;
+    s += `<polygon points="${pts}" fill="${col}" stroke="${sel ? 'var(--tx)' : 'var(--bg)'}"
+  stroke-width="${sel ? 2 : 1.5}" opacity="${sel ? 1 : 0.88}" data-region="${g.id}"
+  style="cursor:pointer;transition:opacity .15s"><title>${reg?.name || g.id}: ${v === null ? 'sin dato' : fmt(v)}</title></polygon>`;
+    s += `<text x="${(g.xl + g.xr) / 2}" y="${g.y + g.h / 2 + (g.h > 30 ? 4 : 3)}" text-anchor="middle"
+  font-size="${g.h > 40 ? 9 : 8}" fill="rgba(255,255,255,.95)" font-weight="700"
+  pointer-events="none" font-family="system-ui,sans-serif">${reg?.code || ''}</text>`;
+  });
+  return `<svg id="mapa-svg" width="185" height="782" style="flex-shrink:0;border-radius:8px">${s}</svg>`;
+}
+
+/* Grafo de relaciones en disposición radial alrededor del nodo focal.
+   El borde punteado marca vínculo candidato no confirmado. */
+function networkGraph(nodes, edges, w = 720, h = 380) {
+  const focus = nodes.find((n) => n.focus) || nodes[0];
+  const others = nodes.filter((n) => n !== focus);
+  const cx = w / 2;
+  const cy = h / 2;
+  const R = Math.min(w, h) * 0.36;
+  const pos = new Map([[focus.node_id, { x: cx, y: cy, r: 32 }]]);
+  others.forEach((n, i) => {
+    const a = (i / others.length) * 2 * Math.PI - Math.PI / 2;
+    pos.set(n.node_id, { x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) * 0.82, r: 24 });
+  });
+  const srcVar = (id) => `var(--${id || 'ctx'})`;
+  let s = `<rect width="${w}" height="${h}" fill="var(--s2)" rx="8"/>`;
+  edges.forEach((e) => {
+    const a = pos.get(e.from);
+    const b = pos.get(e.to);
+    if (!a || !b) return;
+    s += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="var(--tx2)"
+  stroke-width="${e.confirmed ? 1.6 : 1.2}" opacity="${e.confirmed ? 0.5 : 0.35}"
+  ${e.confirmed ? '' : 'stroke-dasharray="4,4"'}><title>${e.relation}${e.confirmed ? '' : ' (candidato)'}</title></line>`;
+  });
+  nodes.forEach((n) => {
+    const p = pos.get(n.node_id);
+    s += `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${srcVar(n.source_id)}" opacity=".92"/>`;
+    s += `<text x="${p.x}" y="${p.y - 2}" text-anchor="middle" font-size="8.5" fill="#fff"
+  font-weight="700" pointer-events="none" font-family="system-ui,sans-serif">${n.label.slice(0, 16)}</text>`;
+    s += `<text x="${p.x}" y="${p.y + 9}" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,.75)"
+  pointer-events="none" font-family="system-ui,sans-serif">${(n.sublabel || '').slice(0, 20)}</text>`;
+  });
+  s += `<text x="${w - 10}" y="${h - 10}" text-anchor="end" font-size="8.5" fill="var(--txm)"
+  font-family="system-ui,sans-serif">Línea punteada = vínculo candidato · Relación ≠ herencia de riesgo</text>`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block;border-radius:8px">${s}</svg>`;
+}
+
+
+/* IFL Cockpit v1 — aplicación.
+   No contiene reglas de negocio AML: proyecta el contrato producido por la capa
+   de fusión y registra qué hizo el analista. Si una cifra aparece aquí, existe un
+   archivo de un radar que la respalda. */
+
+
+/* El contrato viaja incrustado en esta build autocontenida. */
+
+/* ── Catálogo de fuentes: etiqueta y token de color ─────────── */
+const SRC = {
+  sii: 'SII', uaf: 'UAF', cgr: 'CGR', del: 'Delictual',
+  pre: 'Presupuesto', san: 'Sanciones', osl: 'OSFL', ctx: 'Context Hub',
+};
+const srcLabel = (id) => SRC[id] || id;
+const badge = (id) => `<span class="bd ${id}">${srcLabel(id)}</span>`;
+
+const STATE_LABEL = {
+  DETECTADO: 'Detectado', EN_REVISION: 'En revisión', CORROBORADO: 'Corroborado',
+  ESCALADO: 'Escalado', DESCARTADO: 'Descartado',
+};
+const REASON_LABEL = {
+  EXPLICACION_LEGITIMA: 'Explicación legítima', ERROR_IDENTIDAD: 'Error de identidad',
+  DATO_DESACTUALIZADO: 'Dato desactualizado', FUERA_DE_PERIMETRO: 'Fuera de perímetro',
+  EVIDENCIA_INSUFICIENTE: 'Evidencia insuficiente', DUPLICADO: 'Duplicado',
+};
+const OPEN_STATES = ['DETECTADO', 'EN_REVISION', 'CORROBORADO'];
+
+/* ── Módulos y personas ─────────────────────────────────────── */
+const MODULES = {
+  hallazgos:   { t: 'Motor de Hallazgos',    ic: '🎯', g: 'Exploración' },
+  territorio:  { t: 'Análisis Territorial',  ic: '🗺',  g: 'Exploración' },
+  sectorial:   { t: 'Actividad Sectorial',   ic: '📊', g: 'Exploración' },
+  anomalias:   { t: 'Anomalías',             ic: '⚠️', g: 'Exploración' },
+  casos:       { t: 'Cola de Casos',         ic: '🗂',  g: 'Investigación' },
+  aml360:      { t: 'AML 360°',              ic: '🔎', g: 'Investigación' },
+  red:         { t: 'Red de Relaciones',     ic: '🔗', g: 'Investigación' },
+  evidencia:   { t: 'Evidencia',             ic: '📋', g: 'Investigación' },
+  salud:       { t: 'Salud del Programa',    ic: '💓', g: 'Supervisión' },
+  benchmark:   { t: 'Benchmark Nacional',    ic: '⚖️', g: 'Supervisión' },
+  calibracion: { t: 'Calibración de Reglas', ic: '🎚', g: 'Supervisión' },
+  fiscal:      { t: 'Perímetro UAF',         ic: '🏛',  g: 'Fiscalización' },
+  sanciones:   { t: 'Sanciones',             ic: '⚖️', g: 'Fiscalización' },
+  perfil:      { t: 'Perfil por RUT',        ic: '🔍', g: 'Búsqueda' },
+};
+
+/* El perfil reordena y filtra la navegación. No es control de acceso: es
+   encuadre. Cada perfil entra por el módulo que responde su pregunta. */
+const PERSONAS = {
+  EXPLORADOR:   { label: 'Explorador',    home: 'hallazgos',
+                  mods: ['hallazgos', 'territorio', 'sectorial', 'anomalias', 'casos', 'aml360', 'evidencia', 'perfil'] },
+  INVESTIGADOR: { label: 'Investigador',  home: 'casos',
+                  mods: ['casos', 'aml360', 'red', 'evidencia', 'perfil', 'hallazgos', 'anomalias', 'sanciones'] },
+  SUPERVISOR:   { label: 'Supervisor',    home: 'salud',
+                  mods: ['salud', 'benchmark', 'calibracion', 'casos', 'territorio', 'sectorial', 'fiscal', 'sanciones'] },
+  STEWARD:      { label: 'Data Steward',  home: 'evidencia',
+                  mods: ['evidencia', 'salud', 'calibracion', 'sectorial', 'territorio'] },
+};
+
+/* ── Estado de la aplicación ────────────────────────────────── */
+const app = {
+  data: null,
+  persona: 'EXPLORADOR',
+  module: 'hallazgos',
+  region: 'CL-REG-13',
+  mapLayer: 'exposure',
+  entityFilter: null,
+};
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ── Helpers de presentación ────────────────────────────────── */
+
+/** Renderiza los guardrails cuyo `scope` cubre el módulo actual. */
+function guardrails(moduleId) {
+  return (app.data.guardrails || [])
+    .filter((g) => g.scope.includes('*') || g.scope.includes(moduleId))
+    .map((g) => `<div class="gr"><strong>${esc(g.title)}:</strong> ${esc(g.text)}</div>`)
+    .join('');
+}
+
+/* Qué sección del contrato alimenta cada módulo, para declarar su procedencia. */
+const MODULE_SECTION = {
+  hallazgos: 'cases', casos: 'cases', aml360: 'cases', perfil: 'cases',
+  red: 'network', anomalias: 'anomalies', territorio: 'territory',
+  sectorial: 'sectors', fiscal: 'sectors', benchmark: 'benchmark',
+  calibracion: 'rules', sanciones: 'sanctions',
+};
+
+/** Declara en pantalla si el módulo se alimenta de datos reales o de la demo. */
+function provenanceBanner(moduleId) {
+  const section = MODULE_SECTION[moduleId];
+  const origin = (app.data.provenance || {})[section];
+  if (!section || origin === 'REAL') return '';
+  if (!origin) return '';
+  return `<div class="banner demo"><strong>Datos demostrativos.</strong>
+    La sección <code class="mono">${section}</code> proviene de
+    <code class="mono">tools/demo_overlay.json</code>: entidades, RUT y cifras
+    <strong>sintéticos</strong>, para ejercitar el módulo hasta que la capa de fusión la
+    materialice. No representan personas ni organizaciones reales.</div>`;
+}
+
+/** Valor de una métrica del catálogo. `null` se muestra '—', nunca 0. */
+function metric(metricId, scope = 'GLOBAL') {
+  return (app.data.program_health || []).find(
+    (m) => m.metric_id === metricId && m.scope === scope);
+}
+
+function metricValue(metricId, scope = 'GLOBAL') {
+  const m = metric(metricId, scope);
+  if (!m || m.value === null) return '—';
+  return `${fmt(m.value)}${m.unit === '%' ? '%' : ''}`;
+}
+
+function kpi(label, value, sub, cls = 'acc', spark = '', tip = '') {
+  const nodata = value === '—';
+  return `<div class="kpi ${nodata ? 'nodata' : cls}"${tip ? ` title="${esc(tip)}"` : ''}>
+    <div class="kl">${esc(label)}</div>
+    <div class="kv ${nodata ? 'nodata' : ''}">${value}</div>
+    <div class="ks">${esc(sub)}</div>
+    ${spark ? `<div class="ksp">${spark}</div>` : ''}
+  </div>`;
+}
+
+const statusClass = { OK: 'ok', WARN: 'warn', CRIT: 'crit', NO_DATA: 'nodata' };
+const statusRk = { OK: 'lo', WARN: 'hi', CRIT: 'cr', NO_DATA: 'nd' };
+
+function signalChip(sig) {
+  return `<span class="sc" style="background:var(--${sig.source_id}-bg);color:var(--${sig.source_id}-tx);border-color:var(--${sig.source_id})">
+    ${srcLabel(sig.source_id)}: ${esc(sig.text)} <span class="rid">${esc(sig.rule_id)}</span></span>`;
+}
+
+function caseCard(c) {
+  const cls = level(c.score.score_value);
+  const sources = [...new Set(c.signals.map((s) => s.source_id))];
+  const disp = c.disposition_reason
+    ? `<span class="rk lo">${REASON_LABEL[c.disposition_reason]}</span>` : '';
+  return `<div class="hcard ${cls}">
+    <div class="htop">
+      <div class="hid">
+        <h3>${esc(c.name)}</h3>
+        <div class="rut">${c.rut ? `RUT ${esc(c.rut)}` : 'Identidad no resuelta'} · ${esc(c.entity_type)} · ${esc(c.region_label)}</div>
+        <div class="metas">
+          <span class="st ${c.state}">${STATE_LABEL[c.state]}</span>
+          ${disp}
+          ${sources.map(badge).join('')}
+        </div>
+      </div>
+      <div class="hscore">${gauge(c.score.score_value)}
+        <div style="margin-top:4px"><span class="rk ${cls}">${levelLabel(c.score.score_value)}</span></div>
+      </div>
+    </div>
+    <div class="sigs">${c.signals.map(signalChip).join('')}</div>
+    <div class="hyp"><div class="hyp-lbl">Hipótesis analítica</div>
+      <div class="hyp-tx">${esc(c.hypothesis)}</div></div>
+    ${c.next_steps?.length
+      ? `<div class="nxt">${c.next_steps.map((s) => `<span class="nxt-s">→ ${esc(s)}</span>`).join('')}</div>`
+      : ''}
+  </div>`;
+}
+
+const contentWidth = () => Math.max(320, ($('ct')?.offsetWidth || 900) - 44);
+
+/* ── Módulos ────────────────────────────────────────────────── */
+
+function rHallazgos() {
+  const open = app.data.cases.filter((c) => OPEN_STATES.includes(c.state));
+  const sorted = [...open].sort((a, b) => b.score.score_value - a.score.score_value);
+  const allSignals = app.data.cases.flatMap((c) => c.signals);
+  const critical = open.filter((c) => c.score.score_value >= 80).length;
+  const series = app.data.signal_series;
+  const W = contentWidth();
+
+  const bySource = Object.entries(
+    allSignals.reduce((acc, s) => ({ ...acc, [s.source_id]: (acc[s.source_id] || 0) + 1 }), {}))
+    .map(([id, v]) => ({ l: srcLabel(id), v, c: `var(--${id})` }));
+
+  return `
+    <div class="mh"><h1>Motor de Hallazgos</h1>
+      <p>Entidades con mayor convergencia de señales independientes · Ordenadas por prioridad de revisión · ${app.data.sources.length} fuentes</p></div>
+    ${guardrails('hallazgos')}
+    <div class="krow">
+      ${kpi('Casos abiertos', fmt(open.length), `${critical} en nivel crítico`, 'cr')}
+      ${kpi('Señales activas', fmt(allSignals.length), `De ${new Set(allSignals.map((s) => s.source_id)).size} fuentes independientes`, 'pre')}
+      ${kpi('Convergencia multifuente', metricValue('PRG_SOURCE_CONVERGENCE'), 'Casos con ≥3 fuentes', 'uaf')}
+      ${kpi('Integridad de evidencia', metricValue('PRG_EVIDENCE_INTEGRITY'), 'Señales con evidencia trazable', 'sii')}
+      ${kpi('Anomalías detectadas', fmt(app.data.anomalies.length), `${app.data.anomalies.filter((a) => !a.corroborated).length} sin corroborar`, 'san')}
+      ${kpi('Cobertura territorial', `${app.data.territory.length}/16`, 'Regiones con datos activos', 'acc')}
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Evolución de señales · ${esc(app.data.period_id)}</div>
+        ${linechart(series.series.map((s) => ({ data: s.data, c: `var(--${s.source_id})` })), series.labels, W / 2 - 40, 120)}
+        <div style="display:flex;gap:14px;margin-top:8px;font-size:11px;flex-wrap:wrap">
+          ${series.series.map((s) => `<span style="color:var(--${s.source_id})">■ ${esc(s.label)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center">
+        <div class="ct" style="width:100%">Señales por fuente</div>
+        ${donut(bySource, 170, 170, 'señales')}
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px;letter-spacing:-.02em">Cola de prioridad analítica</div>
+    ${sorted.map(caseCard).join('')}`;
+}
+
+function rCasos() {
+  const cases = app.data.cases;
+  const open = cases.filter((c) => OPEN_STATES.includes(c.state));
+  const closed = cases.filter((c) => c.disposed_at);
+  const byState = Object.fromEntries(
+    Object.keys(STATE_LABEL).map((s) => [s, cases.filter((c) => c.state === s).length]));
+
+  const rows = [...cases]
+    .sort((a, b) => b.score.score_value - a.score.score_value)
+    .map((c) => `<tr>
+      <td><strong>${esc(c.name)}</strong><br><code class="rut">${c.rut ? esc(c.rut) : 'identidad no resuelta'}</code></td>
+      <td><span class="st ${c.state}">${STATE_LABEL[c.state]}</span></td>
+      <td class="num"><span class="rk ${level(c.score.score_value)}">${c.score.score_value}</span></td>
+      <td class="num">${esc(c.opened_at)}</td>
+      <td class="num">${c.sla_due_at ? esc(c.sla_due_at) : '<span class="nodata-cell">—</span>'}</td>
+      <td>${c.assignee_role ? esc(PERSONAS[c.assignee_role]?.label || c.assignee_role) : '<span class="nodata-cell">sin asignar</span>'}</td>
+      <td>${c.disposition_reason ? esc(REASON_LABEL[c.disposition_reason]) : '<span class="nodata-cell">—</span>'}</td>
+      <td class="num">${c.signals.length}</td>
+    </tr>`).join('');
+
+  const stateSegs = Object.entries(byState)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => ({
+      l: STATE_LABEL[k], v,
+      c: { DETECTADO: 'var(--nd)', EN_REVISION: 'var(--cgr)', CORROBORADO: 'var(--ch)',
+           ESCALADO: 'var(--cr)', DESCARTADO: 'var(--cl)' }[k],
+    }));
+
+  return `
+    <div class="mh"><h1>Cola de Casos</h1>
+      <p>Ciclo de vida analítico · Estado, antigüedad, SLA y disposición tipificada</p></div>
+    ${guardrails('casos')}
+    <div class="gr"><strong>Invariante:</strong> el estado del caso es un objeto del cockpit.
+      Ningún cambio de estado escribe sobre <code class="mono">signals.jsonl</code> ni
+      <code class="mono">scores.jsonl</code> de los radares.</div>
+    <div class="krow">
+      ${kpi('Backlog abierto', metricValue('PRG_QUEUE_BACKLOG'), `${byState.DETECTADO} sin asignar`, 'cr')}
+      ${kpi('Antigüedad p90', metricValue('PRG_QUEUE_AGING'), 'Percentil 90 de casos abiertos', 'warn')}
+      ${kpi('Tiempo a disposición', metricValue('PRG_MTTD'), 'Mediana de casos cerrados', 'pre')}
+      ${kpi('Cumplimiento de SLA', metricValue('PRG_SLA_COMPLIANCE'), `${closed.length} casos dispuestos`, 'ok')}
+      ${kpi('Escalados', fmt(byState.ESCALADO), 'Con convergencia sostenida', 'san')}
+    </div>
+    <div class="g21">
+      <div class="card"><div class="ct">Cola completa</div>
+        <div class="scroll-x"><table class="dtbl">
+          <thead><tr><th>Entidad</th><th>Estado</th><th class="num">Prioridad</th><th class="num">Apertura</th>
+          <th class="num">SLA</th><th>Responsable</th><th>Disposición</th><th class="num">Señales</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center">
+        <div class="ct" style="width:100%">Distribución por estado</div>
+        ${donut(stateSegs, 160, 160, 'casos')}
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin:4px 0 12px;letter-spacing:-.02em">Casos abiertos</div>
+    ${open.sort((a, b) => b.score.score_value - a.score.score_value).map(caseCard).join('')}`;
+}
+
+function rSalud() {
+  const sources = app.data.sources;
+  const keyLabel = { NATIVE: 'Nativo', READY: 'Listo', PARTIAL: 'Parcial', NOT_PRIMARY: 'No aplica' };
+  const keyMark = (v) => {
+    if (v === null || v === undefined) return '<span class="nodata-cell">—</span>';
+    const color = { NATIVE: 'var(--cl)', READY: 'var(--cl)', PARTIAL: 'var(--cm)', NOT_PRIMARY: 'var(--nd)' }[v];
+    return `<span style="color:${color};font-weight:600;font-size:11px">${keyLabel[v]}</span>`;
+  };
+
+  const srcRows = sources.map((s) => `<tr>
+    <td><strong>${esc(s.label)}</strong><br><code class="rut">${esc(s.repository)}</code></td>
+    <td><span class="rk ${statusRk[s.status]}">${s.status}</span></td>
+    <td><code class="mono" style="font-size:10px">${esc(s.implementation_stage)}</code></td>
+    <td>${keyMark(s.conformed_keys.entity_id)}</td>
+    <td>${keyMark(s.conformed_keys.territory_id)}</td>
+    <td>${keyMark(s.conformed_keys.sector_id)}</td>
+    <td>${keyMark(s.conformed_keys.period_id)}</td>
+    <td class="num">${s.territory_resolution_pct === null || s.territory_resolution_pct === undefined
+      ? '<span class="nodata-cell">no medida</span>'
+      : `<span class="rk ${s.territory_resolution_pct >= 95 ? 'lo' : s.territory_resolution_pct >= 75 ? 'md' : 'cr'}">${s.territory_resolution_pct}%</span>`}</td>
+    <td>${esc(s.update_cadence)}</td>
+    <td class="num">${s.freshness_days === null ? '<span class="nodata-cell">—</span>' : fmt(s.freshness_days)}</td>
+  </tr>`).join('');
+
+  const globals = app.data.program_health.filter((m) => m.scope === 'GLOBAL');
+  const cards = globals.map((m) => {
+    const val = m.value === null ? '—' : `${fmt(m.value)}${m.unit === '%' ? '%' : ''}`;
+    const target = m.target !== null && m.target !== undefined
+      ? `Objetivo ${fmt(m.target)}${m.unit === '%' ? '%' : ` ${m.unit}`}` : m.unit;
+    return kpi(m.name || m.metric_id, val, target, statusClass[m.status], '', m.guardrail || '');
+  }).join('');
+
+  const noData = globals.filter((m) => m.status === 'NO_DATA');
+
+  return `
+    <div class="mh"><h1>Salud del Programa</h1>
+      <p>La maquinaria analítica medida a sí misma · Derivado de los manifiestos interop reales de cada radar</p></div>
+    ${guardrails('salud')}
+    <div class="krow">${cards}</div>
+    ${noData.length ? `<div class="banner demo"><strong>${noData.length} métricas en NO_DATA.</strong>
+      Requieren que los radares publiquen <code class="mono">fusion_interop_status_v1.json</code> en su rama de datos
+      (fase F2 del roadmap). Se muestran como '—' y nunca como 0.</div>` : ''}
+    <div class="card"><div class="ct">Estado de fuentes y claves conformadas</div>
+      <div class="scroll-x"><table class="dtbl">
+        <thead><tr><th>Fuente</th><th>Estado</th><th>Etapa interop</th>
+          <th>entity_id</th><th>territory_id</th><th>sector_id</th><th>period_id</th>
+          <th class="num">Resolución territorial</th><th>Cadencia</th><th class="num">Frescura</th></tr></thead>
+        <tbody>${srcRows}</tbody></table></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--txm)">
+        Las columnas de clave se derivan del <code class="mono">current_status</code> declarado en
+        <code class="mono">interop/integration_manifest_v1.json</code> de cada repositorio.
+        «No aplica» significa que la dimensión no es primaria para esa fuente: no cuenta ni a favor ni en contra de la cobertura.
+      </div>
+    </div>`;
+}
+
+function rBenchmark() {
+  const b = app.data.benchmark;
+  const W = contentWidth();
+  const cov = b.coverage || {};
+  const ser = (m) => b.series.find((s) => s.metric === m);
+  const last = (m) => { const s = ser(m); return s ? s.points[s.points.length - 1] : null; };
+
+  const labels = (ser('ros_recibidos')?.points || []).map((p) => p.period);
+  const lines = [
+    { m: 'ros_recibidos', c: 'var(--uaf)' },
+    { m: 'entidades_reportantes_total', c: 'var(--sii)' },
+  ].filter((l) => ser(l.m)).map((l) => ({ data: ser(l.m).points.map((p) => p.value), c: l.c }));
+
+  const derived = (b.derived || []).map((d) => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--bd)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+        <span style="font-size:12px;font-weight:600">${esc(d.label)}</span>
+        <span style="font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap">
+          ${d.value === null ? '—' : fmt(d.value)} <span style="font-size:11px;color:var(--tx2);font-weight:600">${esc(d.unit || '')}</span></span>
+      </div>
+      <div style="font-size:11px;color:var(--txm);margin-top:4px;line-height:1.55">${esc(d.note)}</div>
+    </div>`).join('');
+
+  const caveats = (b.caveats || []).map((c) => `
+    <div class="gr" style="border-left-color:var(--cm)"><strong>${esc(c.title)}:</strong> ${esc(c.text)}</div>`).join('');
+
+  const flags = (b.quality_flags || []).map((f) => `
+    <div class="banner demo"><strong>Control de calidad · ${esc(f.label)}:</strong> ${esc(f.text)}</div>`).join('');
+
+  const seriesRows = b.series.map((s) => `<tr>
+    <td><strong>${esc(s.label)}</strong><br><code class="rut">${esc(s.metric)}</code></td>
+    ${s.points.map((p) => `<td class="num">${fmt(p.value)}</td>`).join('')}
+    <td><a href="${esc(s.points[s.points.length - 1].source_url)}" target="_blank" rel="noopener"
+      style="color:var(--ac);font-size:11px">fuente ↗</a></td>
+  </tr>`).join('');
+
+  const topSectors = [...app.data.sectors]
+    .filter((s) => s.so_count).sort((a, b2) => b2.so_count - a.so_count).slice(0, 12);
+
+  const gaps = (app.data.sector_gaps || []).map((g) => `<tr>
+    <td>${esc(g.registry_label)}</td><td class="num">${fmt(g.so_count)}</td>
+    <td><span class="rk md">${esc(g.status)}</span></td></tr>`).join('');
+
+  return `
+    <div class="mh"><h1>Benchmark Nacional</h1>
+      <p>Producción propia contrastada con el denominador público de la UAF · Equivalente chileno del benchmark contra estadísticas de industria</p></div>
+    ${guardrails('benchmark')}
+    ${caveats}${flags}
+    <div class="krow">
+      ${kpi('Universo inscrito', fmt(last('entidades_reportantes_total')?.value), `Sujetos obligados · ${last('entidades_reportantes_total')?.period || ''}`, 'uaf')}
+      ${kpi('ROS recibidos', fmt(last('ros_recibidos')?.value), `Nacional · ${last('ros_recibidos')?.period || ''}`, 'acc')}
+      ${kpi('Equivalencia de taxonomía', cov.mapped_pct === null ? '—' : `${cov.mapped_pct}%`,
+        `${fmt(cov.mapped_entities)} de ${fmt(cov.registry_entities)} entidades`, 'sii')}
+      ${kpi('Actividades sin equivalencia', fmt(cov.unmapped_activities), 'Del registro, no forzadas', 'warn')}
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">ROS recibidos frente al universo inscrito</div>
+        ${lines.length ? linechart(lines, labels, Math.min(W / 2 - 40, 420), 170) : ''}
+        <div style="display:flex;gap:14px;margin-top:8px;font-size:11px">
+          <span style="color:var(--uaf)">■ ROS recibidos</span>
+          <span style="color:var(--sii)">■ Universo inscrito</span></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--txm)">
+          El universo crece 21,8% entre 2021 y 2025; los ROS, 124,2%. La brecha entre ambas
+          pendientes es el hecho a explicar, y admite lecturas opuestas.</div>
+      </div>
+      <div class="card"><div class="ct">Indicadores derivados</div>${derived}</div>
+    </div>
+    <div class="card"><div class="ct">Series oficiales publicadas por la UAF</div>
+      <div class="scroll-x"><table class="dtbl">
+        <thead><tr><th>Métrica</th>${labels.map((l) => `<th class="num">${l}</th>`).join('')}<th>Origen</th></tr></thead>
+        <tbody>${seriesRows}</tbody></table></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Universo inscrito por actividad · top 12</div>
+        ${hbar(topSectors.map((s) => ({ l: s.name.slice(0, 26), v: s.so_count, c: 'var(--uaf)' })),
+          Math.min(W / 2 - 40, 420), 300, 200)}
+      </div>
+      <div class="card"><div class="ct">Actividades del registro sin equivalencia exacta</div>
+        <div class="scroll-x"><table class="dtbl">
+          <thead><tr><th>Glosa del registro</th><th class="num">Entidades</th><th>Estado</th></tr></thead>
+          <tbody>${gaps}</tbody></table></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--txm)">
+          El cruce con la taxonomía se hace por igualdad exacta sobre la forma normalizada.
+          Estas glosas no se fuerzan a un sector: se reportan como brecha para resolución gobernada.</div>
+      </div>
+    </div>`;
+}
+
+function rCalibracion() {
+  const rules = app.data.rules;
+  const shown = rules.filter((r) => r.dispositions >= 20);
+  const hidden = rules.filter((r) => r.dispositions > 0 && r.dispositions < 20);
+  const mute = rules.filter((r) => r.status === 'MUDA');
+  const W = contentWidth();
+
+  const rows = shown.map((r) => {
+    const mix = Object.entries(r.reason_mix || {})
+      .sort((a, b) => b[1] - a[1])
+      .map(([k, v]) => `<span class="nxt-s">${REASON_LABEL[k] || k}: ${v}</span>`).join(' ');
+    return `<tr>
+      <td><code class="mono">${esc(r.rule_id)}</code><br><span style="color:var(--tx2)">${esc(r.label)}</span></td>
+      <td>${badge(r.source_id)}</td>
+      <td class="num">${fmt(r.dispositions)}</td>
+      <td class="num"><span class="rk ${statusRk[r.status] || 'nd'}">${r.non_corroboration_rate}%</span></td>
+      <td class="num">${r.escalation_contribution}%</td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap">${mix}</div></td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="mh"><h1>Calibración de Reglas</h1>
+      <p>El desenlace analítico realimenta la regla que originó la señal · Se evalúan reglas y fuentes, nunca personas</p></div>
+    ${guardrails('calibracion')}
+    <div class="krow">
+      ${kpi('Reglas evaluables', fmt(shown.length), '≥20 disposiciones registradas', 'acc')}
+      ${kpi('Reglas en crítico', fmt(shown.filter((r) => r.status === 'CRIT').length), 'No corroboración > 70%', 'crit')}
+      ${kpi('Reglas mudas', fmt(mute.length), 'Sin señales en 3 períodos', 'warn')}
+      ${kpi('Muestra insuficiente', fmt(hidden.length), 'Ocultas hasta alcanzar 20 disposiciones', 'nodata')}
+    </div>
+    <div class="card"><div class="ct">Tasa de no corroboración por regla</div>
+      ${hbar(shown.map((r) => ({
+        l: r.rule_id.split('_')[0],
+        v: r.non_corroboration_rate,
+        suffix: '%',
+        c: r.non_corroboration_rate > 70 ? 'var(--cr)' : r.non_corroboration_rate > 40 ? 'var(--cm)' : 'var(--cl)',
+      })), Math.min(W - 60, 700), 190, 150)}
+      <div style="margin-top:8px;font-size:11px;color:var(--txm)">
+        Equivalente funcional de la tasa de falsos positivos, con nombre distinto a propósito:
+        una señal no corroborada no era falsa, era insuficiente.
+      </div>
+    </div>
+    <div class="card"><div class="ct">Detalle y diagnóstico por regla</div>
+      <div class="scroll-x"><table class="dtbl">
+        <thead><tr><th>Regla</th><th>Fuente</th><th class="num">Disposiciones</th>
+          <th class="num">No corroboración</th><th class="num">Contribución a escalados</th><th>Mezcla de motivos</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--txm)">
+        Diagnóstico, no puntaje. Predominio de <strong>Error de identidad</strong> indica problema de resolución de entidad;
+        predominio de <strong>Explicación legítima</strong> indica umbral mal puesto. Son remedios distintos.
+      </div>
+    </div>
+    ${mute.length ? `<div class="card"><div class="ct">Reglas sin producción</div>
+      ${mute.map((r) => `<div style="padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px">
+        <code class="mono">${esc(r.rule_id)}</code> · ${esc(r.label)} ${badge(r.source_id)}
+      </div>`).join('')}
+      <div style="margin-top:10px;font-size:11px;color:var(--txm)">Una regla muda puede estar bien calibrada o estar rota. Requiere revisión, nunca desactivación automática.</div>
+    </div>` : ''}`;
+}
+
+function rTerritorio() {
+  const regions = app.data.territory;
+  const sorted = [...regions].sort((a, b) => (b.exposure ?? -1) - (a.exposure ?? -1));
+  const sel = regions.find((r) => r.territory_id === app.region) || sorted[0];
+  const layers = [
+    ['exposure', 'Exposición'], ['crime_art27', 'Delictual art. 27'], ['so_count', 'SO UAF'],
+    ['public_spend_mm', 'Gasto público'], ['osfl_count', 'OSFL'],
+  ];
+  const high = regions.filter((r) => (r.exposure ?? 0) >= 60).length;
+
+  const detail = sel ? `
+    <div style="font-size:14px;font-weight:800;margin-bottom:10px;letter-spacing:-.02em">${esc(sel.name)}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center">
+        <div class="kl">Exposición</div>
+        <div style="font-size:22px;font-weight:800;color:${levelVar(sel.exposure)};margin:2px 0">${fmt(sel.exposure)}</div>
+        <span class="rk ${level(sel.exposure)}">${levelLabel(sel.exposure)}</span>
+      </div>
+      <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center">
+        <div class="kl">Casos abiertos</div>
+        <div style="font-size:22px;font-weight:800;color:var(--ac);margin:2px 0">${fmt(sel.open_cases)}</div>
+        <div style="font-size:10px;color:var(--txm)">en la región</div>
+      </div>
+    </div>
+    <table class="dtbl" style="font-size:11px">
+      <tr><td style="color:var(--tx2)">Clave territorial</td><td class="num"><code class="mono">${esc(sel.territory_id)}</code></td></tr>
+      <tr><td style="color:var(--tx2)">SO UAF</td><td class="num">${fmt(sel.so_count)}</td></tr>
+      <tr><td style="color:var(--tx2)">Delitos art. 27 Ley 19.913</td><td class="num">${fmt(sel.crime_art27)}</td></tr>
+      <tr><td style="color:var(--tx2)">Gasto público</td><td class="num">$${fmt(sel.public_spend_mm)}M</td></tr>
+      <tr><td style="color:var(--tx2)">OSFL activas</td><td class="num">${fmt(sel.osfl_count)}</td></tr>
+      <tr><td style="color:var(--tx2)">Auditorías CGR</td><td class="num">${fmt(sel.cgr_audits)}</td></tr>
+    </table>` : '';
+
+  return `
+    <div class="mh"><h1>Análisis Territorial</h1>
+      <p>Distribución geográfica de señales · 16 regiones · Claves CUT/Subdere del Context Hub</p></div>
+    ${guardrails('territorio')}
+    <div class="fbr" style="margin-bottom:16px">
+      <span style="font-size:12px;color:var(--tx2);font-weight:600">Capa:</span>
+      ${layers.map(([k, l]) => `<button class="fbtn${k === app.mapLayer ? ' on' : ''}" data-layer="${k}">${l}</button>`).join('')}
+    </div>
+    <div class="g12">
+      <div>
+        <div class="krow" style="margin-bottom:12px">
+          ${kpi('Mayor exposición', sorted[0]?.code || '—', `${esc(sorted[0]?.name || '')} · ${fmt(sorted[0]?.exposure)}`, 'crit')}
+          ${kpi('En nivel alto', fmt(high), 'Regiones con exposición ≥60', 'warn')}
+        </div>
+        <div class="card"><div class="ct">Exposición por región</div>
+          ${sorted.map((r) => `<div class="rrow">
+            <div class="rname"><strong>${esc(r.code)}</strong> <span style="color:var(--tx2)">${esc(r.name)}</span></div>
+            <div class="rbw"><div class="pb"><div class="pf" style="width:${r.exposure ?? 0}%;background:${levelVar(r.exposure ?? 0)}"></div></div></div>
+            <div class="rval" style="color:${levelVar(r.exposure ?? 0)}">${fmt(r.exposure)}</div>
+            <div class="rct">${fmt(r.open_cases)} casos</div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="card"><div class="ct">Mapa de Chile · selecciona una región</div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div id="mapa-container">${chileMap(regions, app.mapLayer, app.region)}</div>
+            <div id="reg-detail" style="flex:1;min-width:0">${detail}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function rSectorial() {
+  const sectors = app.data.sectors;
+  const present = sectors.filter((s) => s.so_count);
+  const absent = sectors.filter((s) => !s.so_count);
+  const totalSO = present.reduce((a, s) => a + s.so_count, 0);
+  const mapped = sectors.filter((s) => s.acteco_strong_mappings).length;
+  const W = contentWidth();
+
+  // Concentración: cuántas actividades acumulan la mitad del universo inscrito.
+  const ranked = [...present].sort((a, b) => b.so_count - a.so_count);
+  let acc = 0;
+  const half = ranked.findIndex((s) => (acc += s.so_count) >= totalSO / 2) + 1;
+
+  const rows = sectors.map((s) => `<tr>
+    <td>${esc(s.name)}<br><code class="rut">${esc(s.sector_id)}</code></td>
+    <td style="font-size:11px;color:var(--tx2)">${esc(s.macrofamily || '—')}</td>
+    <td class="num">${s.so_count === null ? '<span class="nodata-cell">no inscritas</span>' : fmt(s.so_count)}</td>
+    <td class="num">${s.so_count ? `${(s.so_count / totalSO * 100).toFixed(1)}%` : '<span class="nodata-cell">—</span>'}</td>
+    <td class="num">${s.acteco_mappings === null ? '<span class="nodata-cell">—</span>' : fmt(s.acteco_mappings)}</td>
+    <td class="num">${s.acteco_strong_mappings === null ? '<span class="nodata-cell">—</span>' : fmt(s.acteco_strong_mappings)}</td>
+    <td class="num nodata-cell">—</td></tr>`).join('');
+
+  const byFamily = Object.entries(present.reduce((m, s) => {
+    const k = s.macrofamily || 'Sin familia';
+    return { ...m, [k]: (m[k] || 0) + s.so_count };
+  }, {})).sort((a, b) => b[1] - a[1]);
+  const famColors = ['var(--uaf)', 'var(--sii)', 'var(--cgr)', 'var(--pre)', 'var(--san)', 'var(--osl)', 'var(--del)', 'var(--ctx)'];
+
+  return `
+    <div class="mh"><h1>Actividad Sectorial</h1>
+      <p>Universo inscrito por actividad UAF · Registro real cruzado con la taxonomía del Context Hub</p></div>
+    ${guardrails('sectorial')}
+    <div class="gr" style="border-left-color:var(--cm)"><strong>Alcance de esta vista:</strong>
+      muestra el <strong>universo inscrito</strong>, que es un hecho registral. La UAF no publica ROS,
+      ROE ni sanciones desagregados por actividad, de modo que las columnas de reportabilidad se
+      serializan NO_DATA y se muestran «—». El contraste disponible es nacional y vive en
+      <strong>Benchmark</strong>.</div>
+    <div class="krow">
+      ${kpi('Sujetos obligados inscritos', fmt(totalSO), `En ${present.length} actividades del registro`, 'uaf')}
+      ${kpi('Actividades en la taxonomía', fmt(sectors.length), `${absent.length} sin entidades inscritas`, 'acc')}
+      ${kpi('Concentración', `${half} act.`, 'Acumulan la mitad del universo', 'crit')}
+      ${kpi('Con crosswalk MATCH_FUERTE', fmt(mapped), 'Actividades con equivalencia ACTECO fuerte', 'sii')}
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Universo inscrito por actividad · top 12</div>
+        ${hbar(ranked.slice(0, 12).map((s) => ({ l: s.name.slice(0, 26), v: s.so_count, c: 'var(--uaf)' })),
+          Math.min(W / 2 - 40, 420), 300, 195)}
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center">
+        <div class="ct" style="width:100%">Universo por macrofamilia</div>
+        ${donut(byFamily.map(([l, v], i) => ({ l: l.length > 26 ? `${l.slice(0, 26)}…` : l, v, c: famColors[i % famColors.length] })), 180, 180, 'SO')}
+      </div>
+    </div>
+    <div class="card"><div class="ct">Detalle por actividad UAF</div>
+      <div class="scroll-x"><table class="dtbl">
+        <thead><tr><th>Actividad</th><th>Macrofamilia</th><th class="num">SO inscritos</th>
+          <th class="num">Share</th><th class="num">Mapeos ACTECO</th><th class="num">MATCH_FUERTE</th>
+          <th class="num">% ROS</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+    </div>`;
+}
+
+function rAnomalias() {
+  const kindLabel = {
+    ANOMALIA_CONTEXTUAL: ['Anomalía contextual', 'pre'],
+    ALERTA_FISCALIZACION: ['Alerta de fiscalización', 'cgr'],
+    SENAL_AML: ['Señal AML', 'uaf'],
+  };
+  const counts = Object.keys(kindLabel).map((k) => app.data.anomalies.filter((a) => a.kind === k).length);
+  const affected = app.data.anomalies.reduce((a, b) => a + (b.affected_count || 0), 0);
+
+  const cards = app.data.anomalies.map((a) => {
+    const [lbl, tok] = kindLabel[a.kind];
+    return `<div class="ac">
+      <div class="ah">
+        <div>
+          <div class="at">${esc(a.title)}</div>
+          <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+            ${a.source_ids.map(badge).join('')}
+            <span class="bd ${tok}">${lbl}</span>
+            ${a.corroborated ? '<span class="rk lo">Corroborada</span>' : '<span class="rk md">Sin corroborar</span>'}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:14px">
+          <div style="font-size:26px;font-weight:800;color:var(--${tok});line-height:1">${fmt(a.affected_count)}</div>
+          <div style="font-size:10px;color:var(--txm)">entidades</div>
+        </div>
+      </div>
+      <div class="adesc">${esc(a.description)}</div>
+      <div class="aev">📎 ${esc(a.evidence)} · <code class="mono">${esc(a.rule_id)}</code></div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="mh"><h1>Anomalías Detectadas</h1>
+      <p>Patrones contextuales que requieren corroboración antes de elevarse a señal gobernada</p></div>
+    ${guardrails('anomalias')}
+    <div class="krow">
+      ${kpi('Anomalías contextuales', fmt(counts[0]), 'Requieren corroboración', 'pre')}
+      ${kpi('Alertas de fiscalización', fmt(counts[1]), 'No son señales AML', 'cgr')}
+      ${kpi('Señales AML', fmt(counts[2]), 'Con evidencia directa', 'uaf')}
+      ${kpi('Entidades afectadas', fmt(affected), 'En revisión activa', 'acc')}
+    </div>${cards}`;
+}
+
+function rAml360() {
+  const c = app.data.cases.find((x) => x.case_id === app.entityFilter) || app.data.cases[0];
+  const cls = level(c.score.score_value);
+  const sources = [...new Set(c.signals.map((s) => s.source_id))];
+  const W = contentWidth();
+  const options = app.data.cases.map((x) =>
+    `<option value="${esc(x.case_id)}"${x.case_id === c.case_id ? ' selected' : ''}>${esc(x.name)}</option>`).join('');
+
+  return `
+    <div class="mh"><h1>AML 360°</h1>
+      <p>Vista integrada de señales, convergencia, relaciones y evidencia por entidad</p></div>
+    ${guardrails('aml360')}
+    <div class="card"><div class="fbr">
+      <select class="fsel" id="entity-select" style="min-width:280px">${options}</select>
+      <span style="font-size:11px;color:var(--txm)">${c.entity_id ? `Identidad canónica: <code class="mono">${esc(c.entity_id)}</code>` : 'Identidad no resuelta · ENTITY_ID_NULL_CANDIDATE_ONLY'}</span>
+    </div></div>
+    <div class="card" style="border-top:2px solid ${levelVar(c.score.score_value)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <h2 style="font-size:16px;font-weight:800;letter-spacing:-.03em">${esc(c.name)}</h2>
+          <div style="color:var(--tx2);font-size:12px;margin-top:2px">
+            ${c.rut ? `RUT <code class="rut">${esc(c.rut)}</code>` : 'Sin RUT en la fuente'} · ${esc(c.entity_type)} · ${esc(c.region_label)}</div>
+          <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+            <span class="st ${c.state}">${STATE_LABEL[c.state]}</span>${sources.map(badge).join('')}</div>
+        </div>
+        <div style="text-align:center">${gauge(c.score.score_value)}
+          <div style="margin-top:4px"><span class="rk ${cls}">${levelLabel(c.score.score_value)}</span></div></div>
+      </div>
+      <div class="g3" style="margin-bottom:13px">
+        <div style="background:var(--cr-bg);border-radius:8px;padding:12px;text-align:center">
+          <div class="kl" style="color:var(--cr)">Señales directas</div>
+          <div style="font-size:26px;font-weight:800;color:var(--cr);margin:4px 0">${c.signals.length}</div></div>
+        <div style="background:var(--cm-bg);border-radius:8px;padding:12px;text-align:center">
+          <div class="kl" style="color:var(--cm)">Fuentes independientes</div>
+          <div style="font-size:26px;font-weight:800;color:var(--cm);margin:4px 0">${sources.length}</div></div>
+        <div style="background:var(--uaf-bg);border-radius:8px;padding:12px;text-align:center">
+          <div class="kl" style="color:var(--uaf)">Referencias de evidencia</div>
+          <div style="font-size:26px;font-weight:800;color:var(--uaf);margin:4px 0">${c.signals.flatMap((s) => s.evidence_refs).length}</div></div>
+      </div>
+      <div class="sigs" style="margin-bottom:12px">${c.signals.map(signalChip).join('')}</div>
+      <div class="hyp"><div class="hyp-lbl">Hipótesis analítica</div><div class="hyp-tx">${esc(c.hypothesis)}</div></div>
+      <div class="g2" style="margin-top:14px">
+        <div><div class="ct">Contribución de cada fuente a la prioridad</div>
+          ${hbar(c.signals.map((s) => ({ l: srcLabel(s.source_id), v: s.weight, c: `var(--${s.source_id})` })),
+            Math.min(W / 2 - 40, 360), 150, 90)}
+          <div style="margin-top:8px;font-size:11px;color:var(--txm)">La contribución es trazable a la regla que la produjo.</div>
+        </div>
+        <div><div class="ct">Evidencia por señal</div>
+          ${c.signals.map((s) => `<div style="padding:6px 0;border-bottom:1px solid var(--bd);font-size:11px">
+            <code class="mono">${esc(s.rule_id)}</code><br>
+            ${s.evidence_refs.map((e) => `<span class="chip">${esc(e)}</span>`).join(' ')}</div>`).join('')}
+        </div>
+      </div>
+      ${c.next_steps?.length ? `<div style="margin-top:14px">
+        <div class="ct">Próximos pasos</div>
+        ${c.next_steps.map((s) => `<div style="padding:6px 0;font-size:12px;border-bottom:1px solid var(--bd);color:var(--tx2)">→ ${esc(s)}</div>`).join('')}
+      </div>` : ''}
+    </div>`;
+}
+
+function rRed() {
+  const { nodes, edges } = app.data.network;
+  const relLabel = {
+    REPRESENTANTE_LEGAL: 'Representante legal', DOMICILIO_COMPARTIDO: 'Domicilio compartido',
+    PROVEEDOR_COMUN: 'Proveedor común', ORGANISMO_CONTRATANTE: 'Organismo contratante',
+    PROPIEDAD: 'Propiedad', CANDIDATO_BF: 'Beneficiario final candidato',
+  };
+  const byId = Object.fromEntries(nodes.map((n) => [n.node_id, n.label]));
+  const rows = edges.map((e) => `<tr>
+    <td>${esc(byId[e.from])}</td><td>${esc(byId[e.to])}</td>
+    <td>${esc(relLabel[e.relation] || e.relation)}</td>
+    <td>${e.confirmed ? '<span class="rk lo">Confirmado</span>' : '<span class="rk md">Candidato</span>'}</td>
+    <td>${e.evidence_refs.map((r) => `<span class="chip">${esc(r)}</span>`).join(' ')}</td>
+  </tr>`).join('');
+
+  return `
+    <div class="mh"><h1>Red de Relaciones</h1>
+      <p>Expansión sobre vínculos observados · Sin herencia de riesgo entre nodos</p></div>
+    ${guardrails('red')}
+    <div class="card" style="padding:8px">${networkGraph(nodes, edges)}</div>
+    <div class="card"><div class="ct">Vínculos y su evidencia</div>
+      <div class="scroll-x"><table class="dtbl">
+        <thead><tr><th>Origen</th><th>Destino</th><th>Relación</th><th>Estado</th><th>Evidencia</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+    </div>`;
+}
+
+function rEvidencia() {
+  const keys = [
+    ['entity_id', 'Identidad canónica de la entidad (RUT con dígito verificador validado)'],
+    ['territory_id', 'CL-REG / CL-PROV / CL-COM según CUT/Subdere'],
+    ['sector_id', 'UAF-SEC-NN · 55 actividades UAF conformadas'],
+    ['period_id', 'Período canónico de la señal'],
+    ['source_id', 'Fuente y versión del dato'],
+  ];
+  const rows = app.data.sources.map((s) => `<tr>
+    <td><strong>${esc(s.label)}</strong></td>
+    <td>${esc(s.coverage)}</td><td>${esc(s.update_cadence)}</td>
+    <td class="num">${s.exports.length}</td>
+    <td><span class="rk ${statusRk[s.status]}">${s.status}</span></td>
+    <td><div style="display:flex;flex-direction:column;gap:2px">
+      ${s.exports.slice(0, 3).map((e) => `<code class="mono" style="font-size:10px">${esc(e)}</code>`).join('')}
+      ${s.exports.length > 3 ? `<span style="font-size:10px;color:var(--txm)">+${s.exports.length - 3} más</span>` : ''}
+    </div></td>
+  </tr>`).join('');
+
+  return `
+    <div class="mh"><h1>Evidencia y Trazabilidad</h1>
+      <p>Cobertura, fuente y linaje de todas las señales · Principio evidence-first</p></div>
+    ${guardrails('evidencia')}
+    <div class="krow">
+      ${kpi('Integridad de evidencia', metricValue('PRG_EVIDENCE_INTEGRITY'), 'Señales con referencia resoluble', 'ok')}
+      ${kpi('Resolución de identidad', metricValue('PRG_IDENTITY_RESOLUTION'), 'Cobertura de entity_id conformado', 'sii')}
+      ${kpi('Cobertura territorial', metricValue('PRG_TERRITORY_COVERAGE'), 'Cobertura de territory_id conformado', 'cgr')}
+      ${kpi('Cobertura sectorial', metricValue('PRG_SECTOR_COVERAGE'), 'Cobertura de sector_id conformado', 'uaf')}
+    </div>
+    <div class="card"><div class="ct">Catálogo de fuentes y artefactos publicados</div>
+      <div class="scroll-x"><table class="dtbl">
+        <thead><tr><th>Fuente</th><th>Cobertura</th><th>Actualización</th><th class="num">Exports</th><th>Estado</th><th>Artefactos</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+    </div>
+    <div class="card"><div class="ct">Claves conformadas del ecosistema</div>
+      ${keys.map(([k, d]) => `<div style="padding:7px 0;border-bottom:1px solid var(--bd);font-size:12px">
+        <span class="chip">${k}</span> <span style="color:var(--tx2)">${esc(d)}</span></div>`).join('')}
+      <div style="margin-top:13px;font-size:11px;color:var(--txm)">
+        Las anomalías y alertas de fiscalización <strong>no modifican</strong>
+        <code class="mono">signals.jsonl</code> ni <code class="mono">scores.jsonl</code>:
+        son objetos semánticos distintos de la señal AML gobernada.
+      </div>
+    </div>`;
+}
+
+function rFiscal() {
+  const sectors = app.data.sectors;
+  const present = sectors.filter((s) => s.so_count);
+  const totalSO = present.reduce((a, s) => a + s.so_count, 0);
+  const strongMaps = sectors.reduce((a, s) => a + (s.acteco_strong_mappings || 0), 0);
+  const b = app.data.benchmark;
+  const supervision = b.series?.find((s) => s.metric === 'acciones_supervision');
+  const lastSup = supervision?.points[supervision.points.length - 1];
+  const W = contentWidth();
+
+  return `
+    <div class="mh"><h1>Perímetro UAF · Fiscalización</h1>
+      <p>Universo inscrito y equivalencias hacia ACTECO · Registro real de sujetos obligados</p></div>
+    ${guardrails('fiscal')}
+    <div class="krow">
+      ${kpi('Sujetos obligados inscritos', fmt(totalSO), `${present.length} actividades con registro`, 'uaf')}
+      ${kpi('Equivalencias MATCH_FUERTE', fmt(strongMaps), 'Hacia ACTECO del SII · candidatas a validación', 'sii')}
+      ${kpi('Acciones de supervisión', fmt(lastSup?.value), `Nacional · ${lastSup?.period || ''}`, 'cgr')}
+      ${kpi('MATCH_FUERTE sin inscripción', '—', 'Requiere cruzar el padrón SII completo', 'nodata')}
+    </div>
+    <div class="gr" style="border-left-color:var(--cm)"><strong>Pendiente de la fase F2:</strong>
+      detectar entidades con actividad ACTECO de MATCH_FUERTE que <em>no</em> figuran en el registro
+      UAF exige cruzar el padrón completo del SII contra la nómina, y hoy Radar SII declara
+      <code class="mono">sector</code> sin bloque conformado. Hasta entonces el indicador es NO_DATA
+      y no se estima.</div>
+    <div class="g2">
+      <div class="card"><div class="ct">Densidad de equivalencias ACTECO por actividad</div>
+        ${hbar(sectors.filter((s) => s.acteco_mappings)
+          .sort((a, c) => c.acteco_mappings - a.acteco_mappings).slice(0, 12)
+          .map((s) => ({ l: s.name.slice(0, 26), v: s.acteco_mappings, c: 'var(--sii)' })),
+          Math.min(W / 2 - 40, 420), 290, 195)}
+      </div>
+      <div class="card"><div class="ct">Acciones de supervisión · serie nacional</div>
+        ${supervision ? vbar(supervision.points.map((p) => ({ l: p.period, v: p.value, c: 'var(--cgr)' })),
+          Math.min(W / 2 - 40, 380), 210) : ''}
+        <div style="margin-top:8px;font-size:11px;color:var(--txm)">
+          La capacidad de supervisión se mantiene plana mientras el universo inscrito crece:
+          172 acciones en 2025 sobre 9.911 entidades. Es un hecho de contexto, no un juicio.</div>
+      </div>
+    </div>`;
+}
+
+function rSanciones() {
+  const s = app.data.sanctions;
+  const alacft = s.filter((x) => x.alacft).length;
+  const repeat = s.filter((x) => x.repeat_offender).length;
+  const pending = s.filter((x) => !x.resolved).length;
+  const unresolvedId = s.filter((x) => !x.entity_id).length;
+
+  const rows = s.map((x) => `<tr>
+    <td><strong>${esc(x.entity_name)}</strong><br>
+      ${x.rut ? `<code class="rut">${esc(x.rut)}</code>` : '<span class="nodata-cell">identidad pendiente</span>'}</td>
+    <td>${esc(x.authority)}</td>
+    <td>${esc(x.matter)} ${x.alacft ? '<span class="bd uaf">ALA/CFT</span>' : ''}</td>
+    <td class="num">${esc(x.date)}</td>
+    <td class="num">${x.amount ? esc(x.amount) : '<span class="nodata-cell">—</span>'}</td>
+    <td>${x.repeat_offender ? '<span class="rk cr">Reincidente</span>' : '<span class="rk lo">1ª vez</span>'}</td>
+    <td>${x.resolved ? '<span class="rk lo">Resuelto</span>' : '<span class="rk hi">Activo</span>'}</td>
+  </tr>`).join('');
+
+  const byAuthority = Object.entries(s.reduce((acc, x) =>
+    ({ ...acc, [x.authority]: (acc[x.authority] || 0) + 1 }), {}))
+    .map(([l, v], i) => ({ l, v, c: ['var(--cgr)', 'var(--uaf)', 'var(--sii)', 'var(--san)', 'var(--nd)'][i % 5] }));
+
+  return `
+    <div class="mh"><h1>Registro de Sanciones</h1>
+      <p>Eventos adversos regulatorios por supervisor prudencial · Con resolución de identidad</p></div>
+    ${guardrails('sanciones')}
+    <div class="krow">
+      ${kpi('Total de sanciones', fmt(s.length), 'En el período', 'san')}
+      ${kpi('Vinculadas ALA/CFT', fmt(alacft), `${Math.round((alacft / s.length) * 100)}% del total`, 'crit')}
+      ${kpi('Reincidentes', fmt(repeat), 'Con ≥2 eventos adversos', 'warn')}
+      ${kpi('Procesos activos', fmt(pending), 'Sin resolución definitiva', 'acc')}
+      ${kpi('Identidad pendiente', fmt(unresolvedId), 'Sin RUT en la fuente de origen', 'nodata')}
+    </div>
+    <div class="g21">
+      <div class="card"><div class="ct">Registro detallado</div>
+        <div class="scroll-x"><table class="dtbl">
+          <thead><tr><th>Entidad</th><th>Autoridad</th><th>Materia</th><th class="num">Fecha</th>
+            <th class="num">Monto</th><th>Reincidencia</th><th>Estado</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center">
+        <div class="ct" style="width:100%">Por autoridad sancionadora</div>
+        ${donut(byAuthority, 155, 155, 'sanciones')}
+      </div>
+    </div>`;
+}
+
+function rPerfil() {
+  return `
+    <div class="mh"><h1>Perfil por RUT</h1>
+      <p>Función secundaria · Para hipótesis sobre una entidad ya identificada</p></div>
+    <div class="gr">Para exploración sin hipótesis previa, use el <strong>Motor de Hallazgos</strong>
+      o la vista <strong>Territorial</strong>. Esta vista es complementaria.</div>
+    ${rAml360().split('</div>').slice(3).join('</div>')}`;
+}
+
+const RENDERERS = {
+  hallazgos: rHallazgos, casos: rCasos, territorio: rTerritorio, sectorial: rSectorial,
+  anomalias: rAnomalias, aml360: rAml360, red: rRed, evidencia: rEvidencia,
+  salud: rSalud, benchmark: rBenchmark, calibracion: rCalibracion,
+  fiscal: rFiscal, sanciones: rSanciones, perfil: rPerfil,
+};
+
+/* ── Navegación y arranque ──────────────────────────────────── */
+
+function renderNav() {
+  const mods = PERSONAS[app.persona].mods;
+  const openCases = app.data.cases.filter((c) => OPEN_STATES.includes(c.state)).length;
+  const crit = app.data.program_health.filter((m) => m.status === 'CRIT').length;
+  const groups = [];
+  mods.forEach((id) => {
+    const m = MODULES[id];
+    let g = groups.find((x) => x.name === m.g);
+    if (!g) groups.push((g = { name: m.g, items: [] }));
+    g.items.push(id);
+  });
+
+  $('nav').innerHTML = groups.map((g) => `<div class="nav-sec">
+    <div class="nav-lbl">${g.name}</div>
+    ${g.items.map((id) => {
+      const m = MODULES[id];
+      const bdg = id === 'casos' && openCases
+        ? `<span class="ni-bd">${openCases}</span>`
+        : id === 'salud' && crit ? `<span class="ni-bd warn">${crit}</span>` : '';
+      return `<button class="ni${id === app.module ? ' on' : ''}" data-mod="${id}">
+        <span class="ni-ic">${m.ic}</span><span>${m.t}</span>${bdg}</button>`;
+    }).join('')}
+  </div>`).join('');
+}
+
+function render() {
+  renderNav();
+  $('tb-title').textContent = MODULES[app.module].t;
+  const body = (RENDERERS[app.module] || rHallazgos)();
+  // El aviso de procedencia va tras el encabezado, antes de cualquier cifra.
+  const banner = provenanceBanner(app.module);
+  $('ct').innerHTML = banner
+    ? body.replace(/(<\/div>)/, `$1${banner}`)
+    : body;
+  $('ct').scrollTop = 0;
+}
+
+function go(moduleId) {
+  if (!MODULES[moduleId]) return;
+  app.module = moduleId;
+  render();
+}
+
+function bindEvents() {
+  $('sb').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-mod]');
+    if (btn) go(btn.dataset.mod);
+  });
+
+  $('ct').addEventListener('click', (e) => {
+    const layer = e.target.closest('[data-layer]');
+    if (layer) { app.mapLayer = layer.dataset.layer; render(); return; }
+    const region = e.target.closest('[data-region]');
+    if (region) { app.region = region.dataset.region; render(); }
+  });
+
+  $('ct').addEventListener('change', (e) => {
+    if (e.target.id === 'entity-select') {
+      app.entityFilter = e.target.value;
+      render();
+    }
+  });
+
+  $('persona').addEventListener('change', (e) => {
+    app.persona = e.target.value;
+    app.module = PERSONAS[app.persona].home;
+    render();
+  });
+
+  $('theme').addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = root.getAttribute('data-theme') !== 'light';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    render(); // los gráficos SVG resuelven color en el momento del dibujo
+  });
+}
+
+async function boot() {
+  $('persona').innerHTML = Object.entries(PERSONAS)
+    .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+
+  try {
+    app.data = CONTRACT_DATA;
+  } catch (err) {
+    $('ct').innerHTML = `<div class="banner err">
+      <strong>No se pudo cargar el contrato.</strong>
+      La aplicación consume <code class="mono">app/data/cockpit_contract_v1.json</code> por fetch,
+      que el navegador bloquea al abrir el archivo con <code class="mono">file://</code>.
+      Levante un servidor estático desde la raíz del repositorio:<br><br>
+      <code class="mono">python3 -m http.server 8000</code> y abra
+      <code class="mono">http://localhost:8000/app/</code><br><br>
+      Detalle: ${esc(err.message)}</div>`;
+    return;
+  }
+
+  $('brand-ver').textContent = `Corte ${app.data.period_id} · contrato v${app.data.contract_version}`;
+  bindEvents();
+  render();
+}
+
+boot();
+
+</script>

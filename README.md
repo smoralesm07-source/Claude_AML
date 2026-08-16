@@ -21,8 +21,18 @@ de radares OSINT con enfoque AML/LA-FT.
 
 ## Puesta en marcha
 
+**Para verla sin instalar nada:** `app/standalone.html` es la app completa en un solo archivo,
+con CSS, JavaScript y contrato incrustados. Se abre con doble clic, sin servidor.
+
 ```bash
 python3 tools/build_cockpit_data.py --validate   # lee los interop de los radares hermanos
+python3 tools/build_standalone.py                # regenera app/standalone.html
+```
+
+Para desarrollar sobre `app/` hace falta un servidor, porque la app consume el contrato por
+`fetch` y el navegador lo bloquea bajo `file://`:
+
+```bash
 python3 -m http.server 8000                      # desde la raíz del repositorio
 # abrir http://localhost:8000/app/
 ```
