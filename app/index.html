@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IFL Cockpit · Intelligence Fusion Layer</title>
+  <meta name="description" content="Cockpit analítico del ecosistema de radares OSINT con enfoque AML/LA-FT.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230c1525'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%233b82f6' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23ef4444'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/cockpit.css">
+</head>
+<body>
+  <aside id="sb">
+    <div class="brand">
+      <div class="brand-tag">IFL · v1.0</div>
+      <div class="brand-name">Intelligence<br>Fusion Layer</div>
+      <div class="brand-ver" id="brand-ver">Cargando contrato…</div>
+    </div>
+
+    <div class="persona-box">
+      <div class="persona-lbl">Perfil de uso</div>
+      <select class="persona-sel" id="persona" aria-label="Perfil de uso"></select>
+    </div>
+
+    <nav id="nav" aria-label="Módulos"></nav>
+
+    <div class="sb-foot">
+      <button class="fbtn" id="theme" style="width:100%;display:flex;justify-content:center;gap:6px">
+        ☀ Cambiar tema
+      </button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header id="tb">
+      <span id="tb-title">Motor de Hallazgos</span>
+      <span id="tb-sep">|</span>
+      <div class="fbr">
+        <select class="fsel" aria-label="Período"><option>2024</option><option>2023</option><option>2022–2024</option></select>
+        <select class="fsel" aria-label="Nivel"><option>Todos los niveles</option><option>Crítico ≥80</option><option>Alto 60–79</option><option>Medio 40–59</option></select>
+      </div>
+      <div class="tb-acts">
+        <button class="btn">↓ Exportar</button>
+        <button class="btn btn-p">↻ Actualizar</button>
+      </div>
+    </header>
+    <div id="ct"></div>
+  </main>
+
+  <script type="module" src="assets/cockpit.js"></script>
+</body>
+</html>

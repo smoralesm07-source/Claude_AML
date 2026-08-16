@@ -1,0 +1,241 @@
+{
+  "_comment": "SOBRECAPA DEMOSTRATIVA. Contenido ilustrativo para ejercitar todos los módulos del cockpit mientras la capa de fusión no materializa cases/benchmark/rules. Las entidades, RUT y cifras son SINTÉTICOS y no representan personas ni organizaciones reales. Las secciones 'sources' y 'program_health' NO se toman de aquí: se derivan de los interop reales de los radares.",
+  "_synthetic": true,
+  "_as_of": "2024-12-31",
+  "_period_id": "2024",
+
+  "guardrails": [
+    {"guardrail_id": "GR_SEMANTICA", "scope": ["hallazgos", "casos"], "title": "Distinción semántica",
+     "text": "Hecho ≠ Anomalía ≠ Señal AML ≠ Hipótesis. Las tarjetas muestran convergencia de señales independientes, no acusaciones. Toda evidencia se traza a su fuente y regla. Una anomalía de fiscalización no propaga riesgo AML."},
+    {"guardrail_id": "GR_SCORE", "scope": ["hallazgos", "casos", "aml360", "perfil", "territorio"], "title": "Naturaleza del score",
+     "text": "ifl_priority_score es orden de revisión (INVESTIGATION_PRIORITY), no medida de riesgo de la entidad ni probabilidad de ilicitud. Los siete radares declaran common_risk_score=false; este score existe sólo en el cockpit y expone su contribución desagregada."},
+    {"guardrail_id": "GR_ANOMALIA", "scope": ["anomalias"], "title": "Anomalía ≠ señal AML",
+     "text": "Una anomalía contextual requiere corroboración antes de elevarse a señal gobernada. No se propaga riesgo entre contrapartes. Toda anomalía expone su regla y su evidencia."},
+    {"guardrail_id": "GR_RED", "scope": ["red"], "title": "Relación ≠ herencia de riesgo",
+     "text": "Relación, proximidad o actividad económica compartida NO crean ni propagan riesgo AML. La red muestra vínculos observados; el borde punteado indica vínculo candidato no confirmado. El analista determina la relevancia investigativa."},
+    {"guardrail_id": "GR_ACTECO", "scope": ["sectorial", "fiscal", "benchmark"], "title": "ACTECO ≠ sujeto obligado",
+     "text": "El código ACTECO del SII no acredita condición jurídica de sujeto obligado UAF. MATCH_FUERTE identifica candidatos a validación; la condición sólo la confirma la fuente regulatoria competente."},
+    {"guardrail_id": "GR_EVIDENCIA", "scope": ["evidencia", "salud"], "title": "missing ≠ zero",
+     "text": "La ausencia de dato en una fuente no equivale a ausencia del hecho. Se serializa NO_DATA y se renderiza '—'. Cada señal está trazada a su fuente, regla y período."},
+    {"guardrail_id": "GR_SANCION", "scope": ["sanciones"], "title": "Sanción prudencial ≠ LA/FT",
+     "text": "Una sanción puede elevar la plausibilidad de una hipótesis; no la confirma. Las identidades sin resolver se muestran pendientes hasta confirmación con la fuente regulatoria."},
+    {"guardrail_id": "GR_CALIBRACION", "scope": ["calibracion"], "title": "No corroborado ≠ falso",
+     "text": "Una señal no corroborada no era falsa: era insuficiente. Las métricas de calibración evalúan reglas y fuentes, nunca personas. Una regla se omite con menos de 20 disposiciones."},
+    {"guardrail_id": "GR_BENCHMARK", "scope": ["benchmark"], "title": "Intensidad ≠ prevalencia",
+     "text": "Una intensidad alta frente al denominador público UAF puede reflejar mejor cobertura de fuentes públicas en ese sector, no más lavado. Con cobertura del universo bajo 50% la lectura es NO_INTERPRETABLE."},
+    {"guardrail_id": "GR_TERRITORIO", "scope": ["territorio"], "title": "Territorio no atribuye",
+     "text": "Criminalidad general no equivale a riesgo LA/FT: sólo entran categorías con vínculo suficientemente preciso al art. 27 de la Ley 19.913. Un territorio expuesto no transfiere riesgo a las entidades domiciliadas en él."}
+  ],
+
+  "cases": [
+    {"case_id": "CASO-2024-0001", "entity_id": "ENT-RUT-761234567", "name": "Corporación Agro-Sur Limitada", "rut": "76.123.456-7",
+     "entity_type": "Persona Jurídica", "territory_id": "CL-REG-13", "region_label": "Metropolitana",
+     "score": {"score_name": "ifl_priority_score", "score_value": 94, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "ESCALADO", "assignee_role": "INVESTIGADOR", "opened_at": "2024-10-02", "sla_due_at": "2024-10-07", "disposed_at": "2024-10-06", "disposition_reason": null,
+     "signals": [
+       {"source_id": "san", "rule_id": "SAN.R03_REINCIDENCIA_ALACFT", "text": "3 sanciones ALA/CFT (SVS, CMF) — reincidencia confirmada", "weight": 30, "period_id": "2022-2024", "evidence_refs": ["san:res/2023-04-CMF#p3", "san:res/2022-06-SVS#p1"]},
+       {"source_id": "pre", "rule_id": "PRE.R11_CONCENTRACION_ORGANISMO", "text": "Pagos del Estado +782% en 24 meses; concentración 94% en un organismo", "weight": 28, "period_id": "2022-2024", "evidence_refs": ["pre:tx/2024-Q3#agg-7712"]},
+       {"source_id": "cgr", "rule_id": "CGR.R07_PROVEEDOR_OBSERVADO", "text": "Hallazgo CGR: proveedor recurrente con observaciones contables", "weight": 18, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-1842#h4"]},
+       {"source_id": "uaf", "rule_id": "UAF.R02_MATCH_FUERTE_SIN_INSCRIPCION", "text": "MATCH_FUERTE: actividad SII coincide con sector UAF sin inscripción verificada", "weight": 14, "period_id": "2024", "evidence_refs": ["ctx:crosswalk/UAF-SEC-07#acteco-46201"]},
+       {"source_id": "del", "rule_id": "DEL.R01_CONTEXTO_ART27", "text": "Comuna de operación: +67% delitos vinculados a Ley 19.913", "weight": 10, "period_id": "2023", "evidence_refs": ["del:cead/2023#CL-COM-13101"]}
+     ],
+     "hypothesis": "Posible uso de persona jurídica como vehículo de captación y canalización de fondos hacia el sector público. La concentración extrema de pagos en un organismo, junto a sanciones ALA/CFT previas y ausencia de inscripción UAF, configura un perfil de revisión prioritaria.",
+     "next_steps": ["Verificar inscripción UAF con la fuente regulatoria", "Revisar cadena de beneficiario final (DDC)", "Cruzar con licitaciones en ChileCompra"]},
+
+    {"case_id": "CASO-2024-0002", "entity_id": "ENT-RUT-772345678", "name": "Inmobiliaria del Pacífico SpA", "rut": "77.234.567-8",
+     "entity_type": "Persona Jurídica", "territory_id": "CL-REG-05", "region_label": "Valparaíso",
+     "score": {"score_name": "ifl_priority_score", "score_value": 87, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "EN_REVISION", "assignee_role": "INVESTIGADOR", "opened_at": "2024-11-14", "sla_due_at": "2024-11-19", "disposed_at": null, "disposition_reason": null,
+     "signals": [
+       {"source_id": "pre", "rule_id": "PRE.R04_FRACCIONAMIENTO", "text": "Fraccionamiento: 14 pagos similares en 6 días bajo el umbral de orden de compra", "weight": 32, "period_id": "2024", "evidence_refs": ["pre:tx/2024-08#frag-2291"]},
+       {"source_id": "uaf", "rule_id": "UAF.R05_SIN_ROE_PERIODO", "text": "CANDIDATO: actividad inmobiliaria sin reporte ROE en el período anual", "weight": 25, "period_id": "2023", "evidence_refs": ["uaf:roe/2023#sector-07"]},
+       {"source_id": "sii", "rule_id": "SII.R09_DOTACION_VS_TRAMO", "text": "2 trabajadores dependientes con tramo de ventas superior a UF 100.000", "weight": 20, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-772345678"]},
+       {"source_id": "cgr", "rule_id": "CGR.R02_ORGANISMO_OBSERVADO", "text": "Organismo pagador con 2 observaciones CGR en el período", "weight": 15, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-0977#h2"]},
+       {"source_id": "san", "rule_id": "SAN.R01_SANCION_ACTIVA", "text": "Sanción UAF por incumplimiento DDC (2023)", "weight": 8, "period_id": "2023", "evidence_refs": ["san:res/2023-08-UAF#p2"]}
+     ],
+     "hypothesis": "El patrón de fraccionamiento en pagos públicos, junto a baja dotación y ausencia de ROE, sugiere posible estructuración para eludir umbrales de reporte. Requiere verificar si los pagos son económicamente idénticos.",
+     "next_steps": ["Analizar si los pagos son económicamente idénticos", "Verificar órdenes de compra asociadas", "Revisar relación con funcionarios del organismo"]},
+
+    {"case_id": "CASO-2024-0003", "entity_id": "ENT-RUT-783456789", "name": "Consultora Delta Asesores Ltda.", "rut": "78.345.678-9",
+     "entity_type": "Persona Jurídica", "territory_id": "CL-REG-13", "region_label": "Metropolitana",
+     "score": {"score_name": "ifl_priority_score", "score_value": 81, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "CORROBORADO", "assignee_role": "INVESTIGADOR", "opened_at": "2024-11-28", "sla_due_at": "2024-12-03", "disposed_at": null, "disposition_reason": null,
+     "signals": [
+       {"source_id": "sii", "rule_id": "SII.R03_CRECIMIENTO_ATIPICO", "text": "Constitución 2021. Ventas 2023: +8.100% respecto del año anterior", "weight": 28, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-783456789"]},
+       {"source_id": "osl", "rule_id": "OSL.R06_REPRESENTANTE_COMPARTIDO", "text": "OSFL relacionada: mismos representantes con antecedentes registrales adversos", "weight": 24, "period_id": "2023", "evidence_refs": ["osl:reg/2023#osfl-4412"]},
+       {"source_id": "pre", "rule_id": "PRE.R08_PRIMER_PAGO_ATIPICO", "text": "Primer pago estatal 2022 por $890M (top 3% de proveedores nuevos)", "weight": 22, "period_id": "2022", "evidence_refs": ["pre:tx/2022-11#first-8841"]},
+       {"source_id": "cgr", "rule_id": "CGR.R12_MULTIREGION", "text": "Presencia en 3 regiones simultáneamente en 18 meses", "weight": 14, "period_id": "2022-2023", "evidence_refs": ["cgr:inf/2023-1120#h7"]},
+       {"source_id": "del", "rule_id": "DEL.R01_CONTEXTO_ART27", "text": "Comuna de domicilio con densidad art. 27 sobre el percentil 90", "weight": 12, "period_id": "2023", "evidence_refs": ["del:cead/2023#CL-COM-13114"]}
+     ],
+     "hypothesis": "Sociedad de constitución reciente con crecimiento exponencial y vínculos societarios con una OSFL. Patrón compatible con persona jurídica instrumental; requiere mapeo completo de la red antes de escalar.",
+     "next_steps": ["Mapear la red completa de personas relacionadas", "Verificar si la OSFL registra inicio de actividades ante SII", "Revisar beneficiario final en CMF"]},
+
+    {"case_id": "CASO-2024-0004", "entity_id": "ENT-RUT-794567890", "name": "Transportes del Norte SA", "rut": "79.456.789-0",
+     "entity_type": "Persona Jurídica", "territory_id": "CL-REG-02", "region_label": "Antofagasta",
+     "score": {"score_name": "ifl_priority_score", "score_value": 74, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "DETECTADO", "assignee_role": null, "opened_at": "2024-12-09", "sla_due_at": "2024-12-24", "disposed_at": null, "disposition_reason": null,
+     "signals": [
+       {"source_id": "uaf", "rule_id": "UAF.R07_SO_SIN_ROS", "text": "Sujeto obligado inscrito sin ROS desde 2021 y sin ROE en el último período", "weight": 26, "period_id": "2021-2024", "evidence_refs": ["uaf:nomina/2024#so-1183"]},
+       {"source_id": "san", "rule_id": "SAN.R04_PROCESO_ACTIVO", "text": "Proceso regulatorio activo ante CMF en materia ALA/CFT (2024)", "weight": 24, "period_id": "2024", "evidence_refs": ["san:res/2024-03-CMF#p1"]},
+       {"source_id": "sii", "rule_id": "SII.R14_DOMICILIO_DIVERGENTE", "text": "Domicilio tributario distinto del operacional; múltiples códigos ACTECO", "weight": 20, "period_id": "2024", "evidence_refs": ["sii:dir/2024#rut-794567890"]},
+       {"source_id": "pre", "rule_id": "PRE.R15_MIGRACION_ORGANISMOS", "text": "Migración entre 4 organismos distintos en 3 años", "weight": 18, "period_id": "2021-2024", "evidence_refs": ["pre:tx/2024#mig-3310"]},
+       {"source_id": "del", "rule_id": "DEL.R01_CONTEXTO_ART27", "text": "Antofagasta: +43% en delitos de tráfico en período solapado", "weight": 12, "period_id": "2023", "evidence_refs": ["del:cead/2023#CL-REG-02"]}
+     ],
+     "hypothesis": "Sujeto obligado que no cumple obligaciones de reportabilidad mientras mantiene relaciones con múltiples organismos. La migración entre organismos admite explicación comercial legítima y debe descartarse antes de escalar.",
+     "next_steps": ["Confirmar estado del proceso ante CMF", "Verificar si el incumplimiento ROS es persistente", "Revisar historial de licitaciones por organismo"]},
+
+    {"case_id": "CASO-2024-0005", "entity_id": "ENT-RUT-765678901", "name": "Minera Atacama Holdings SpA", "rut": "76.567.890-1",
+     "entity_type": "Persona Jurídica", "territory_id": "CL-REG-03", "region_label": "Atacama",
+     "score": {"score_name": "ifl_priority_score", "score_value": 69, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "DETECTADO", "assignee_role": null, "opened_at": "2024-12-18", "sla_due_at": "2025-01-02", "disposed_at": null, "disposition_reason": null,
+     "signals": [
+       {"source_id": "pre", "rule_id": "PRE.R09_CRECIMIENTO_MULTIINSTITUCION", "text": "Proveedor que crece simultáneamente en 5 instituciones distintas", "weight": 30, "period_id": "2023-2024", "evidence_refs": ["pre:tx/2024#multi-5521"]},
+       {"source_id": "cgr", "rule_id": "CGR.R05_TRATO_DIRECTO", "text": "Auditorías CGR en 2 organismos con observaciones por trato directo", "weight": 27, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-2044#h1"]},
+       {"source_id": "uaf", "rule_id": "UAF.R02_MATCH_FUERTE_SIN_INSCRIPCION", "text": "MATCH_FUERTE: minería coincide con sector UAF sin inscripción verificada", "weight": 25, "period_id": "2024", "evidence_refs": ["ctx:crosswalk/UAF-SEC-21#acteco-07100"]},
+       {"source_id": "sii", "rule_id": "SII.R09_DOTACION_VS_TRAMO", "text": "Ventas 2023/2022 = 12,4x sin variación en la dotación de trabajadores", "weight": 18, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-765678901"]}
+     ],
+     "hypothesis": "Crecimiento exponencial simultáneo en múltiples instituciones con hallazgos CGR en los contratantes. La ausencia de crecimiento en dotación sugiere que el aumento de facturación no responde a mayor capacidad productiva propia.",
+     "next_steps": ["Correlacionar organismos con funcionarios presentes en hallazgos CGR", "Verificar si los contratos fueron licitación o trato directo"]},
+
+    {"case_id": "CASO-2024-0006", "entity_id": "ENT-RUT-770123456", "name": "Servicios Australes SpA", "rut": "77.012.345-6",
+     "entity_type": "Persona Jurídica", "territory_id": "CL-REG-10", "region_label": "Los Lagos",
+     "score": {"score_name": "ifl_priority_score", "score_value": 58, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "DESCARTADO", "assignee_role": "INVESTIGADOR", "opened_at": "2024-09-11", "sla_due_at": "2024-10-11", "disposed_at": "2024-09-30", "disposition_reason": "EXPLICACION_LEGITIMA",
+     "signals": [
+       {"source_id": "pre", "rule_id": "PRE.R04_FRACCIONAMIENTO", "text": "9 pagos consecutivos bajo el umbral de orden de compra", "weight": 26, "period_id": "2024", "evidence_refs": ["pre:tx/2024-06#frag-1104"]},
+       {"source_id": "sii", "rule_id": "SII.R03_CRECIMIENTO_ATIPICO", "text": "Ventas 2023 con variación de +240%", "weight": 18, "period_id": "2023", "evidence_refs": ["sii:nomina/2023#rut-770123456"]}
+     ],
+     "hypothesis": "El fraccionamiento correspondía a hitos contractuales de un convenio marco documentado; el crecimiento se explica por la incorporación de una nueva línea de servicio con respaldo registral.",
+     "next_steps": []},
+
+    {"case_id": "CASO-2024-0007", "entity_id": null, "name": "Comercial Andes y Cía. (identidad no resuelta)", "rut": null,
+     "entity_type": "Persona Jurídica", "territory_id": null, "region_label": "—",
+     "score": {"score_name": "ifl_priority_score", "score_value": 52, "score_version": "1.0", "score_scope": "INVESTIGATION_PRIORITY"},
+     "state": "DESCARTADO", "assignee_role": "STEWARD", "opened_at": "2024-08-20", "sla_due_at": "2024-09-19", "disposed_at": "2024-09-02", "disposition_reason": "ERROR_IDENTIDAD",
+     "signals": [
+       {"source_id": "san", "rule_id": "SAN.R09_MATCH_POR_NOMBRE", "text": "Coincidencia por razón social sin RUT en la resolución de origen", "weight": 22, "period_id": "2024", "evidence_refs": ["san:res/2024-05-SP#p4"]},
+       {"source_id": "cgr", "rule_id": "CGR.R07_PROVEEDOR_OBSERVADO", "text": "Proveedor homónimo mencionado en informe de auditoría", "weight": 16, "period_id": "2023", "evidence_refs": ["cgr:inf/2023-1533#h9"]}
+     ],
+     "hypothesis": "La convergencia se apoyaba en coincidencia de nombre entre dos entidades distintas. Sin RUT en la fuente de origen, la identidad permanece ENTITY_ID_NULL_CANDIDATE_ONLY y el caso no puede sostenerse.",
+     "next_steps": []}
+  ],
+
+  "anomalies": [
+    {"anomaly_id": "ANM-01", "title": "Concentración anormal de pagos en noviembre–diciembre", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["pre"], "rule_id": "PRE.R21_ESTACIONALIDAD", "affected_count": 14, "corroborated": false,
+     "description": "14 organismos concentran más del 68% de sus pagos anuales en noviembre–diciembre, con montos superiores al promedio mensual en factor 8,3x. Patrón de ejecución presupuestaria de fin de año con dispersión atípica hacia proveedores de constitución reciente.",
+     "evidence": "Presupuesto Abierto 2024 · Umbral: razón nov–dic sobre promedio mensual > 5x"},
+    {"anomaly_id": "ANM-02", "title": "Grupos de proveedores con comportamiento temporal sincronizado", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["pre", "sii"], "rule_id": "PRE.R23_SINCRONIA", "affected_count": 17, "corroborated": false,
+     "description": "3 grupos de 4 a 6 proveedores inician y terminan contratos en organismos distintos dentro de ventanas de 30 días, con montos similares y tipos de gasto equivalentes.",
+     "evidence": "Presupuesto Abierto + ACTECO SII · Correlación temporal de series de pago"},
+    {"anomaly_id": "ANM-03", "title": "OSFL sin registro SII con actividad económica activa", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["osl", "sii"], "rule_id": "OSL.R11_SIN_INICIO_ACTIVIDADES", "affected_count": 38, "corroborated": true,
+     "description": "38 organizaciones sin fines de lucro constituidas entre 2020 y 2023 no registran inicio de actividades ante SII pese a tener RUT asignado y movimiento en el sistema. 12 aparecen vinculadas a personas jurídicas con pagos estatales.",
+     "evidence": "Radar OSFL + Radar SII · Cruce por RUT exacto"},
+    {"anomaly_id": "ANM-04", "title": "SO con término de giro SII no reflejado en la nómina UAF", "kind": "ALERTA_FISCALIZACION", "source_ids": ["uaf", "sii"], "rule_id": "UAF.R13_TERMINO_GIRO", "affected_count": 8, "corroborated": true,
+     "description": "23 entidades clasificadas como sujetos obligados en el corte UAF registran término de giro ante SII en el período. 8 muestran término SII con actividad UAF residual aparente sin baja del registro.",
+     "evidence": "Radar SII (término de giro) + corte UAF · Cruce RUT exacto"},
+    {"anomaly_id": "ANM-05", "title": "Movimiento ROE por comuna sin masa societaria correspondiente", "kind": "SENAL_AML", "source_ids": ["uaf", "sii"], "rule_id": "UAF.R17_ROE_ZSCORE", "affected_count": 6, "corroborated": true,
+     "description": "6 comunas registran volumen ROE que supera en más de 3σ lo esperable según la masa de personas jurídicas domiciliadas y su rango de ventas.",
+     "evidence": "Serie estadística ROE UAF + entity_search SII · Z-score por comuna"},
+    {"anomaly_id": "ANM-06", "title": "Explosión de constitución societaria en comunas con alta densidad art. 27", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["sii", "del"], "rule_id": "SII.R22_CONSTITUCION_TERRITORIAL", "affected_count": 6, "corroborated": false,
+     "description": "4 comunas de la RM y 2 de Valparaíso registran +150% en constitución de SpA y SRL entre 2021 y 2023, coincidiendo con el período de mayor densidad de delitos vinculados a la Ley 19.913.",
+     "evidence": "Radar SII (fecha de inicio de actividades) + Radar Delictual · Umbral: +150% sobre base 2018–2020"},
+    {"anomaly_id": "ANM-07", "title": "Proveedores con historial adverso que ingresan a nuevos organismos", "kind": "ANOMALIA_CONTEXTUAL", "source_ids": ["pre", "san", "cgr"], "rule_id": "PRE.R27_HISTORIAL_ADVERSO", "affected_count": 9, "corroborated": false,
+     "description": "9 proveedores con al menos una sanción prudencial o presencia en hallazgos CGR en organismos anteriores aparecen por primera vez en nuevos organismos contratantes en 2024.",
+     "evidence": "Presupuesto Abierto + Radar Sanciones + Radar CGR · Cruce RUT exacto"}
+  ],
+
+  "territory": [
+    {"territory_id": "CL-REG-15", "code": "XV",   "name": "Arica y Parinacota", "exposure": 62, "open_cases": 8,   "so_count": 23,   "crime_art27": 145,  "public_spend_mm": 48200,   "osfl_count": 12,  "cgr_audits": 3},
+    {"territory_id": "CL-REG-01", "code": "I",    "name": "Tarapacá",           "exposure": 71, "open_cases": 14,  "so_count": 41,   "crime_art27": 287,  "public_spend_mm": 125000,  "osfl_count": 18,  "cgr_audits": 5},
+    {"territory_id": "CL-REG-02", "code": "II",   "name": "Antofagasta",        "exposure": 58, "open_cases": 19,  "so_count": 89,   "crime_art27": 412,  "public_spend_mm": 289000,  "osfl_count": 34,  "cgr_audits": 9},
+    {"territory_id": "CL-REG-03", "code": "III",  "name": "Atacama",            "exposure": 44, "open_cases": 7,   "so_count": 31,   "crime_art27": 198,  "public_spend_mm": 87000,   "osfl_count": 9,   "cgr_audits": 4},
+    {"territory_id": "CL-REG-04", "code": "IV",   "name": "Coquimbo",           "exposure": 51, "open_cases": 12,  "so_count": 67,   "crime_art27": 334,  "public_spend_mm": 156000,  "osfl_count": 21,  "cgr_audits": 6},
+    {"territory_id": "CL-REG-05", "code": "V",    "name": "Valparaíso",         "exposure": 68, "open_cases": 31,  "so_count": 178,  "crime_art27": 891,  "public_spend_mm": 478000,  "osfl_count": 87,  "cgr_audits": 18},
+    {"territory_id": "CL-REG-13", "code": "RM",   "name": "Metropolitana",      "exposure": 82, "open_cases": 127, "so_count": 1243, "crime_art27": 3456, "public_spend_mm": 4820000, "osfl_count": 432, "cgr_audits": 67},
+    {"territory_id": "CL-REG-06", "code": "VI",   "name": "O'Higgins",          "exposure": 41, "open_cases": 9,   "so_count": 54,   "crime_art27": 267,  "public_spend_mm": 134000,  "osfl_count": 27,  "cgr_audits": 7},
+    {"territory_id": "CL-REG-07", "code": "VII",  "name": "Maule",              "exposure": 48, "open_cases": 11,  "so_count": 62,   "crime_art27": 312,  "public_spend_mm": 145000,  "osfl_count": 31,  "cgr_audits": 8},
+    {"territory_id": "CL-REG-16", "code": "XVI",  "name": "Ñuble",              "exposure": 39, "open_cases": 6,   "so_count": 28,   "crime_art27": 178,  "public_spend_mm": 78000,   "osfl_count": 14,  "cgr_audits": 3},
+    {"territory_id": "CL-REG-08", "code": "VIII", "name": "Biobío",             "exposure": 61, "open_cases": 24,  "so_count": 134,  "crime_art27": 678,  "public_spend_mm": 345000,  "osfl_count": 73,  "cgr_audits": 14},
+    {"territory_id": "CL-REG-09", "code": "IX",   "name": "La Araucanía",       "exposure": 73, "open_cases": 28,  "so_count": 87,   "crime_art27": 534,  "public_spend_mm": 212000,  "osfl_count": 56,  "cgr_audits": 12},
+    {"territory_id": "CL-REG-14", "code": "XIV",  "name": "Los Ríos",           "exposure": 45, "open_cases": 8,   "so_count": 39,   "crime_art27": 234,  "public_spend_mm": 98000,   "osfl_count": 22,  "cgr_audits": 5},
+    {"territory_id": "CL-REG-10", "code": "X",    "name": "Los Lagos",          "exposure": 55, "open_cases": 17,  "so_count": 91,   "crime_art27": 389,  "public_spend_mm": 198000,  "osfl_count": 43,  "cgr_audits": 9},
+    {"territory_id": "CL-REG-11", "code": "XI",   "name": "Aisén",              "exposure": 32, "open_cases": 3,   "so_count": 14,   "crime_art27": 87,   "public_spend_mm": 45000,   "osfl_count": 7,   "cgr_audits": 2},
+    {"territory_id": "CL-REG-12", "code": "XII",  "name": "Magallanes",         "exposure": 37, "open_cases": 5,   "so_count": 21,   "crime_art27": 98,   "public_spend_mm": 67000,   "osfl_count": 10,  "cgr_audits": 3}
+  ],
+
+  "sectors": [
+    {"sector_id": "UAF-SEC-01", "name": "Bancos e instituciones financieras",   "so_count": 45,  "ros_reporters": 44,  "roe_reporters": 43,  "sanctioned": 3,  "strong_match_unregistered": 2},
+    {"sector_id": "UAF-SEC-02", "name": "Corredoras de valores",               "so_count": 87,  "ros_reporters": 71,  "roe_reporters": 65,  "sanctioned": 8,  "strong_match_unregistered": 11},
+    {"sector_id": "UAF-SEC-03", "name": "Compañías de seguros",                "so_count": 34,  "ros_reporters": 34,  "roe_reporters": 30,  "sanctioned": 2,  "strong_match_unregistered": 1},
+    {"sector_id": "UAF-SEC-04", "name": "Casas de cambio",                     "so_count": 123, "ros_reporters": 89,  "roe_reporters": 102, "sanctioned": 14, "strong_match_unregistered": 37},
+    {"sector_id": "UAF-SEC-05", "name": "Cooperativas de ahorro y crédito",    "so_count": 56,  "ros_reporters": 48,  "roe_reporters": 41,  "sanctioned": 5,  "strong_match_unregistered": 6},
+    {"sector_id": "UAF-SEC-06", "name": "Empresas de factoring",               "so_count": 78,  "ros_reporters": 52,  "roe_reporters": 44,  "sanctioned": 9,  "strong_match_unregistered": 24},
+    {"sector_id": "UAF-SEC-07", "name": "Inmobiliarias y constructoras",       "so_count": 312, "ros_reporters": 134, "roe_reporters": 98,  "sanctioned": 23, "strong_match_unregistered": 168},
+    {"sector_id": "UAF-SEC-08", "name": "Notarios y conservadores",            "so_count": 445, "ros_reporters": 312, "roe_reporters": 178, "sanctioned": 31, "strong_match_unregistered": 12},
+    {"sector_id": "UAF-SEC-09", "name": "Administradoras de fondos",           "so_count": 67,  "ros_reporters": 61,  "roe_reporters": 58,  "sanctioned": 4,  "strong_match_unregistered": 3},
+    {"sector_id": "UAF-SEC-10", "name": "Casinos y juegos de azar",            "so_count": 23,  "ros_reporters": 22,  "roe_reporters": 22,  "sanctioned": 1,  "strong_match_unregistered": 0}
+  ],
+
+  "benchmark": [
+    {"sector_id": "UAF-SEC-01", "ifl_signals": 31,  "uaf_ros_published": 1840, "uaf_roe_published": 4210, "coverage_ratio": 97.8, "signal_intensity": 0.81, "reading": "ALINEADO"},
+    {"sector_id": "UAF-SEC-02", "ifl_signals": 44,  "uaf_ros_published": 612,  "uaf_roe_published": 1180, "coverage_ratio": 91.2, "signal_intensity": 1.34, "reading": "ALINEADO"},
+    {"sector_id": "UAF-SEC-03", "ifl_signals": 12,  "uaf_ros_published": 380,  "uaf_roe_published": 640,  "coverage_ratio": 94.1, "signal_intensity": 0.72, "reading": "ALINEADO"},
+    {"sector_id": "UAF-SEC-04", "ifl_signals": 128, "uaf_ros_published": 890,  "uaf_roe_published": 2340, "coverage_ratio": 76.4, "signal_intensity": 2.11, "reading": "SOBRE_REPRESENTADO"},
+    {"sector_id": "UAF-SEC-05", "ifl_signals": 21,  "uaf_ros_published": 310,  "uaf_roe_published": 520,  "coverage_ratio": 88.0, "signal_intensity": 0.94, "reading": "ALINEADO"},
+    {"sector_id": "UAF-SEC-06", "ifl_signals": 96,  "uaf_ros_published": 240,  "uaf_roe_published": 410,  "coverage_ratio": 69.2, "signal_intensity": 1.88, "reading": "SOBRE_REPRESENTADO"},
+    {"sector_id": "UAF-SEC-07", "ifl_signals": 214, "uaf_ros_published": 520,  "uaf_roe_published": 780,  "coverage_ratio": 42.6, "signal_intensity": null, "reading": "NO_INTERPRETABLE"},
+    {"sector_id": "UAF-SEC-08", "ifl_signals": 58,  "uaf_ros_published": 1420, "uaf_roe_published": 2980, "coverage_ratio": 95.5, "signal_intensity": 0.38, "reading": "SUB_REPRESENTADO"},
+    {"sector_id": "UAF-SEC-09", "ifl_signals": 9,   "uaf_ros_published": 410,  "uaf_roe_published": 890,  "coverage_ratio": 92.7, "signal_intensity": 0.44, "reading": "SUB_REPRESENTADO"},
+    {"sector_id": "UAF-SEC-10", "ifl_signals": 4,   "uaf_ros_published": 210,  "uaf_roe_published": 380,  "coverage_ratio": 100.0, "signal_intensity": 0.29, "reading": "SUB_REPRESENTADO"}
+  ],
+
+  "rules": [
+    {"rule_id": "PRE.R04_FRACCIONAMIENTO",            "source_id": "pre", "label": "Fraccionamiento bajo umbral de OC",        "dispositions": 84, "non_corroboration_rate": 61.9, "escalation_contribution": 22.4, "status": "WARN", "reason_mix": {"EXPLICACION_LEGITIMA": 38, "EVIDENCIA_INSUFICIENTE": 12, "DUPLICADO": 2}},
+    {"rule_id": "SII.R03_CRECIMIENTO_ATIPICO",        "source_id": "sii", "label": "Crecimiento de ventas atípico",            "dispositions": 142, "non_corroboration_rate": 71.8, "escalation_contribution": 18.1, "status": "CRIT", "reason_mix": {"EXPLICACION_LEGITIMA": 79, "DATO_DESACTUALIZADO": 18, "EVIDENCIA_INSUFICIENTE": 5}},
+    {"rule_id": "SAN.R09_MATCH_POR_NOMBRE",           "source_id": "san", "label": "Coincidencia por razón social sin RUT",    "dispositions": 47, "non_corroboration_rate": 89.4, "escalation_contribution": 2.1, "status": "CRIT", "reason_mix": {"ERROR_IDENTIDAD": 39, "DUPLICADO": 3}},
+    {"rule_id": "UAF.R02_MATCH_FUERTE_SIN_INSCRIPCION", "source_id": "uaf", "label": "MATCH_FUERTE sin inscripción verificada", "dispositions": 63, "non_corroboration_rate": 33.3, "escalation_contribution": 41.7, "status": "OK", "reason_mix": {"FUERA_DE_PERIMETRO": 14, "EVIDENCIA_INSUFICIENTE": 7}},
+    {"rule_id": "SAN.R03_REINCIDENCIA_ALACFT",        "source_id": "san", "label": "Reincidencia en materia ALA/CFT",          "dispositions": 28, "non_corroboration_rate": 17.9, "escalation_contribution": 58.3, "status": "OK", "reason_mix": {"DUPLICADO": 3, "EVIDENCIA_INSUFICIENTE": 2}},
+    {"rule_id": "CGR.R05_TRATO_DIRECTO",              "source_id": "cgr", "label": "Observación por trato directo",            "dispositions": 51, "non_corroboration_rate": 45.1, "escalation_contribution": 27.8, "status": "WARN", "reason_mix": {"EXPLICACION_LEGITIMA": 16, "FUERA_DE_PERIMETRO": 7}},
+    {"rule_id": "OSL.R11_SIN_INICIO_ACTIVIDADES",     "source_id": "osl", "label": "OSFL sin inicio de actividades SII",       "dispositions": 22, "non_corroboration_rate": 40.9, "escalation_contribution": 12.5, "status": "OK", "reason_mix": {"DATO_DESACTUALIZADO": 6, "EXPLICACION_LEGITIMA": 3}},
+    {"rule_id": "DEL.R04_HOMICIDIO_TERRITORIAL",      "source_id": "del", "label": "Densidad de homicidios por comuna",        "dispositions": 0, "non_corroboration_rate": null, "escalation_contribution": null, "status": "MUDA", "reason_mix": {}},
+    {"rule_id": "PRE.R27_HISTORIAL_ADVERSO",          "source_id": "pre", "label": "Proveedor con historial adverso previo",   "dispositions": 12, "non_corroboration_rate": null, "escalation_contribution": null, "status": "INSUFICIENTE", "reason_mix": {}}
+  ],
+
+  "sanctions": [
+    {"entity_name": "Inmobiliaria del Pacífico SpA", "entity_id": "ENT-RUT-772345678", "rut": "77.234.567-8", "authority": "UAF", "matter": "DDC / ALA-CFT", "alacft": true, "date": "2023-08", "amount": "UF 2.800", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2023-08-UAF#p2"]},
+    {"entity_name": "Banco Comercial Regional SA", "entity_id": "ENT-RUT-970012345", "rut": "97.001.234-5", "authority": "CMF", "matter": "ALA/CFT — reportabilidad", "alacft": true, "date": "2024-01", "amount": "UF 15.000", "repeat_offender": false, "resolved": true, "evidence_refs": ["san:res/2024-01-CMF#p1"]},
+    {"entity_name": "Transportes del Norte SA", "entity_id": "ENT-RUT-794567890", "rut": "79.456.789-0", "authority": "CMF", "matter": "ALA/CFT", "alacft": true, "date": "2024-03", "amount": null, "repeat_offender": false, "resolved": false, "evidence_refs": ["san:res/2024-03-CMF#p1"]},
+    {"entity_name": "Corredora de Valores Sur Ltda.", "entity_id": "ENT-RUT-767890123", "rut": "76.789.012-3", "authority": "CMF", "matter": "ALA/CFT — beneficiario final", "alacft": true, "date": "2023-11", "amount": "UF 8.500", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2023-11-CMF#p2"]},
+    {"entity_name": "Corporación Agro-Sur Limitada", "entity_id": "ENT-RUT-761234567", "rut": "76.123.456-7", "authority": "SVS", "matter": "ALA/CFT", "alacft": true, "date": "2022-06", "amount": "UF 4.200", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2022-06-SVS#p1"]},
+    {"entity_name": "Corporación Agro-Sur Limitada", "entity_id": "ENT-RUT-761234567", "rut": "76.123.456-7", "authority": "CMF", "matter": "ALA/CFT — DDC", "alacft": true, "date": "2023-04", "amount": "UF 6.100", "repeat_offender": true, "resolved": true, "evidence_refs": ["san:res/2023-04-CMF#p3"]},
+    {"entity_name": "Comercial Andes y Cía. (sin RUT en la fuente)", "entity_id": null, "rut": null, "authority": "SP", "matter": "Reportabilidad", "alacft": false, "date": "2024-05", "amount": null, "repeat_offender": false, "resolved": false, "evidence_refs": ["san:res/2024-05-SP#p4"]}
+  ],
+
+  "network": {
+    "nodes": [
+      {"node_id": "N1", "label": "Corporación Agro-Sur", "sublabel": "Prioridad 94", "kind": "ENTITY", "source_id": "pre", "focus": true},
+      {"node_id": "N2", "label": "Representante legal", "sublabel": "Sanciones previas", "kind": "PERSON", "source_id": "san", "focus": false},
+      {"node_id": "N3", "label": "Organismo contratante", "sublabel": "Observaciones CGR", "kind": "PUBLIC_BODY", "source_id": "cgr", "focus": false},
+      {"node_id": "N4", "label": "OSFL relacionada", "sublabel": "Representante común", "kind": "OSFL", "source_id": "osl", "focus": false},
+      {"node_id": "N5", "label": "Proveedor compartido", "sublabel": "Mismo organismo", "kind": "SUPPLIER", "source_id": "pre", "focus": false},
+      {"node_id": "N6", "label": "Sociedad matriz", "sublabel": "Beneficiario final candidato", "kind": "HOLDING", "source_id": "sii", "focus": false}
+    ],
+    "edges": [
+      {"from": "N1", "to": "N2", "relation": "REPRESENTANTE_LEGAL", "confirmed": true, "evidence_refs": ["sii:soc/2025-11#rut-761234567"]},
+      {"from": "N1", "to": "N3", "relation": "ORGANISMO_CONTRATANTE", "confirmed": true, "evidence_refs": ["pre:tx/2024-Q3#agg-7712"]},
+      {"from": "N1", "to": "N4", "relation": "DOMICILIO_COMPARTIDO", "confirmed": true, "evidence_refs": ["sii:dir/2024#rut-761234567"]},
+      {"from": "N1", "to": "N5", "relation": "PROVEEDOR_COMUN", "confirmed": true, "evidence_refs": ["pre:tx/2024#multi-5521"]},
+      {"from": "N1", "to": "N6", "relation": "CANDIDATO_BF", "confirmed": false, "evidence_refs": ["sii:soc/2025-11#cand-0912"]},
+      {"from": "N2", "to": "N4", "relation": "REPRESENTANTE_LEGAL", "confirmed": true, "evidence_refs": ["osl:reg/2023#osfl-4412"]}
+    ]
+  },
+
+  "signal_series": {
+    "labels": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+    "series": [
+      {"key": "aml", "label": "Señal AML", "source_id": "uaf", "data": [4, 3, 5, 6, 8, 7, 9, 11, 10, 12, 14, 16]},
+      {"key": "fis", "label": "Fiscalización", "source_id": "cgr", "data": [8, 6, 9, 7, 11, 10, 12, 14, 13, 15, 17, 19]},
+      {"key": "ano", "label": "Anomalía", "source_id": "pre", "data": [6, 5, 7, 8, 9, 12, 10, 11, 13, 14, 18, 22]}
+    ]
+  }
+}

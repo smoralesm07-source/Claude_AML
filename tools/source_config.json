@@ -1,0 +1,13 @@
+{
+  "_comment": "Metadatos editoriales por fuente. La cadencia y el SLA son declaraciones de operación, no se derivan del manifiesto interop. El resto de los campos de 'sources' se lee del interop real de cada repositorio.",
+  "sources": [
+    {"source_id": "sii", "label": "Radar SII",            "dir": "Radar_SII",                 "coverage": "Nacional", "update_cadence": "MENSUAL",  "sla_days": 45},
+    {"source_id": "uaf", "label": "Radar UAF",            "dir": "Radar_UAF",                 "coverage": "Nacional", "update_cadence": "ANUAL",    "sla_days": 400},
+    {"source_id": "cgr", "label": "Radar CGR",            "dir": "Radar-CGR",                 "coverage": "Nacional", "update_cadence": "VARIABLE", "sla_days": 90},
+    {"source_id": "del", "label": "Radar Delictual",      "dir": "Radar_delictual",           "coverage": "Nacional", "update_cadence": "MENSUAL",  "sla_days": 60},
+    {"source_id": "pre", "label": "Presupuesto Abierto",  "dir": "Rada_Presupuesto_Abierto",  "coverage": "Nacional", "update_cadence": "DIARIA",   "sla_days": 7},
+    {"source_id": "san", "label": "Radar Sanciones",      "dir": "Radar_sanciones",           "coverage": "Parcial",  "update_cadence": "VARIABLE", "sla_days": 90},
+    {"source_id": "osl", "label": "Radar OSFL",           "dir": "Radar_OSFL",                "coverage": "Nacional", "update_cadence": "ANUAL",    "sla_days": 400},
+    {"source_id": "ctx", "label": "Context Hub",          "dir": "Context-Hub",               "coverage": "Nacional", "update_cadence": "ANUAL",    "sla_days": 400}
+  ]
+}

@@ -1,0 +1,60 @@
+name: build-cockpit-contract
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install jsonschema
+
+      - name: Verificar que los esquemas y el catálogo son JSON válido
+        run: |
+          python3 -c "
+          import json, sys
+          for path in ['contracts/cockpit_contract_v1.schema.json',
+                       'contracts/metrics_catalog_v1.json',
+                       'tools/demo_overlay.json',
+                       'tools/source_config.json']:
+              json.load(open(path, encoding='utf-8'))
+              print(f'ok {path}')
+          "
+
+      - name: Verificar que toda métrica publicada existe en el catálogo
+        run: |
+          python3 -c "
+          import json, sys
+          catalog = {m['metric_id'] for m in json.load(open('contracts/metrics_catalog_v1.json'))['metrics']}
+          contract = json.load(open('app/data/cockpit_contract_v1.json'))
+          unknown = {m['metric_id'] for m in contract['program_health']} - catalog
+          if unknown:
+              sys.exit(f'Métricas fuera del catálogo: {sorted(unknown)}')
+          print(f'{len(catalog)} métricas catalogadas, todas las publicadas registradas')
+          "
+
+      # Los radares hermanos no están disponibles en CI: el constructor debe
+      # degradar a NO_DATA sin romper y seguir produciendo un contrato válido.
+      - name: Construir y validar el contrato sin los radares presentes
+        run: python3 tools/build_cockpit_data.py --repos-root /nonexistent --validate
+
+      - name: Verificar que el contrato versionado sigue validando
+        run: |
+          git checkout -- app/data/cockpit_contract_v1.json
+          python3 -c "
+          import json, jsonschema
+          schema = json.load(open('contracts/cockpit_contract_v1.schema.json'))
+          data = json.load(open('app/data/cockpit_contract_v1.json'))
+          jsonschema.validate({k: v for k, v in data.items() if k != 'signal_series'}, schema)
+          print('contrato versionado: válido')
+          "

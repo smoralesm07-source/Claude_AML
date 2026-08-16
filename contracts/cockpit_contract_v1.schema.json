@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ifl-cockpit-contract-v1",
+  "title": "Contrato de consumo del IFL Cockpit v1",
+  "description": "Artefacto único que consume la aplicación del cockpit. Producido por la capa de fusión a partir de los exports interop de los siete radares. La aplicación no consume ninguna otra fuente.",
+  "type": "object",
+  "required": ["contract_version", "generated_at", "sources", "program_health", "cases", "guardrails"],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {"const": "1.0"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "generator": {"type": "string"},
+    "period_id": {"type": "string", "description": "Período canónico del corte, p.ej. 2024 o 2024-Q4"},
+
+    "sources": {
+      "type": "array",
+      "description": "Una entrada por radar. Alimenta el módulo Salud del Programa y la matriz de Evidencia.",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "label", "repository", "implementation_stage", "status"],
+        "properties": {
+          "source_id": {"enum": ["sii", "uaf", "cgr", "del", "pre", "san", "osl", "ctx"]},
+          "radar_id": {"type": ["string", "null"], "description": "null para capas transversales que no son radares, como Context Hub"},
+          "label": {"type": "string"},
+          "repository": {"type": "string"},
+          "implementation_stage": {"type": "string"},
+          "status": {"enum": ["OK", "WARN", "CRIT", "NO_DATA"]},
+          "coverage": {"type": "string"},
+          "update_cadence": {"enum": ["DIARIA", "SEMANAL", "MENSUAL", "ANUAL", "VARIABLE"]},
+          "sla_days": {"type": ["integer", "null"]},
+          "last_snapshot_at": {"type": ["string", "null"], "format": "date"},
+          "freshness_days": {"type": ["integer", "null"]},
+          "conformed_keys": {
+            "type": "object",
+            "description": "Estado de las claves conformadas. null significa NO_DATA, nunca 0.",
+            "properties": {
+              "entity_id": {"enum": ["NATIVE", "READY", "PARTIAL", "NOT_PRIMARY", null]},
+              "territory_id": {"enum": ["NATIVE", "READY", "PARTIAL", "NOT_PRIMARY", null]},
+              "sector_id": {"enum": ["NATIVE", "READY", "PARTIAL", "NOT_PRIMARY", null]},
+              "period_id": {"enum": ["NATIVE", "READY", "PARTIAL", "NOT_PRIMARY", null]}
+            }
+          },
+          "exports": {"type": "array", "items": {"type": "string"}},
+          "signal_count": {"type": ["integer", "null"]}
+        }
+      }
+    },
+
+    "program_health": {
+      "type": "array",
+      "description": "Valores de las métricas de familia KPI_PROGRAMA declaradas en metrics_catalog_v1.json.",
+      "items": {
+        "type": "object",
+        "required": ["metric_id", "value", "status"],
+        "properties": {
+          "metric_id": {"type": "string", "description": "Debe existir en metrics_catalog_v1.json"},
+          "name": {"type": "string", "description": "Nombre legible, copiado del catálogo"},
+          "family": {"type": ["string", "null"]},
+          "guardrail": {"type": ["string", "null"], "description": "Advertencia semántica de la métrica, copiada del catálogo"},
+          "scope": {"type": "string", "description": "GLOBAL o un source_id"},
+          "value": {"type": ["number", "null"], "description": "null = NO_DATA. Se renderiza '—'."},
+          "unit": {"type": "string"},
+          "target": {"type": ["number", "null"]},
+          "status": {"enum": ["OK", "WARN", "CRIT", "NO_DATA"]},
+          "trend": {"type": "array", "items": {"type": ["number", "null"]}}
+        }
+      }
+    },
+
+    "cases": {
+      "type": "array",
+      "description": "Cola analítica con ciclo de vida. Objeto propio del cockpit: no muta las fuentes.",
+      "items": {
+        "type": "object",
+        "required": ["case_id", "name", "state", "score", "signals"],
+        "properties": {
+          "case_id": {"type": "string"},
+          "entity_id": {"type": ["string", "null"], "pattern": "^(ENT-RUT-[0-9K]+)?$", "description": "null cuando la identidad no se resolvió: ENTITY_ID_NULL_CANDIDATE_ONLY"},
+          "name": {"type": "string"},
+          "rut": {"type": ["string", "null"]},
+          "entity_type": {"type": "string"},
+          "territory_id": {"type": ["string", "null"], "pattern": "^(CL-(REG|PROV|COM)-[0-9]+)?$"},
+          "region_label": {"type": "string", "description": "Atributo, nunca clave"},
+          "score": {
+            "type": "object",
+            "required": ["score_name", "score_value", "score_version", "score_scope"],
+            "description": "Metadatos exigidos por los manifiestos interop de los siete radares",
+            "properties": {
+              "score_name": {"const": "ifl_priority_score"},
+              "score_value": {"type": "number", "minimum": 0, "maximum": 100},
+              "score_version": {"type": "string"},
+              "score_scope": {"const": "INVESTIGATION_PRIORITY", "description": "Nunca ENTITY_RISK"}
+            }
+          },
+          "state": {"enum": ["DETECTADO", "EN_REVISION", "CORROBORADO", "ESCALADO", "DESCARTADO"]},
+          "assignee_role": {"enum": ["EXPLORADOR", "INVESTIGADOR", "SUPERVISOR", "STEWARD", null]},
+          "opened_at": {"type": "string", "format": "date"},
+          "sla_due_at": {"type": ["string", "null"], "format": "date"},
+          "disposed_at": {"type": ["string", "null"], "format": "date"},
+          "disposition_reason": {
+            "enum": ["EXPLICACION_LEGITIMA", "ERROR_IDENTIDAD", "DATO_DESACTUALIZADO", "FUERA_DE_PERIMETRO", "EVIDENCIA_INSUFICIENTE", "DUPLICADO", null],
+            "description": "Obligatorio si state = DESCARTADO"
+          },
+          "signals": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["source_id", "rule_id", "text", "weight", "evidence_refs"],
+              "properties": {
+                "source_id": {"enum": ["sii", "uaf", "cgr", "del", "pre", "san", "osl", "ctx"]},
+                "rule_id": {"type": "string"},
+                "text": {"type": "string"},
+                "weight": {"type": "number", "minimum": 0},
+                "period_id": {"type": "string"},
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "description": "Invariante duro: una señal sin evidencia no se publica, se cuarentena",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          },
+          "hypothesis": {"type": "string", "description": "Hipótesis analítica, nunca una acusación"},
+          "next_steps": {"type": "array", "items": {"type": "string"}}
+        },
+        "allOf": [{
+          "if": {"properties": {"state": {"const": "DESCARTADO"}}},
+          "then": {"required": ["disposition_reason"], "properties": {"disposition_reason": {"type": "string"}}}
+        }]
+      }
+    },
+
+    "anomalies": {
+      "type": "array",
+      "description": "Patrones contextuales. Objeto semántico distinto de la señal AML gobernada.",
+      "items": {
+        "type": "object",
+        "required": ["anomaly_id", "title", "kind", "source_ids", "description", "evidence"],
+        "properties": {
+          "anomaly_id": {"type": "string"},
+          "title": {"type": "string"},
+          "kind": {"enum": ["ANOMALIA_CONTEXTUAL", "ALERTA_FISCALIZACION", "SENAL_AML"]},
+          "source_ids": {"type": "array", "items": {"type": "string"}},
+          "description": {"type": "string"},
+          "evidence": {"type": "string"},
+          "rule_id": {"type": "string"},
+          "affected_count": {"type": ["integer", "null"]},
+          "corroborated": {"type": "boolean", "default": false}
+        }
+      }
+    },
+
+    "territory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["territory_id", "code", "name"],
+        "properties": {
+          "territory_id": {"type": "string", "pattern": "^CL-REG-[0-9]+$"},
+          "code": {"type": "string", "description": "Etiqueta romana de uso común. Atributo, no clave."},
+          "name": {"type": "string"},
+          "exposure": {"type": ["number", "null"]},
+          "open_cases": {"type": ["integer", "null"]},
+          "so_count": {"type": ["integer", "null"]},
+          "crime_art27": {"type": ["integer", "null"]},
+          "public_spend_mm": {"type": ["number", "null"]},
+          "osfl_count": {"type": ["integer", "null"]},
+          "cgr_audits": {"type": ["integer", "null"]}
+        }
+      }
+    },
+
+    "sectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sector_id", "name"],
+        "properties": {
+          "sector_id": {"type": "string", "pattern": "^UAF-SEC-[0-9]{2}$"},
+          "name": {"type": "string"},
+          "so_count": {"type": ["integer", "null"]},
+          "ros_reporters": {"type": ["integer", "null"]},
+          "roe_reporters": {"type": ["integer", "null"]},
+          "sanctioned": {"type": ["integer", "null"]},
+          "strong_match_unregistered": {"type": ["integer", "null"], "description": "Candidatos MATCH_FUERTE sin inscripción verificada. No son sujetos obligados."}
+        }
+      }
+    },
+
+    "benchmark": {
+      "type": "array",
+      "description": "Contraste contra denominador público UAF. Equivalente del benchmark FinCEN SAR Stats.",
+      "items": {
+        "type": "object",
+        "required": ["sector_id", "coverage_ratio"],
+        "properties": {
+          "sector_id": {"type": "string"},
+          "ifl_signals": {"type": ["integer", "null"]},
+          "uaf_ros_published": {"type": ["integer", "null"]},
+          "uaf_roe_published": {"type": ["integer", "null"]},
+          "coverage_ratio": {"type": ["number", "null"], "description": "BMK_COVERAGE_RATIO. Si es bajo, la intensidad no es interpretable."},
+          "signal_intensity": {"type": ["number", "null"], "description": "BMK_SIGNAL_INTENSITY"},
+          "reading": {"enum": ["SOBRE_REPRESENTADO", "ALINEADO", "SUB_REPRESENTADO", "NO_INTERPRETABLE"]}
+        }
+      }
+    },
+
+    "rules": {
+      "type": "array",
+      "description": "Calibración. Se omite una regla con menos de 20 disposiciones.",
+      "items": {
+        "type": "object",
+        "required": ["rule_id", "source_id", "label"],
+        "properties": {
+          "rule_id": {"type": "string"},
+          "source_id": {"type": "string"},
+          "label": {"type": "string"},
+          "dispositions": {"type": "integer"},
+          "non_corroboration_rate": {"type": ["number", "null"]},
+          "escalation_contribution": {"type": ["number", "null"]},
+          "reason_mix": {"type": "object", "additionalProperties": {"type": "integer"}},
+          "status": {"enum": ["OK", "WARN", "CRIT", "MUDA", "INSUFICIENTE"]}
+        }
+      }
+    },
+
+    "sanctions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity_name", "authority", "matter", "date"],
+        "properties": {
+          "entity_name": {"type": "string"},
+          "entity_id": {"type": ["string", "null"]},
+          "rut": {"type": ["string", "null"]},
+          "authority": {"type": "string"},
+          "matter": {"type": "string"},
+          "alacft": {"type": "boolean"},
+          "date": {"type": "string"},
+          "amount": {"type": ["string", "null"], "description": "null cuando no está resuelto; se renderiza '—'"},
+          "repeat_offender": {"type": "boolean"},
+          "resolved": {"type": "boolean"},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+
+    "network": {
+      "type": "object",
+      "description": "Vínculos observados. Ningún borde propaga riesgo.",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["node_id", "label", "kind"],
+            "properties": {
+              "node_id": {"type": "string"},
+              "label": {"type": "string"},
+              "sublabel": {"type": "string"},
+              "kind": {"enum": ["ENTITY", "PERSON", "PUBLIC_BODY", "OSFL", "SUPPLIER", "HOLDING"]},
+              "source_id": {"type": "string"},
+              "focus": {"type": "boolean"}
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "relation", "evidence_refs"],
+            "properties": {
+              "from": {"type": "string"},
+              "to": {"type": "string"},
+              "relation": {"enum": ["REPRESENTANTE_LEGAL", "DOMICILIO_COMPARTIDO", "PROVEEDOR_COMUN", "ORGANISMO_CONTRATANTE", "PROPIEDAD", "CANDIDATO_BF"]},
+              "confirmed": {"type": "boolean", "description": "false = vínculo candidato, se dibuja punteado"},
+              "evidence_refs": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+
+    "guardrails": {
+      "type": "array",
+      "description": "Catálogo de advertencias semánticas. La app inyecta las de cada módulo según scope.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["guardrail_id", "scope", "title", "text"],
+        "properties": {
+          "guardrail_id": {"type": "string"},
+          "scope": {"type": "array", "items": {"type": "string"}, "description": "Módulos donde se muestra, o ['*'] para global"},
+          "title": {"type": "string"},
+          "text": {"type": "string"}
+        }
+      }
+    }
+  }
+}
