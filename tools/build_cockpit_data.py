@@ -137,7 +137,12 @@ def build_sources(repos_root: Path, config: dict) -> tuple[list[dict], list[str]
             status = norm_key_status((block or {}).get("current_status"))
             keys[key] = status if status else infer_from_materialization(block)
         stage = manifest.get("implementation_stage", "")
+        # Cuando un radar publica su tasa de resolución medida, esa cifra manda
+        # sobre la etapa cualitativa del manifiesto: es un hecho, no una etiqueta.
+        measured = (manifest.get("territory") or {}).get("measured") or {}
         sources.append({
+            "territory_resolution_pct": measured.get("row_resolution_pct"),
+            "territory_granularity": (manifest.get("territory") or {}).get("granularity"),
             "source_id": entry["source_id"],
             "radar_id": manifest.get("radar_id"),
             "label": entry["label"],

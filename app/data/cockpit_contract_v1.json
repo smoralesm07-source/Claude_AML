@@ -1,10 +1,12 @@
 {
   "contract_version": "1.0",
-  "generated_at": "2026-08-16T15:08:29+00:00",
+  "generated_at": "2026-08-16T15:35:54+00:00",
   "generator": "tools/build_cockpit_data.py",
   "period_id": "2024",
   "sources": [
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "sii",
       "radar_id": "RADAR_SII",
       "label": "Radar SII",
@@ -31,6 +33,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "uaf",
       "radar_id": "RADAR_UAF",
       "label": "Radar UAF",
@@ -59,6 +63,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": 97.3,
+      "territory_granularity": "REGION_ONLY",
       "source_id": "cgr",
       "radar_id": "RADAR_CGR",
       "label": "Radar CGR",
@@ -72,7 +78,7 @@
       "freshness_days": null,
       "conformed_keys": {
         "entity_id": "READY",
-        "territory_id": "PARTIAL",
+        "territory_id": "READY",
         "sector_id": "PARTIAL",
         "period_id": "READY"
       },
@@ -86,6 +92,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "del",
       "radar_id": "RADAR_DELICTUAL",
       "label": "Radar Delictual",
@@ -112,6 +120,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "pre",
       "radar_id": "RADAR_PRESUPUESTO",
       "label": "Presupuesto Abierto",
@@ -138,6 +148,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "san",
       "radar_id": "RADAR_SANCIONES",
       "label": "Radar Sanciones",
@@ -166,6 +178,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "osl",
       "radar_id": "RADAR_OSFL",
       "label": "Radar OSFL",
@@ -195,6 +209,8 @@
       "signal_count": null
     },
     {
+      "territory_resolution_pct": null,
+      "territory_granularity": null,
       "source_id": "ctx",
       "radar_id": null,
       "label": "Context Hub",
@@ -235,10 +251,10 @@
       "family": "KPI_PROGRAMA",
       "guardrail": "Nombre de comuna no es clave. Texto libre no resuelto no se promueve a CL-COM-*.",
       "scope": "GLOBAL",
-      "value": 66.7,
+      "value": 75.0,
       "unit": "%",
       "target": 95,
-      "status": "CRIT",
+      "status": "WARN",
       "trend": []
     },
     {

@@ -41,7 +41,9 @@
             }
           },
           "exports": {"type": "array", "items": {"type": "string"}},
-          "signal_count": {"type": ["integer", "null"]}
+          "signal_count": {"type": ["integer", "null"]},
+          "territory_resolution_pct": {"type": ["number", "null"], "description": "Tasa de resolución territorial medida sobre datos reales, publicada por el radar. null = el radar aún no la mide."},
+          "territory_granularity": {"type": ["string", "null"], "description": "Nivel territorial que la fuente realmente tiene, p.ej. REGION_ONLY"}
         }
       }
     },

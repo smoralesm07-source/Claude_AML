@@ -283,6 +283,9 @@ function rSalud() {
     <td>${keyMark(s.conformed_keys.territory_id)}</td>
     <td>${keyMark(s.conformed_keys.sector_id)}</td>
     <td>${keyMark(s.conformed_keys.period_id)}</td>
+    <td class="num">${s.territory_resolution_pct === null || s.territory_resolution_pct === undefined
+      ? '<span class="nodata-cell">no medida</span>'
+      : `<span class="rk ${s.territory_resolution_pct >= 95 ? 'lo' : s.territory_resolution_pct >= 75 ? 'md' : 'cr'}">${s.territory_resolution_pct}%</span>`}</td>
     <td>${esc(s.update_cadence)}</td>
     <td class="num">${s.freshness_days === null ? '<span class="nodata-cell">—</span>' : fmt(s.freshness_days)}</td>
   </tr>`).join('');
@@ -309,7 +312,7 @@ function rSalud() {
       <div class="scroll-x"><table class="dtbl">
         <thead><tr><th>Fuente</th><th>Estado</th><th>Etapa interop</th>
           <th>entity_id</th><th>territory_id</th><th>sector_id</th><th>period_id</th>
-          <th>Cadencia</th><th class="num">Frescura</th></tr></thead>
+          <th class="num">Resolución territorial</th><th>Cadencia</th><th class="num">Frescura</th></tr></thead>
         <tbody>${srcRows}</tbody></table></div>
       <div style="margin-top:12px;font-size:11px;color:var(--txm)">
         Las columnas de clave se derivan del <code class="mono">current_status</code> declarado en
