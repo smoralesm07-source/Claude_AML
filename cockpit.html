@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>IFL Cockpit</title>
 <style>
 @import url('data:text/css,');
@@ -165,6 +166,140 @@ body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',R
 .delta.up{color:var(--cr)}.delta.dn{color:var(--cl)}
 code.rut{font-family:'SF Mono',Menlo,monospace;font-size:12px;color:var(--tx2)}
 @media(max-width:800px){.g2,.g3,.g12,.g21{grid-template-columns:1fr}}
+/* ═══ ENTITY 360 · expediente analítico ═══════════════════════════
+   Alcance: solo la sección Entity 360. Todas las clases van con
+   prefijo e3- para no colisionar con el resto del cockpit, y los
+   colores se toman de las variables ya definidas arriba. */
+.e3-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.e3-inp{border:1px solid var(--bd);border-radius:7px;padding:7px 12px;font-size:12.5px;color:var(--tx);background:var(--s2);width:210px;font-family:'SF Mono',Menlo,monospace}
+.e3-inp:focus{outline:none;border-color:rgba(59,130,246,.5);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.e3-hint{font-size:11px;color:var(--txm)}
+.e3-live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2);font-weight:600}
+.e3-live i{width:7px;height:7px;border-radius:50%;background:var(--cl);flex-shrink:0}
+.e3-live.off i{background:var(--cm)}
+.e3-live.err i{background:var(--cr)}
+
+/* carátula */
+.e3-head{background:var(--s1);border:1px solid var(--bd);border-radius:var(--rad);padding:18px 18px 0;margin-bottom:14px;overflow:hidden}
+.e3-htop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:26px;align-items:start}
+@media(max-width:900px){.e3-htop{grid-template-columns:1fr;gap:16px}}
+.e3-name{font-size:20px;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0}
+.e3-meta{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:7px;align-items:center;font-size:11.5px;color:var(--tx2)}
+.e3-sep{width:3px;height:3px;border-radius:50%;background:var(--txm);flex-shrink:0}
+.e3-roles{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+
+/* lecturas */
+.e3-reads{display:flex;align-items:stretch}
+@media(max-width:900px){.e3-reads{flex-wrap:wrap;gap:14px}}
+.e3-read{padding:0 18px;border-left:1px solid var(--bd);min-width:124px}
+.e3-reads .e3-read:first-child{border-left:0;padding-left:0}
+@media(max-width:900px){.e3-reads .e3-read{border-left:0;padding:0 18px 0 0;min-width:110px}}
+.e3-rk{font-size:9px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--txm);display:block}
+.e3-rv{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:3px;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:3px}
+.e3-rv small{font-size:13px;font-weight:600;color:var(--txm)}
+.e3-rc{font-size:10.5px;color:var(--txm);margin-top:4px;line-height:1.4;max-width:150px}
+.e3-tier{display:inline-block;font-size:17px;font-weight:800;padding:2px 10px;border-radius:6px;letter-spacing:-.01em}
+.e3-tier.p1{background:var(--cr-bg);color:var(--cr)}
+.e3-tier.p2{background:var(--ch-bg);color:var(--ch)}
+.e3-tier.p3{background:var(--cm-bg);color:var(--cm)}
+.e3-tier.na{background:var(--s3);color:var(--tx2);font-size:12px;font-weight:700;padding:5px 10px}
+
+/* cinta de fuentes */
+.e3-ribbon{display:flex;flex-wrap:wrap;margin:16px -18px 0;border-top:1px solid var(--bd)}
+.e3-src{flex:1 1 122px;min-width:122px;padding:10px 13px 11px;border-right:1px solid var(--bd);border-top:0;border-bottom:0;border-left:0;background:0;text-align:left;font-family:inherit;color:inherit;cursor:pointer;position:relative;transition:background .12s}
+.e3-src:last-child{border-right:0}
+.e3-src:hover{background:var(--s2)}
+.e3-src::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--e3c,var(--txm))}
+.e3-sn{font-size:11px;font-weight:700;color:var(--tx)}
+.e3-ss{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-top:4px;display:flex;align-items:center;gap:5px}
+.e3-sa{font-size:10px;color:var(--txm);margin-top:2px;font-family:'SF Mono',Menlo,monospace}
+.e3-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* lentes */
+.e3-tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--bd);margin-bottom:16px}
+.e3-tab{background:0;border:0;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;color:var(--tx2);padding:9px 12px 8px;display:flex;align-items:baseline;gap:7px;white-space:nowrap;transition:.12s}
+.e3-tab:hover{color:var(--tx)}
+.e3-tab .n{font-family:'SF Mono',Menlo,monospace;font-size:10px;font-weight:600;opacity:.7}
+.e3-tab .t{font-size:12.5px;font-weight:600}
+.e3-tab[aria-selected="true"]{color:var(--ac);border-bottom-color:var(--ac)}
+.e3-pane[hidden]{display:none}
+.e3-lead{max-width:720px;margin-bottom:16px}
+.e3-lead h2{font-size:17px;font-weight:800;letter-spacing:-.025em;margin:0}
+.e3-lead p{font-size:12.5px;color:var(--tx2);margin:6px 0 0;line-height:1.6}
+
+/* piezas */
+.e3-note{background:var(--s2);border:1px solid var(--bd);border-left:3px solid var(--txm);border-radius:7px;padding:10px 13px;font-size:11.5px;color:var(--tx2);line-height:1.6;margin-top:12px}
+.e3-note strong{color:var(--tx)}
+.e3-note.warn{border-left-color:var(--cm);background:var(--cm-bg);color:var(--tx2)}
+.e3-dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px;font-size:12px}
+.e3-dl dt{color:var(--tx2);padding:6px 0;border-bottom:1px solid var(--bd)}
+.e3-dl dd{margin:0;padding:6px 0;border-bottom:1px solid var(--bd);text-align:right;font-weight:600}
+.e3-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--s3);color:var(--tx2);white-space:nowrap}
+.e3-pill i{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.e3-pill.ok{background:var(--cl-bg);color:var(--cl)}
+.e3-pill.mid{background:var(--cm-bg);color:var(--cm)}
+.e3-pill.hi{background:var(--ch-bg);color:var(--ch)}
+.e3-pill.cr{background:var(--cr-bg);color:var(--cr)}
+.e3-pill.out{background:transparent;border:1px solid currentColor}
+.e3-empty{font-size:12px;color:var(--txm);padding:14px 0;line-height:1.6}
+.e3-sig{display:grid;grid-template-columns:3px minmax(0,1fr) auto;gap:11px;padding:12px 0;border-bottom:1px solid var(--bd);align-items:start}
+.e3-sig:last-child{border-bottom:0}
+.e3-stripe{border-radius:2px;align-self:stretch;min-height:34px}
+.e3-code{font-family:'SF Mono',Menlo,monospace;font-size:11px;font-weight:600;letter-spacing:-.02em}
+.e3-why{font-size:12px;color:var(--tx2);margin-top:3px;line-height:1.55}
+.e3-chk{font-size:11px;color:var(--txm);margin-top:5px;line-height:1.5}
+.e3-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.e3-right{text-align:right;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.e3-item{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}
+.e3-item:last-child{border-bottom:0}
+.e3-mk{flex-shrink:0;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;margin-top:1px;background:var(--s3);color:var(--tx2)}
+.e3-mk.good{background:var(--cl-bg);color:var(--cl)}
+.e3-item h4{margin:0;font-size:12px;font-weight:700}
+.e3-item p{margin:3px 0 0;font-size:11.5px;color:var(--tx2);line-height:1.55}
+.e3-link{font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:0;border:0;padding:1px 0;cursor:pointer;color:var(--ac);border-bottom:1px solid rgba(59,130,246,.35)}
+.e3-link:hover{border-bottom-color:var(--ac)}
+.e3-scroll{overflow-x:auto}
+.e3-scroll .dtbl{min-width:540px}
+.e3-legend{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:10px;font-size:11px;color:var(--tx2)}
+.e3-lg{display:inline-flex;align-items:center;gap:5px}
+.e3-sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ACH */
+.e3-ach td.c{text-align:center;cursor:pointer;user-select:none}
+.e3-ach td.c span{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:5px;font-family:'SF Mono',Menlo,monospace;font-weight:700;font-size:13px;transition:.1s}
+.e3-ach td.c:hover span{outline:2px solid var(--ac);outline-offset:1px}
+.e3-c{background:var(--cl-bg);color:var(--cl)}
+.e3-i{background:var(--cr-bg);color:var(--cr)}
+.e3-n{background:var(--s3);color:var(--txm)}
+.e3-diag{font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ac)}
+.e3-opt{flex:0 0 auto;text-align:left;font-family:inherit;cursor:pointer;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:11px 13px;transition:.12s;color:inherit}
+.e3-opt:hover{border-color:rgba(59,130,246,.35)}
+.e3-opt[aria-pressed="true"]{border-color:var(--ac);background:rgba(59,130,246,.08)}
+.e3-opt b{display:block;font-size:12px;font-weight:700;color:var(--tx)}
+.e3-opt span{display:block;font-size:11px;color:var(--txm);margin-top:2px;line-height:1.45}
+
+/* cajón de evidencia */
+.e3-scrim{position:fixed;inset:0;background:rgba(4,10,20,.5);z-index:110;opacity:0;pointer-events:none;transition:opacity .2s}
+.e3-scrim[data-open="true"]{opacity:1;pointer-events:auto}
+.e3-drawer{position:fixed;top:0;right:0;bottom:0;width:min(410px,100%);z-index:120;background:var(--s1);border-left:1px solid var(--bd);box-shadow:-18px 0 50px -20px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .2s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.e3-drawer[data-open="true"]{transform:translateX(0)}
+.e3-dh{padding:15px 17px 13px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.e3-db{overflow-y:auto;padding:15px 17px 28px;flex:1}
+.e3-f{padding:8px 0;border-bottom:1px solid var(--bd)}
+.e3-f:last-child{border-bottom:0}
+.e3-fk{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--txm)}
+.e3-fv{font-size:12px;margin-top:3px;word-break:break-word;font-family:'SF Mono',Menlo,monospace;color:var(--tx)}
+.e3-fv.tx{font-family:inherit}
+.e3-fv a{color:var(--ac)}
+
+/* tooltip */
+#e3tip{position:fixed;z-index:200;pointer-events:none;opacity:0;background:var(--s3);border:1px solid var(--bds);color:var(--tx);border-radius:7px;padding:8px 11px;font-size:11.5px;line-height:1.5;max-width:270px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);transition:opacity .1s}
+#e3tip b{display:block;margin-bottom:2px}
+#e3tip .k{color:var(--txm)}
+
+.e3-skel{height:11px;border-radius:4px;background:var(--s3);opacity:.6;animation:e3p 1.1s ease-in-out infinite}
+@keyframes e3p{0%,100%{opacity:.35}50%{opacity:.7}}
+@media(prefers-reduced-motion:reduce){.e3-skel{animation:none}.e3-drawer,.e3-scrim{transition:none}}
 </style>
 
 <div style="display:flex;height:100vh;overflow:hidden">
@@ -183,7 +318,7 @@ code.rut{font-family:'SF Mono',Menlo,monospace;font-size:12px;color:var(--tx2)}
   </div>
   <div class="nav-sec">
     <div class="nav-lbl">Análisis AML</div>
-    <button class="ni" data-m="aml360" onclick="sw(this)"><span class="ni-ic">🔎</span><span>AML 360°</span></button>
+    <button class="ni" data-m="aml360" onclick="sw(this)"><span class="ni-ic">🔎</span><span>Entity 360</span></button>
     <button class="ni" data-m="red" onclick="sw(this)"><span class="ni-ic">🔗</span><span>Red de Relaciones</span></button>
     <button class="ni" data-m="evidencia" onclick="sw(this)"><span class="ni-ic">📋</span><span>Evidencia</span></button>
   </div>
@@ -720,42 +855,1103 @@ function rAnomalias(){
     ${kpis}${cards}`;
 }
 
-function rAml360(){
-  const h=HA[0],cls=rc(h.score);
-  const W4=Math.min(380,280);
-  document.getElementById('ct').innerHTML=`
-    <div class="mh"><h1>AML 360°</h1><p>Vista integrada de señales, convergencia, eventos, relaciones y evidencia por entidad</p></div>
-    <div class="gr"><strong>AML 360° combina:</strong> señales directas · anomalías contextuales · relaciones observadas. La convergencia de fuentes independientes aumenta la plausibilidad; no reemplaza el análisis formal. Relación ≠ herencia de riesgo.</div>
-    <div class="card" style="margin-bottom:14px">
-      <div class="fbr"><input class="sinp" style="width:240px" placeholder="RUT: 76.123.456-7" value="${h.rut}"/><button class="btn btn-p">Analizar 360°</button><span style="font-size:11px;color:var(--txm)">o buscar por razón social</span></div>
+// ═══ ENTITY 360 · expediente analítico ══════════════════════════════
+// Reemplaza la antigua tarjeta "AML 360°". Consume los datos públicos
+// que cada radar ya publica en GitHub Pages (/<repo>/data/…) y nunca
+// convierte un fallo de descarga en un cero.
+const E3 = (function(){
+"use strict";
+
+// ── configuración ──────────────────────────────────────────────────
+const BASE = (window.E3_BASE != null) ? window.E3_BASE
+  : /(^|\.)github\.io$/.test(location.hostname) ? '' : 'https://smoralesm07-source.github.io';
+
+// Orden de asignación de color validado para daltonismo sobre la paleta
+// de fuentes que ya usa el cockpit (adyacentes ≥8 ΔE CVD en ambos temas).
+const ORDER = ['sii','uaf','del','cgr','pre','san','osl'];
+
+const RADAR = {
+  sii:{name:'Radar SII',   full:'Servicio de Impuestos Internos',                       repo:'Radar_SII'},
+  uaf:{name:'Radar UAF',   full:'Unidad de Análisis Financiero',                        repo:'Radar_UAF'},
+  del:{name:'Delictual',   full:'CEAD · Subsecretaría de Prevención del Delito',        repo:'Radar_delictual'},
+  cgr:{name:'Radar CGR',   full:'Contraloría General de la República',                  repo:'Radar-CGR'},
+  pre:{name:'Presupuesto', full:'Presupuesto Abierto · DIPRES',                          repo:'Rada_Presupuesto_Abierto'},
+  san:{name:'Sanciones',   full:'UAF · CMF · SP · SUSESO · SCJ',                        repo:'Radar_sanciones'},
+  osl:{name:'Radar OSFL',  full:'Registro Ley 21.440 / Reg. 19.862',                    repo:'Radar_OSFL'},
+};
+const svar = id => `var(--${id})`;
+
+// Política de screening UAF–SII (clases A / A_REGISTRO / B).
+// Copia versionada de Radar_SII/config/uaf_sii_screening_policy.csv.
+// Sólo se embeben las clases que pueden generar candidatos; C y D quedan
+// fuera por definición y se muestran como "sin clase gatillante".
+const SCREEN_SRC = 'Radar_SII · config/uaf_sii_screening_policy.csv';
+const SCREEN = {"451001":["A","Vehículos: Automotoras","SI"],"451002":["A","Vehículos: Automotoras","SI"],"461009":["B","Casas de remate y martillo","REVISAR"],"466200":["B","Comerciantes de Metales Preciosos","REVISAR"],"477392":["A","Armas: Personas que se Dediquen a la Venta de Armas","SI"],"477394":["A","Comerciantes de Joyas y Piedras Preciosas","SI"],"641910":["A","Bancos","SI"],"641990":["B","Cooperativas (instituciones financieras)","REVISAR"],"649100":["A","Empresas de arrendamiento financiero (Leasing)","SI"],"649201":["B","Institución Financiera","REVISAR"],"649203":["A","Cajas de Compensación","SI"],"649209":["B","Cooperativas (instituciones financieras)","REVISAR"],"649900":["B","Empresas de factoraje (Factoring)","REVISAR"],"651100":["A","Compañías de Seguro","SI"],"651210":["A","Compañías de Seguro","SI"],"661100":["A","Bolsas de valores","SI"],"661201":["A","Empresas de securitización","SI"],"661202":["A","Corredores de bolsa de valores","SI"],"661203":["A","Agentes de valores","SI"],"661204":["A","Casas de cambio","SI"],"661902":["A","Emisores de Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago","SI"],"661909":["B","Emisores de Tarjetas de Pago con provisión de fondos, o cualquier otro sistema similar a los referidos medios de pago","COMPLEMENTARIO"],"663010":["A","Administradores de Fondos de Pensiones (AFP)","SI"],"663091":["A","Administradoras de fondos de inversión","SI"],"681012":["B","Empresas dedicadas a la gestión inmobiliaria","REVISAR"],"682000":["A","Corredores de propiedades","SI"],"771000":["A","Vehículos: Empresas de Arriendo de Vehículos","SI"],"801002":["A","Empresas de transporte de valores","SI"],"920010":["A","Casinos de Juego","SI"],"931101":["A","Hipódromos","SI"],"931201":["A","Organizaciones Deportivas Profesionales","SI"],"931209":["B","Organizaciones Deportivas Profesionales","REVISAR"]};
+
+const FEEDS = {
+  enrich :{repo:'Rada_Presupuesto_Abierto', f:'entity_enrichment_v1.json', wave:1, radar:'sii', label:'Enriquecimiento por entidad (campos SII)'},
+  uaf    :{repo:'Radar_UAF',                f:'dashboard.json',            wave:1, radar:'uaf', label:'Registro de entidades reportantes'},
+  sanEnt :{repo:'Radar_sanciones',          f:'entities.json',             wave:1, radar:'san', label:'Entidades con evento adverso'},
+  siiDash:{repo:'Radar_SII',                f:'dashboard.json',            wave:1, radar:'sii', label:'Universo y cobertura SII'},
+  queue  :{repo:'Rada_Presupuesto_Abierto', f:'investigation_queue.json',  wave:2, radar:'pre', label:'Cola de investigación'},
+  sanEvt :{repo:'Radar_sanciones',          f:'events.json',               wave:2, radar:'san', label:'Eventos sancionatorios'},
+  sanCov :{repo:'Radar_sanciones',          f:'coverage_matrix.json',      wave:2, radar:'san', label:'Cobertura por supervisor y año'},
+  cgr    :{repo:'Radar-CGR',                f:'dashboard.json',            wave:2, radar:'cgr', label:'Hallazgos y organismos auditados'},
+  cgrCorr:{repo:'Rada_Presupuesto_Abierto', f:'cgr_correlation.json',      wave:2, radar:'cgr', label:'Enlaces candidatos Presupuesto ↔ CGR'},
+  osfl   :{repo:'Radar_OSFL',               f:'law21440_registry.csv',     wave:2, radar:'osl', label:'Registro de donatarias Ley 21.440', csv:true},
+};
+
+const cache = {};
+const state = {};   // feed -> {s:'idle|loading|ok|error', url, err, at}
+Object.keys(FEEDS).forEach(k => state[k] = {s:'idle', url:`${BASE}/${FEEDS[k].repo}/data/${FEEDS[k].f}`});
+
+// ── utilidades ─────────────────────────────────────────────────────
+const E = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const q = (s, r) => (r || document).querySelector(s);
+const N = n => Number(n).toLocaleString('es-CL');
+const clip = (t, n) => { t = String(t || ''); if (t.length <= n) return t; const c = t.slice(0, n); const k = c.lastIndexOf(' '); return (k > n * .6 ? c.slice(0, k) : c).replace(/[\s,;.·-]+$/, '') + '…'; };
+
+function dvOf(body){ let s = 0, m = 2; for (let i = body.length - 1; i >= 0; i--){ s += (+body[i]) * m; m = m === 7 ? 2 : m + 1; } const r = 11 - (s % 11); return r === 11 ? '0' : r === 10 ? 'K' : String(r); }
+function parseRut(x){
+  const c = String(x || '').toUpperCase().replace(/[^0-9K]/g, '');
+  if (c.length < 2) return null;
+  const body = c.slice(0, -1), d = c.slice(-1);
+  if (!/^\d+$/.test(body)) return null;
+  return {body, d, valid: dvOf(body) === d, key: body + '-' + d,
+          fmt: body.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + d};
+}
+function normName(s){
+  return String(s || '').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function parseCsv(text){
+  const rows = []; let i = 0, field = '', row = [], quoted = false;
+  while (i < text.length){
+    const ch = text[i];
+    if (quoted){
+      if (ch === '"'){ if (text[i+1] === '"'){ field += '"'; i += 2; continue; } quoted = false; i++; continue; }
+      field += ch; i++; continue;
+    }
+    if (ch === '"'){ quoted = true; i++; continue; }
+    if (ch === ','){ row.push(field); field = ''; i++; continue; }
+    if (ch === '\n'){ row.push(field); rows.push(row); row = []; field = ''; i++; continue; }
+    if (ch === '\r'){ i++; continue; }
+    field += ch; i++;
+  }
+  if (field.length || row.length){ row.push(field); rows.push(row); }
+  const head = rows.shift() || [];
+  return rows.filter(r => r.length > 1).map(r => Object.fromEntries(head.map((h, j) => [h.trim(), r[j]])));
+}
+
+async function load(key){
+  if (key in cache) return cache[key];
+  if (state[key].p) return state[key].p;
+  const f = FEEDS[key], url = state[key].url;
+  state[key].s = 'loading';
+  const p = fetch(url, {cache:'force-cache'})
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(t => { const v = f.csv ? parseCsv(t) : JSON.parse(t);
+                 cache[key] = v; state[key].s = 'ok'; state[key].bytes = t.length; return v; })
+    .catch(e => { cache[key] = null; state[key].s = 'error'; state[key].err = e.message; return null; });
+  state[key].p = p;
+  return p;
+}
+const loadWave = w => Promise.all(Object.keys(FEEDS).filter(k => FEEDS[k].wave === w).map(load));
+
+// ── construcción del expediente ────────────────────────────────────
+function build(rut){
+  const d = {rut, obs:{}, gaps:[], events:[], signals:[], alias:[], conflicts:[]};
+  const key = rut.key;
+
+  // ---- SII (vía enriquecimiento de Presupuesto, upstream declarado RADAR_SII)
+  const enr = cache.enrich && cache.enrich.entities ? cache.enrich.entities[key] : null;
+  d.sii = enr || null;
+  d.enrichMeta = cache.enrich ? cache.enrich.sources : null;
+  if (enr){
+    d.obs.sii = true;
+    d.alias.push([enr.legal_name, 'Radar SII', 'legal_name']);
+    (enr.marks || []).forEach(m => {
+      d.signals.push({code:m.signal_type, src:'sii', period:String(m.year), sev:m.severity, conf:'—',
+        why:m.why, checks:'Regla del catálogo Radar SII. Contextualizar por industria y modelo operativo antes de interpretar.',
+        typ:/ACTIVITY|ADDRESS|REACTIVATION|REGION/.test(m.signal_type) ? 'str' : 'eco', origin:m.source});
+      const y = parseInt(m.year, 10);
+      if (y) d.events.push({src:'sii', t:y + .5, k:m.signal_type, d:m.why, w:'signal'});
+    });
+    if (enr.start_date){
+      const y = parseInt(String(enr.start_date).slice(0, 4), 10);
+      if (y) d.events.push({src:'sii', t:y + .1, k:'Inicio de actividades', d:'Fecha de inicio publicada por SII: ' + enr.start_date, w:'life'});
+    }
+    if (enr.termination_date){
+      const y = parseInt(String(enr.termination_date).slice(0, 4), 10);
+      if (y) d.events.push({src:'sii', t:y + .5, k:'Término de giro', d:'Término registrado: ' + enr.termination_date, w:'life'});
+    }
+  }
+
+  // ---- Perímetro UAF: registro + screening ACTECO
+  const uafD = cache.uaf;
+  const uafList = uafD && uafD.entities ? uafD.entities : null;
+  const uafTotal = uafD && uafD.kpis ? uafD.kpis.entities : null;
+  d.uaf = {truncated: !!(uafList && uafTotal && uafList.length < uafTotal),
+           shown: uafList ? uafList.length : 0, total: uafTotal,
+           asOf: uafD && uafD.kpis ? uafD.kpis.registered_total_as_of : null,
+           hit: uafList ? uafList.find(e => e.rut === key) || null : null};
+  if (d.uaf.hit){
+    d.obs.uaf = true;
+    d.alias.push([d.uaf.hit.name, 'Radar UAF', 'name (registro)']);
+    d.events.push({src:'uaf', t:2026.5, k:'Inscrita en el registro UAF', d:'Aparece en el registro de entidades reportantes. Tipo: ' + d.uaf.hit.entity_type, w:'perim'});
+  }
+  d.screen = ((enr && enr.acteco) || []).map(a => {
+    const code = String(a.codigo || '').padStart(6, '0');
+    const s = SCREEN[code];
+    return {code, glosa:a.glosa || '', estado:a.estado || '', cls:s ? s[0] : null, sector:s ? s[1] : null, use:s ? s[2] : null};
+  });
+  const trig = d.screen.filter(s => s.cls === 'A' || s.cls === 'A_REGISTRO');
+  d.uafCandidate = trig.length > 0;   // candidatura de screening ≠ identidad resuelta
+  if (trig.length){
+    d.signals.push({code:'UAF_SCREENING_' + trig[0].cls, src:'uaf', period:'CURRENT', sev:d.uaf.hit ? 'LOW' : 'HIGH', conf:'MEDIUM', typ:'per',
+      why:trig.length + ' ACTECO vigente(s) de clase gatillante compatibles con ' + trig.map(t => t.sector).join(' · ') + (d.uaf.hit ? ', y la entidad figura en el registro publicado.' : ', sin coincidencia en el registro publicado.'),
+      checks:'Una coincidencia ACTECO señala compatibilidad sectorial y no acredita la calidad jurídica de sujeto obligado. La clase A_REGISTRO depende de una autorización o registro sectorial que no se deduce del ACTECO: confirmar con el supervisor competente.',
+      origin:SCREEN_SRC});
+  }
+
+  // ---- Sanciones
+  const sanEnt = cache.sanEnt ? cache.sanEnt.find(e => e.rut === key) : null;
+  d.san = sanEnt || null;
+  if (sanEnt){
+    d.obs.san = true;
+    if (sanEnt.nombre_uaf) d.alias.push([sanEnt.nombre_uaf, 'Radar Sanciones', 'sujeto individualizado']);
+  }
+  d.sanEvents = cache.sanEvt ? cache.sanEvt.filter(e => e.rut_fuente === key) : null;
+  (d.sanEvents || []).forEach(e => {
+    d.obs.san = true;
+    const y = parseFloat(String(e.fecha).slice(0, 4)) + (parseInt(String(e.fecha).slice(5, 7), 10) - 1) / 12;
+    d.events.push({src:'san', t:y, k:e.supervisor + ' · ' + (e.tipo_evento || 'Evento'), d:e.resumen || e.categoria, w:'adv', url:e.resolution_url || e.source_url, raw:e});
+    d.signals.push({code:e.laft_directo ? 'SAN_ALA_CFT_DIRECTO' : 'SAN_EVENTO_ADVERSO', src:'san', period:e.fecha, sev:e.laft_directo ? 'HIGH' : 'MEDIUM', conf:'HIGH', typ:'adv',
+      why:clip(e.resumen, 260), checks:'Verificar firmeza y alcance de la resolución. Una sanción prudencial no acredita LA/FT.',
+      url:e.resolution_url || e.source_url, origin:'Radar Sanciones · ' + e.supervisor});
+  });
+
+  // ---- Presupuesto
+  const qd = cache.queue;
+  d.queueMeta = qd ? {total:qd.total_signals, tiers:qd.priority_tiers, published:qd.queue.length} : null;
+  d.preSignals = qd ? qd.queue.filter(s => String(s.provider_id || '').endsWith(key) || String(s.recipient_id || '').endsWith(key)) : null;
+  (d.preSignals || []).forEach(s => {
+    d.obs.pre = true;
+    let checks = s.recommended_checks;
+    try { const arr = JSON.parse(checks); if (Array.isArray(arr)) checks = arr.join(' · '); } catch(_){}
+    d.signals.push({code:s.signal_type, src:'pre', period:s.periodo + (s.mes ? '-' + String(s.mes).padStart(2, '0') : ''),
+      sev:s.severity, conf:s.confidence, typ:'pub', why:s.why_flagged, checks, tier:s.priority_tier,
+      score:s.investigation_priority_score, expl:s.priority_explanation, org:s.organization_name,
+      amount:s.transaction_amount, oc:s.has_purchase_order, origin:'Presupuesto Abierto', raw:s});
+    const y = s.periodo + (s.mes ? (s.mes - 1) / 12 : .5);
+    d.events.push({src:'pre', t:y, k:s.signal_type, d:s.why_flagged, w:'signal'});
+    if (s.provider_or_recipient_name) d.alias.push([s.provider_or_recipient_name, 'Presupuesto Abierto', 'razón social del devengado']);
+  });
+  d.orgs = [...new Map((d.preSignals || []).filter(s => s.organization_name)
+    .map(s => [s.organization_id, {id:s.organization_id, name:s.organization_name, n:0, amount:0}])).values()];
+  (d.preSignals || []).forEach(s => { const o = d.orgs.find(x => x.id === s.organization_id); if (o){ o.n++; o.amount += (s.transaction_amount || 0); } });
+
+  // ---- CGR (sólo por nombre normalizado: la fuente no publica RUT)
+  d.cgr = {byRut:false, cands:[], orgHits:[]};
+  if (cache.cgr){
+    const names = [...new Set(d.alias.map(a => normName(a[0])).filter(Boolean))];
+    const pool = [...(cache.cgr.providers || []).map(p => ({...p, kind:'PROVEEDOR'})),
+                  ...(cache.cgr.organizations || []).map(o => ({...o, kind:'ORGANISMO', provider_id:o.organization_id}))];
+    d.cgr.hasRut = pool.some(p => p.rut);
+    names.forEach(nm => pool.forEach(p => {
+      if (p.normalized_name && normName(p.normalized_name) === nm) d.cgr.cands.push({...p, matched:nm, sim:1});
+    }));
+    // organismos pagadores de esta entidad que sí aparecen auditados por CGR
+    d.orgs.forEach(o => {
+      const hit = (cache.cgr.organizations || []).find(c => normName(c.normalized_name || c.name) === normName(o.name));
+      if (hit) d.cgr.orgHits.push({org:o, cgr:hit});
+    });
+  }
+  if (d.cgr.cands.length || d.cgr.orgHits.length) d.obs.cgr = 'cand';
+  d.cgr.orgHits.forEach(h => {
+    d.signals.push({code:'CGR_ORGANISMO_CONTRAPARTE', src:'cgr', period:'—', sev:'MEDIUM', conf:'LOW', typ:'adv',
+      why:`El organismo pagador «${h.org.name}» registra ${h.cgr.findings} hallazgos CGR (score AML máximo ${h.cgr.aml_relevance_score}).`,
+      checks:'El hallazgo es del organismo, no de esta entidad. Enlace por nombre normalizado, estado CANDIDATE: no atribuir.',
+      origin:'Radar CGR · dashboard'});
+  });
+
+  // ---- OSFL
+  if (cache.osfl){
+    const hit = cache.osfl.find(r => (r.rut || '').toUpperCase() === key);
+    d.osfl = hit || false;
+    if (hit){ d.obs.osl = true; d.events.push({src:'osl', t:2026.4, k:'Inscrita como donataria (Ley 21.440)', d:'Estado: ' + hit.registry_status, w:'perim', url:hit.source_url}); }
+  } else d.osfl = null;
+
+  // ---- Delictual: contexto territorial, sin publicación en Pages
+  d.del = null;
+
+  // ---- alias / conflictos
+  d.alias = [...new Map(d.alias.map(a => [a[0] + '|' + a[1], a])).values()];
+  const distinct = new Set(d.alias.map(a => normName(a[0])));
+  if (distinct.size > 1) d.conflicts.push({t:'Denominaciones distintas entre fuentes',
+    d:`Las fuentes individualizan a esta entidad con ${distinct.size} formas distintas del nombre. La identidad se sostiene en el RUT, no en la razón social; cualquier cruce por nombre hereda esa ambigüedad.`});
+  if (d.cgr.cands.length) d.conflicts.push({t:'Coincidencia CGR por nombre, sin RUT en la fuente',
+    d:`Radar CGR no publica RUT en ninguno de sus ${(cache.cgr ? (cache.cgr.providers || []).length + (cache.cgr.organizations || []).length : 0)} registros de entidad. La coincidencia queda CANDIDATE y no se computa como convergencia.`});
+  if (!rut.valid) d.conflicts.push({t:'Dígito verificador inválido',
+    d:'El RUT consultado no supera la validación de dígito verificador. La clave global ENT-RUT-{RUT} exige RUT válido: sin él, ninguna fuente puede resolver identidad.'});
+
+  // ---- convergencia: sólo fuentes con identidad resuelta por RUT
+  d.converge = ['sii','uaf','pre','san','osl'].filter(k => d.obs[k] === true).length;
+  d.convTotal = ORDER.length;
+
+  // ---- prioridad: la declarada por Presupuesto, nunca inventada
+  const tiers = (d.preSignals || []).map(s => s.priority_tier).filter(Boolean);
+  d.tier = tiers.includes('P1') ? 'P1' : tiers.includes('P2') ? 'P2' : tiers.includes('P3') ? 'P3' : null;
+  d.tierScores = (d.preSignals || []).map(s => s.investigation_priority_score);
+
+  // ---- pares (calculado sobre el universo publicado, no inventado)
+  d.peers = peerGroup(key, enr);
+
+  // ---- vacíos declarados
+  d.gaps = gaps(d);
+  return d;
+}
+
+function pct(arr, v){ const s = arr.slice().sort((a, b) => a - b); let i = 0; while (i < s.length && s[i] < v) i++; return Math.round(i / Math.max(1, s.length - 1) * 100); }
+
+function peerGroup(key, enr){
+  const all = cache.enrich && cache.enrich.entities ? Object.values(cache.enrich.entities) : null;
+  if (!all || !enr) return {ok:false, reason:'sin_enriquecimiento'};
+  const levels = [
+    {label:'misma actividad principal · ' + (enr.main_activity || '—'), rows:all.filter(e => e.main_activity && e.main_activity === enr.main_activity)},
+    {label:'mismo subtipo tributario · ' + (enr.taxpayer_subtype || '—'), rows:all.filter(e => e.taxpayer_subtype && e.taxpayer_subtype === enr.taxpayer_subtype)},
+    {label:'universo enriquecido completo', rows:all},
+  ];
+  const chosen = levels.find(l => l.rows.length >= 20) || levels[levels.length - 1];
+  const band = chosen.rows.map(e => +e.sales_band_code).filter(v => v > 0);
+  const wk = chosen.rows.map(e => +e.workers).filter(v => v >= 0 && !isNaN(v));
+  const yr = e => { const y = parseInt(String(e.start_date || '').slice(0, 4), 10); return y ? 2026 - y : null; };
+  const ages = chosen.rows.map(yr).filter(v => v != null);
+  const myAge = yr(enr);
+  const wps = chosen.rows.filter(e => +e.workers > 0).map(e => (+e.sales_band_code) / (+e.workers));
+  const myWps = (+enr.workers > 0) ? (+enr.sales_band_code) / (+enr.workers) : null;
+  const m = [
+    {k:'Tramo de ventas SII', p:pct(band, +enr.sales_band_code), unit:enr.sales_band_label || ''},
+    {k:'Trabajadores informados', p:pct(wk, +enr.workers), unit:N(enr.workers || 0) + ' dependientes'},
+  ];
+  if (myAge != null) m.push({k:'Antigüedad de la sociedad', p:pct(ages, myAge), unit:myAge + ' años desde el inicio'});
+  if (myWps != null) m.push({k:'Tramo por trabajador', p:pct(wps, myWps), unit:'proxy de intensidad de dotación'});
+  return {ok:true, level:chosen.label, n:chosen.rows.length, sufficient:chosen.rows.length >= 20,
+    fellBack:chosen !== levels[0], universe:all.length, metrics:m};
+}
+
+function gaps(d){
+  const g = [];
+  const st = k => state[k].s;
+  if (d.uaf.truncated) g.push({t:'Registro UAF publicado de forma truncada', s:'PARCIAL',
+    d:`El dashboard publica ${N(d.uaf.shown)} de ${N(d.uaf.total)} entidades del registro (corte ${d.uaf.asOf || 's/f'}). No encontrar el RUT aquí <b>no significa</b> que la entidad no esté inscrita: significa que no es evaluable con lo publicado.`});
+  if (!d.cgr.hasRut) g.push({t:'Radar CGR no publica RUT', s:'SIN_IDENTIDAD',
+    d:'Ninguno de los registros de entidad de CGR trae RUT. Todo cruce es por nombre normalizado y permanece CANDIDATE, por lo que no suma convergencia ni se atribuye a esta entidad.'});
+  if (d.queueMeta) g.push({t:'Cola de Presupuesto publicada parcialmente', s:'PARCIAL',
+    d:`Se publican las ${N(d.queueMeta.published)} señales de mayor prioridad de un total de ${N(d.queueMeta.total)}. La ausencia de señales para un RUT no implica que no existan en la serie completa.`});
+  g.push({t:'Grafo de propiedad no publicado', s:'NO_DISPONIBLE',
+    d:`Radar SII declara ${cache.siiDash && cache.siiDash.kpis ? N(cache.siiDash.kpis.ownership_edges) : '≈2 millones de'} aristas de propiedad, pero el Parquet vive en artefactos de GitHub Actions y no en Pages. Sin él no hay socios, control ni cadena de beneficiario final: la red de esta vista se limita a los organismos pagadores.`});
+  g.push({t:'Contexto territorial sin publicación en Pages', s:'NO_DISPONIBLE',
+    d:'Radar Delictual materializa sus salidas en la rama <code>radar-data</code>, no en <code>docs/</code>. El carril territorial queda vacío por indisponibilidad de la fuente, no por ausencia de contexto.'});
+  g.push({t:'Benchmark de pares de Context Hub no disponible', s:'NO_DISPONIBLE',
+    d:'Context Hub no publica <code>economic_peer_context_v1</code> en Pages. La comparación de esta vista se calcula sobre el universo enriquecido publicado, que es mucho más pequeño y no equivale al grupo de pares canónico.'});
+  if (st('sanEvt') === 'ok' && d.sanEvents && !d.sanEvents.length) g.push({t:'Cobertura parcial de supervisores', s:'PARCIAL',
+    d:'La carga de SP, SUSESO y SCJ es parcial desde 2020 y el backfill sigue abierto. La ausencia de eventos adversos no equivale a inexistencia.'});
+  Object.keys(FEEDS).forEach(k => { if (state[k].s === 'error') g.push({t:'Fuente no disponible: ' + FEEDS[k].label, s:'FALLO',
+    d:`No se pudo leer <code>${E(state[k].url)}</code> (${E(state[k].err || 'error')}). Se conserva el último estado conocido y no se interpreta como cero.`}); });
+  return g;
+}
+
+// ── tipologías y matriz ────────────────────────────────────────────
+const TYP = [
+  {id:'str', n:'Estructural',  short:'Estructural',   d:'Giros, domicilios, ciclo de vida'},
+  {id:'eco', n:'Económica',    short:'Económica',     d:'Tramo de ventas, dotación, patrimonio'},
+  {id:'per', n:'Perímetro',    short:'Perímetro',     d:'Condición de sujeto obligado'},
+  {id:'pub', n:'Contratación', short:'Contratación',  d:'Flujos de gasto público'},
+  {id:'adv', n:'Adversa',      short:'Adversa',       d:'Sanciones y hallazgos'},
+];
+function matrix(d){
+  const m = {};
+  TYP.forEach(t => { m[t.id] = {}; ORDER.forEach(s => m[t.id][s] = 0); });
+  d.signals.forEach(s => { if (m[s.typ]) m[s.typ][s.src] = (m[s.typ][s.src] || 0) + 1; });
+  return m;
+}
+
+// ── tooltip ────────────────────────────────────────────────────────
+let tipEl;
+function tipInit(){ if (!tipEl){ tipEl = document.createElement('div'); tipEl.id = 'e3tip'; document.body.appendChild(tipEl); } }
+function bindTip(node, html){
+  tipInit();
+  node.addEventListener('mouseenter', e => { tipEl.innerHTML = html; tipEl.style.opacity = '1'; moveTip(e); });
+  node.addEventListener('mousemove', moveTip);
+  node.addEventListener('mouseleave', () => { tipEl.style.opacity = '0'; });
+}
+function moveTip(e){
+  const r = tipEl.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+}
+
+// ── cajón de evidencia ─────────────────────────────────────────────
+function drawerEls(){
+  let dr = q('#e3drawer');
+  if (!dr){
+    const s = document.createElement('div'); s.className = 'e3-scrim'; s.id = 'e3scrim';
+    dr = document.createElement('aside'); dr.className = 'e3-drawer'; dr.id = 'e3drawer'; dr.setAttribute('aria-hidden', 'true');
+    dr.innerHTML = `<div class="e3-dh"><div><div class="e3-rk">Cadena de evidencia</div>
+      <h3 id="e3dt" style="font-size:14px;font-weight:800;letter-spacing:-.02em;margin:4px 0 0"></h3></div>
+      <button class="btn" id="e3dx" aria-label="Cerrar" style="padding:4px 9px">✕</button></div>
+      <div class="e3-db" id="e3db"></div>`;
+    document.body.appendChild(s); document.body.appendChild(dr);
+    s.addEventListener('click', closeDrawer);
+    q('#e3dx').addEventListener('click', closeDrawer);
+    addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  }
+  return {dr, sc:q('#e3scrim')};
+}
+function openDrawer(title, html){
+  const {dr, sc} = drawerEls();
+  q('#e3dt').textContent = title; q('#e3db').innerHTML = html;
+  dr.dataset.open = 'true'; sc.dataset.open = 'true'; dr.setAttribute('aria-hidden', 'false');
+  q('#e3dx').focus();
+}
+function closeDrawer(){ const dr = q('#e3drawer'); if (!dr) return; dr.dataset.open = 'false'; q('#e3scrim').dataset.open = 'false'; dr.setAttribute('aria-hidden', 'true'); }
+const fields = rows => rows.filter(Boolean).map(([k, v, tx]) => `<div class="e3-f"><div class="e3-fk">${E(k)}</div><div class="e3-fv ${tx ? 'tx' : ''}">${v}</div></div>`).join('');
+
+// ── gráficos (se dibujan a escala 1:1 midiendo el contenedor) ──────
+const CH = {};
+function mountCharts(root){
+  (root || document).querySelectorAll('[data-e3chart]').forEach(el => {
+    const w = Math.max(300, Math.floor(el.clientWidth));
+    const c = CH[el.dataset.e3chart];
+    if (!c) return;
+    el.innerHTML = c.draw(w);
+    if (c.bind) c.bind();
+  });
+}
+let rzT;
+addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(() => { if (q('#e3root')) mountCharts(q('#e3root')); }, 180); });
+
+const RAMP_L = ['#cde2fb','#9ec5f4','#86b6ef','#6da7ec','#5598e7','#3987e5','#2a78d6','#256abf','#1c5cab','#184f95'];
+const RAMP_D = ['#0d366b','#104281','#184f95','#1c5cab','#256abf','#2a78d6','#3987e5','#5598e7','#6da7ec','#86b6ef'];
+function isDark(){ const t = document.documentElement.getAttribute('data-theme'); if (t === 'dark') return true; if (t === 'light') return false; return matchMedia('(prefers-color-scheme: dark)').matches; }
+const ramp = f => { const r = isDark() ? RAMP_D : RAMP_L; return r[Math.max(0, Math.min(9, Math.round(f * 9)))]; };
+
+let TLFULL = false;
+function timelineChart(W, d){
+  const all = d.events.slice().sort((a, b) => a.t - b.t);
+  if (!all.length) return `<div class="e3-empty">No hay eventos fechados para esta entidad en las fuentes disponibles. Revise los vacíos declarados antes de leerlo como ausencia de hechos.</div>`;
+  const fullA = Math.floor(Math.min(...all.map(e => e.t)) - .4);
+  const fullB = Math.ceil(Math.max(...all.map(e => e.t)) + .6);
+  const wide = (fullB - fullA) > 14;
+  const t0 = (wide && !TLFULL) ? fullB - 12 : fullA;
+  const t1 = fullB;
+  const ev = all.filter(e => e.t >= t0);
+  const hidden = all.length - ev.length;
+  const lanes = ORDER.filter(s => ev.some(e => e.src === s));
+  const laneH = 32, pl = 116, pr = 16, pt = 24, iW = W - pl - pr;
+  const H = pt + lanes.length * laneH + 34;
+  const px = t => pl + ((t - t0) / (t1 - t0)) * iW;
+  let s = '';
+  const step = (t1 - t0) > 14 ? 2 : 1;
+  for (let y = t0; y <= t1; y += step){
+    s += `<line x1="${px(y).toFixed(1)}" y1="${pt - 6}" x2="${px(y).toFixed(1)}" y2="${pt + lanes.length * laneH}" stroke="var(--bd)" stroke-width="1"/>`;
+    s += `<text x="${px(y).toFixed(1)}" y="${pt - 12}" text-anchor="middle" font-size="10" fill="var(--txm)" font-family="'SF Mono',Menlo,monospace">${y}</text>`;
+  }
+  // ventanas de convergencia reales
+  const wins = [];
+  for (let y = t0; y <= t1; y += .5){
+    const set = new Set(ev.filter(e => e.t >= y && e.t < y + 1).map(e => e.src));
+    if (set.size >= 3) wins.push({a:y, b:y + 1, n:set.size});
+  }
+  wins.forEach(w => { s += `<rect x="${px(w.a).toFixed(1)}" y="${pt - 6}" width="${(px(w.b) - px(w.a)).toFixed(1)}" height="${lanes.length * laneH + 6}" fill="rgba(59,130,246,.10)"/>`; });
+  lanes.forEach((sid, i) => {
+    const y = pt + i * laneH + laneH / 2;
+    const cnt = ev.filter(e => e.src === sid).length;
+    s += `<line x1="${pl}" y1="${y}" x2="${pl + iW}" y2="${y}" stroke="var(--bd)" stroke-width="1"/>`;
+    s += `<rect x="0" y="${y - 8}" width="3" height="16" rx="1.5" fill="${svar(sid)}"/>`;
+    s += `<text x="10" y="${y - 1}" font-size="11" font-weight="700" fill="var(--tx)">${E(RADAR[sid].name)}</text>`;
+    s += `<text x="10" y="${y + 10}" font-size="9.5" fill="var(--txm)" font-family="'SF Mono',Menlo,monospace">${cnt} evento${cnt === 1 ? '' : 's'}</text>`;
+  });
+  // agrupa marcas que se solaparían en el mismo carril
+  const clusters = [];
+  lanes.forEach(sid => {
+    let cur = null;
+    ev.filter(e => e.src === sid).forEach(e => {
+      const x = px(e.t);
+      if (cur && Math.abs(x - cur.x) < 11) cur.items.push(e);
+      else { cur = {src:sid, x, items:[e]}; clusters.push(cur); }
+    });
+  });
+  clusters.forEach((c, i) => {
+    const li = lanes.indexOf(c.src);
+    const y = pt + li * laneH + laneH / 2, x = c.x;
+    const adv = c.items.some(e => e.w === 'adv');
+    const life = !adv && c.items.every(e => e.w === 'life' || e.w === 'perim');
+    const r = (adv ? 6 : 5) + (c.items.length > 1 ? 2 : 0);
+    if (adv) s += `<path d="M${x.toFixed(1)},${(y-r).toFixed(1)} L${(x+r).toFixed(1)},${y.toFixed(1)} L${x.toFixed(1)},${(y+r).toFixed(1)} L${(x-r).toFixed(1)},${y.toFixed(1)} Z" fill="${svar(c.src)}" stroke="var(--s1)" stroke-width="1.6" class="e3ev" data-i="${i}" style="cursor:pointer"/>`;
+    else if (life) s += `<rect x="${(x-r+1).toFixed(1)}" y="${(y-r+1).toFixed(1)}" width="${(r*2-2)}" height="${(r*2-2)}" rx="1.5" fill="none" stroke="${svar(c.src)}" stroke-width="2" class="e3ev" data-i="${i}" style="cursor:pointer"/>`;
+    else s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${svar(c.src)}" stroke="var(--s1)" stroke-width="1.6" class="e3ev" data-i="${i}" style="cursor:pointer"/>`;
+    if (c.items.length > 1) s += `<text x="${x.toFixed(1)}" y="${(y + 3.2).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="var(--s1)" pointer-events="none">${c.items.length}</text>`;
+  });
+  wins.forEach(w => { s += `<text x="${(px(w.a) + 3).toFixed(1)}" y="${pt + lanes.length * laneH + 16}" font-size="10" font-weight="700" fill="var(--ac)">${w.n} fuentes</text>`; });
+  CH._tlCl = clusters;
+  return `${wide ? `<div style="display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:11px;color:var(--txm)">
+      <button class="btn" id="e3tlz" style="padding:3px 10px;font-size:11px">${TLFULL ? 'Ver últimos 12 años' : `Ver rango completo (${fullA}–${fullB})`}</button>
+      ${hidden ? `<span>${hidden} evento(s) anterior(es) a ${t0} fuera de la ventana</span>` : '<span>ventana completa</span>'}</div>` : ''}
+  <div style="overflow-x:auto"><svg id="e3tl" viewBox="0 0 ${W} ${H}" width="100%" style="height:auto;display:block" role="img" aria-label="Cronología multi-fuente">${s}</svg></div>
+  <div class="e3-legend">
+    <span class="e3-lg"><span style="width:10px;height:10px;border-radius:50%;background:var(--txm);display:inline-block"></span>señal derivada</span>
+    <span class="e3-lg"><span style="width:9px;height:9px;border:2px solid var(--txm);display:inline-block;border-radius:2px"></span>hecho registral</span>
+    <span class="e3-lg"><span style="width:10px;height:10px;background:var(--txm);display:inline-block;transform:rotate(45deg)"></span>evento adverso</span>
+    <span class="e3-lg"><span class="e3-sw" style="background:rgba(59,130,246,.16)"></span>≥3 fuentes en 12 meses</span>
+  </div>`;
+}
+function bindTimeline(){
+  const z = q('#e3tlz');
+  if (z) z.addEventListener('click', () => { TLFULL = !TLFULL; mountCharts(q('#e3root')); });
+  document.querySelectorAll('#e3tl .e3ev').forEach(n => {
+    const c = CH._tlCl[+n.dataset.i];
+    const head = c.items.length > 1 ? c.items.length + ' eventos' : c.items[0].k;
+    bindTip(n, `<b>${E(head)}</b><span class="k">${E(RADAR[c.src].name)} · ${String(c.items[0].t).slice(0, 4)}</span><br>` +
+      c.items.slice(0, 4).map(e => (c.items.length > 1 ? '· <b>' + E(e.k) + '</b> — ' : '') + E(clip(e.d, 150))).join('<br>') +
+      (c.items.length > 4 ? `<br><span class="k">y ${c.items.length - 4} más</span>` : ''));
+    n.addEventListener('click', () => evidenceForEvent(c.items[0]));
+  });
+}
+
+function matrixChart(W, d){
+  const m = matrix(d);
+  const rowH = 32, labelW = 104, headH = 96, rightPad = 84;
+  const cell = Math.max(28, (W - labelW - rightPad) / ORDER.length);
+  const H = headH + TYP.length * rowH + 8;
+  const maxV = Math.max(1, ...TYP.flatMap(t => ORDER.map(s => m[t.id][s])));
+  let s = '';
+  ORDER.forEach((sid, j) => {
+    const x = labelW + j * cell + cell / 2;
+    s += `<g transform="translate(${x},${headH - 12}) rotate(-90)"><text x="0" y="4" font-size="10" font-weight="600" fill="var(--tx2)">${E(RADAR[sid].name)}</text></g>`;
+    s += `<rect x="${labelW + j * cell + 2}" y="${headH - 6}" width="${cell - 4}" height="2.5" rx="1" fill="${svar(sid)}"/>`;
+  });
+  TYP.forEach((t, i) => {
+    const y = headH + i * rowH;
+    s += `<text x="0" y="${y + rowH / 2 + 4}" font-size="11" font-weight="600" fill="var(--tx)">${E(t.short)}</text>`;
+    let n = 0;
+    ORDER.forEach((sid, j) => {
+      const v = m[t.id][sid]; if (v) n++;
+      const x = labelW + j * cell + 2;
+      const f = v / maxV;
+      s += `<rect x="${x}" y="${y + 3}" width="${cell - 4}" height="${rowH - 8}" rx="3" fill="${v ? ramp(.25 + f * .75) : 'var(--s2)'}" class="e3mc" data-t="${E(t.n)}" data-s="${E(RADAR[sid].name)}" data-v="${v}"/>`;
+      if (v) s += `<text x="${(x + (cell - 4) / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${f > .5 ? '#fff' : (isDark() ? '#dbeafe' : '#0d366b')}" pointer-events="none">${v}</text>`;
+    });
+    const lbl = n >= 2 ? 'corrobora' : n === 1 ? 'fuente única' : '—';
+    s += `<text x="${labelW + ORDER.length * cell + 8}" y="${y + rowH / 2 + 4}" font-size="9.5" font-weight="700" fill="${n >= 2 ? 'var(--ac)' : 'var(--txm)'}">${lbl}</text>`;
+  });
+  return `<div style="overflow-x:auto"><svg id="e3mx" viewBox="0 0 ${W} ${H}" width="100%" style="height:auto;display:block" role="img" aria-label="Matriz de convergencia">${s}</svg></div>`;
+}
+function bindMatrix(){
+  document.querySelectorAll('#e3mx .e3mc').forEach(n => bindTip(n, `<b>${n.dataset.t}</b><span class="k">${n.dataset.s}</span><br>${n.dataset.v === '0' ? 'sin evidencia en esta fuente — no equivale a ausencia del hecho' : n.dataset.v + ' evidencia(s)'}`));
+}
+
+function peerChart(W, d){
+  const p = d.peers;
+  if (!p || !p.ok) return `<div class="e3-empty">No hay datos de enriquecimiento para construir un grupo de pares.</div>`;
+  const rowH = 44, H = p.metrics.length * rowH + 26, mid = W * .5;
+  let s = `<rect x="${W * .25}" y="14" width="${W * .5}" height="${H - 44}" fill="var(--s2)"/>`;
+  s += `<line x1="${mid}" y1="14" x2="${mid}" y2="${H - 30}" stroke="var(--bds)" stroke-width="1"/>`;
+  p.metrics.forEach((m, i) => {
+    const y = 26 + i * rowH, x = (m.p / 100) * W;
+    const extreme = m.p >= 90 || m.p <= 10;
+    const col = extreme ? 'var(--cr)' : 'var(--ac)';
+    s += `<text x="0" y="${y - 6}" font-size="11" font-weight="700" fill="var(--tx)">${E(m.k)}</text>`;
+    s += `<text x="${W}" y="${y - 6}" text-anchor="end" font-size="10" fill="var(--txm)">${E(m.unit)}</text>`;
+    s += `<line x1="${mid}" y1="${y + 6}" x2="${x.toFixed(1)}" y2="${y + 6}" stroke="${col}" stroke-width="2" stroke-linecap="round" opacity=".5"/>`;
+    s += `<circle cx="${x.toFixed(1)}" cy="${y + 6}" r="5" fill="${col}" stroke="var(--s1)" stroke-width="2"/>`;
+    s += `<text x="${(x + (m.p >= 50 ? -10 : 10)).toFixed(1)}" y="${y + 10}" text-anchor="${m.p >= 50 ? 'end' : 'start'}" font-size="10.5" font-weight="700" fill="var(--tx2)" font-family="'SF Mono',Menlo,monospace">p${m.p}</text>`;
+  });
+  s += `<text x="0" y="${H - 8}" font-size="9.5" fill="var(--txm)" font-family="'SF Mono',Menlo,monospace">p0</text>`;
+  s += `<text x="${mid}" y="${H - 8}" text-anchor="middle" font-size="9.5" fill="var(--txm)" font-family="'SF Mono',Menlo,monospace">mediana</text>`;
+  s += `<text x="${W}" y="${H - 8}" text-anchor="end" font-size="9.5" fill="var(--txm)" font-family="'SF Mono',Menlo,monospace">p100</text>`;
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" width="100%" style="height:auto;display:block" role="img" aria-label="Posición frente a pares">${s}</svg></div>`;
+}
+
+function netChart(W, d){
+  if (!d.orgs.length) return `<div class="e3-empty">No hay organismos pagadores publicados para esta entidad. Sin el Parquet de propiedad del Radar SII, esta vista no puede mostrar socios ni control.</div>`;
+  const orgs = d.orgs.slice(0, 8);
+  const H = Math.max(220, 70 + orgs.length * 44);
+  const cx = 118, cy = H / 2, ox = Math.max(280, Math.min(W - 300, W * .48));
+  let s = '';
+  orgs.forEach((o, i) => {
+    const y = 52 + i * ((H - 74) / Math.max(1, orgs.length - 1 || 1));
+    const yy = orgs.length === 1 ? cy : y;
+    const adverse = d.cgr.orgHits.some(h => h.org.id === o.id);
+    s += `<path d="M${cx + 46},${cy} C${(cx + ox) / 2},${cy} ${(cx + ox) / 2},${yy} ${ox - 12},${yy}" fill="none" stroke="${svar('pre')}" stroke-width="${Math.min(4, 1 + o.n / 12).toFixed(1)}" opacity=".7"/>`;
+    s += `<circle cx="${ox}" cy="${yy}" r="13" fill="var(--s3)" stroke="${adverse ? 'var(--cr)' : 'var(--bds)'}" stroke-width="${adverse ? 2.4 : 1.4}" class="e3nn" data-t="${E(o.name)}" data-n="${o.n}" data-a="${adverse ? 1 : 0}"/>`;
+    s += `<text x="${ox + 20}" y="${yy - 1}" font-size="10.5" font-weight="700" fill="var(--tx)">${E(clip(o.name, 34))}</text>`;
+    s += `<text x="${ox + 20}" y="${yy + 11}" font-size="9.5" fill="var(--txm)" font-family="'SF Mono',Menlo,monospace">${o.n} señal${o.n === 1 ? '' : 'es'}${adverse ? ' · CGR' : ''}</text>`;
+  });
+  s += `<circle cx="${cx}" cy="${cy}" r="34" fill="var(--ac)" opacity=".92"/>`;
+  s += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">FOCO</text>`;
+  s += `<text x="${cx}" y="${cy + 52}" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--tx)">${E(d.rut.fmt)}</text>`;
+  return `<div style="overflow-x:auto"><svg id="e3net" viewBox="0 0 ${W} ${H}" width="100%" style="height:auto;display:block" role="img" aria-label="Organismos pagadores">${s}</svg></div>`;
+}
+function bindNet(){
+  document.querySelectorAll('#e3net .e3nn').forEach(n => bindTip(n, `<b>${n.dataset.t}</b><span class="k">${n.dataset.n} señal(es) de gasto público con esta entidad</span>${n.dataset.a === '1' ? '<br>Registra hallazgos CGR propios (enlace por nombre, CANDIDATE)' : ''}`));
+}
+
+// ── render ─────────────────────────────────────────────────────────
+let CUR = null, LENS = 'identidad', RUT = parseRut('94510000-1');
+
+const LENSES = [
+  {id:'identidad',  n:'01', t:'Identidad'},
+  {id:'caracter',   n:'02', t:'Caracterización'},
+  {id:'cronologia', n:'03', t:'Cronología'},
+  {id:'red',        n:'04', t:'Red de exposición'},
+  {id:'senales',    n:'05', t:'Señales y convergencia'},
+  {id:'hipotesis',  n:'06', t:'Hipótesis y decisión'},
+];
+
+function render(){
+  const ct = document.getElementById('ct');
+  ct.innerHTML = `<div id="e3root">
+    <div class="mh"><h1>Entity 360</h1><p>Expediente analítico por entidad · identidad, caracterización, cronología, red, señales e hipótesis, con la evidencia trazada a su fuente</p></div>
+    <div class="e3-bar">
+      <input class="e3-inp" id="e3q" value="${E(RUT.fmt)}" spellcheck="false" aria-label="RUT de la entidad">
+      <button class="btn btn-p" id="e3go">Abrir expediente</button>
+      <span class="e3-hint">RUT con dígito verificador · la identidad del ecosistema es <code style="font-family:'SF Mono',Menlo,monospace">ENT-RUT-{RUT}</code></span>
+      <span class="e3-live" id="e3live"><i></i><span>conectando…</span></span>
     </div>
-    <div class="card" style="border-top:2px solid var(--cr)">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
-        <div>
-          <h2 style="font-size:16px;font-weight:800;letter-spacing:-.03em">${h.n}</h2>
-          <div style="color:var(--tx2);font-size:12px;margin-top:2px">RUT <code class="rut">${h.rut}</code> · ${h.tipo} · Región ${h.reg}</div>
-          <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">${[...new Set(h.sigs.map(s=>s.src))].map(s=>bds(s)).join('')}</div>
-        </div>
-        <div style="text-align:center">${gauge(h.score)}<div style="margin-top:4px"><span class="rk ${cls}">${rl(h.score)}</span></div></div>
+    <div id="e3body"></div>
+  </div>`;
+  q('#e3go').addEventListener('click', () => go(q('#e3q').value));
+  q('#e3q').addEventListener('keydown', e => { if (e.key === 'Enter') go(q('#e3q').value); });
+  q('#e3body').innerHTML = skeleton();
+  boot();
+}
+
+function skeleton(){
+  return `<div class="card">${[92, 60, 74, 40].map(w => `<div class="e3-skel" style="width:${w}%;margin-bottom:10px"></div>`).join('')}
+    <div style="font-size:11.5px;color:var(--txm);margin-top:6px">Leyendo las fuentes publicadas por cada radar…</div></div>`;
+}
+
+function go(v){
+  const r = parseRut(v);
+  if (!r){ q('#e3body').innerHTML = `<div class="card"><div class="e3-empty">«${E(v)}» no es un RUT interpretable. Ingrese el RUT con su dígito verificador.</div></div>`; return; }
+  RUT = r; LENS = 'identidad';
+  q('#e3body').innerHTML = skeleton();
+  boot();
+}
+
+async function boot(){
+  await loadWave(1);
+  liveStatus();
+  CUR = build(RUT);
+  paint();
+  await loadWave(2);
+  liveStatus();
+  CUR = build(RUT);
+  paint();
+}
+
+function liveStatus(){
+  const el = q('#e3live'); if (!el) return;
+  const ks = Object.keys(FEEDS);
+  const ok = ks.filter(k => state[k].s === 'ok').length;
+  const err = ks.filter(k => state[k].s === 'error').length;
+  el.className = 'e3-live' + (err === ks.length ? ' err' : err ? ' off' : '');
+  el.innerHTML = `<i></i><span>${ok}/${ks.length} fuentes en vivo${err ? ' · ' + err + ' sin respuesta' : ''}</span>`;
+  el.title = ks.map(k => FEEDS[k].label + ': ' + state[k].s).join('\n');
+}
+
+function paint(){
+  const d = CUR;
+  q('#e3body').innerHTML = caratula(d) + tabs() + LENSES.map(l => `<section class="e3-pane" id="e3p-${l.id}" ${l.id === LENS ? '' : 'hidden'}></section>`).join('');
+  q('#e3body').querySelectorAll('.e3-tab').forEach(b => b.addEventListener('click', () => { LENS = b.dataset.l; paint(); }));
+  q('#e3body').querySelectorAll('.e3-src').forEach(b => b.addEventListener('click', () => sourceDrawer(b.dataset.s, d)));
+  const pane = q('#e3p-' + LENS);
+  ({identidad:lIdent, caracter:lCar, cronologia:lCron, red:lRed, senales:lSig, hipotesis:lHip}[LENS])(pane, d);
+  mountCharts(q('#e3root'));
+}
+
+function tabs(){
+  return `<div class="e3-tabs" role="tablist">${LENSES.map(l =>
+    `<button class="e3-tab" role="tab" data-l="${l.id}" aria-selected="${l.id === LENS}"><span class="n">${l.n}</span><span class="t">${E(l.t)}</span></button>`).join('')}</div>`;
+}
+
+function resolution(d, sid){
+  const st = k => state[k].s;
+  if (sid === 'sii') return st('enrich') === 'error' ? ['SIN RESPUESTA', 'err'] : d.obs.sii ? ['RESUELTA', 'ok'] : ['SIN COINCIDENCIA', 'na'];
+  if (sid === 'uaf') return st('uaf') === 'error' ? ['SIN RESPUESTA', 'err'] : d.uaf.hit ? ['RESUELTA', 'ok'] : d.uaf.truncated ? ['NO EVALUABLE', 'mid'] : ['SIN COINCIDENCIA', 'na'];
+  if (sid === 'pre') return st('queue') === 'error' ? ['SIN RESPUESTA', 'err'] : st('queue') !== 'ok' ? ['CARGANDO', 'na'] : d.obs.pre ? ['RESUELTA', 'ok'] : ['SIN SEÑALES', 'na'];
+  if (sid === 'san') return st('sanEnt') === 'error' ? ['SIN RESPUESTA', 'err'] : d.obs.san ? ['RESUELTA', 'ok'] : ['SIN COINCIDENCIA', 'na'];
+  if (sid === 'cgr') return st('cgr') === 'error' ? ['SIN RESPUESTA', 'err'] : d.obs.cgr ? ['CANDIDATA', 'mid'] : cache.cgr ? ['SIN COINCIDENCIA', 'na'] : ['CARGANDO', 'na'];
+  if (sid === 'osl') return st('osfl') === 'error' ? ['SIN RESPUESTA', 'err'] : st('osfl') !== 'ok' ? ['CARGANDO', 'na'] : d.osfl ? ['RESUELTA', 'ok'] : ['SIN COINCIDENCIA', 'na'];
+  if (sid === 'del') return ['NO PUBLICADO', 'mid'];
+  return ['—', 'na'];
+}
+const RESCOL = {ok:'var(--cl)', mid:'var(--cm)', err:'var(--cr)', na:'var(--txm)'};
+
+function caratula(d){
+  const name = (d.sii && d.sii.legal_name) || (d.san && d.san.nombre_uaf) || (d.uaf.hit && d.uaf.hit.name) || 'Entidad sin denominación en las fuentes disponibles';
+  const roles = [];
+  if (d.obs.pre) roles.push(['Proveedor o receptor de pagos del Estado', '']);
+  if (d.uaf.hit) roles.push(['Sujeto obligado inscrito (UAF)', 'ok']);
+  else if (d.screen.some(s => s.cls === 'A' || s.cls === 'A_REGISTRO')) roles.push(['Candidato de screening UAF', 'mid']);
+  if (d.obs.san) roles.push([`Con evento adverso · ${d.san ? d.san.supervisores : ''}`, 'cr']);
+  if (d.obs.cgr) roles.push(['Mención CGR candidata', 'mid']);
+  if (d.osfl) roles.push(['Donataria Ley 21.440', '']);
+  if (d.sii && d.sii.tax_status) roles.push([d.sii.tax_status === 'ACTIVE_AS_PUBLISHED' ? 'Contribuyente activo según publicación' : d.sii.tax_status, '']);
+
+  const meta = [];
+  meta.push(`<code style="font-family:'SF Mono',Menlo,monospace;color:var(--tx);font-weight:600">${E(d.rut.fmt)}</code>`);
+  meta.push(d.rut.valid ? `<span class="e3-pill ok"><i></i>DV verificado</span>` : `<span class="e3-pill cr"><i></i>DV inválido</span>`);
+  if (d.sii && d.sii.taxpayer_type) meta.push(`<span class="e3-sep"></span><span>${E(d.sii.taxpayer_subtype || d.sii.taxpayer_type)}</span>`);
+  if (d.sii && d.sii.main_region) meta.push(`<span class="e3-sep"></span><span>${E(d.sii.main_region)}</span>`);
+  if (d.sii && d.sii.start_date) meta.push(`<span class="e3-sep"></span><span>Inicio ${E(d.sii.start_date)}</span>`);
+  meta.push(`<span class="e3-sep"></span><span style="font-family:'SF Mono',Menlo,monospace;color:var(--txm)">ENT-RUT-${E(d.rut.key)}</span>`);
+
+  const tier = d.tier
+    ? `<span class="e3-tier ${d.tier.toLowerCase()}">${d.tier}</span>`
+    : `<span class="e3-tier na">sin señal publicada</span>`;
+  const cov = Object.keys(FEEDS).filter(k => state[k].s === 'ok').length;
+  const covPct = Math.round(cov / Object.keys(FEEDS).length * 100);
+
+  return `<div class="e3-head">
+    <div class="e3-htop">
+      <div>
+        <div class="e3-rk">Expediente analítico</div>
+        <h2 class="e3-name" style="margin-top:5px">${E(name)}</h2>
+        <div class="e3-meta">${meta.join('')}</div>
+        <div class="e3-roles">${roles.map(r => `<span class="e3-pill ${r[1]}"><i></i>${E(r[0])}</span>`).join('') || '<span class="e3-pill"><i></i>Sin roles observados en las fuentes disponibles</span>'}</div>
       </div>
-      <div class="g3" style="margin-bottom:13px">
-        <div style="background:var(--cr-bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:9px;color:var(--cr);font-weight:800;text-transform:uppercase;letter-spacing:.5px">Señales directas</div><div style="font-size:26px;font-weight:800;color:var(--cr);margin:4px 0">${h.sigs.length}</div></div>
-        <div style="background:var(--cm-bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:9px;color:var(--cm);font-weight:800;text-transform:uppercase;letter-spacing:.5px">Fuentes</div><div style="font-size:26px;font-weight:800;color:var(--cm);margin:4px 0">${new Set(h.sigs.map(s=>s.src)).size}</div></div>
-        <div style="background:var(--uaf-bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:9px;color:var(--uaf);font-weight:800;text-transform:uppercase;letter-spacing:.5px">Convergencia</div><div style="font-size:26px;font-weight:800;color:var(--uaf);margin:4px 0">Alta</div></div>
+      <div class="e3-reads">
+        <div class="e3-read"><span class="e3-rk">Convergencia</span>
+          <div class="e3-rv">${d.converge}<small>/ ${d.convTotal}</small></div>
+          <div class="e3-rc">fuentes independientes que resuelven esta entidad por RUT</div></div>
+        <div class="e3-read"><span class="e3-rk">Prioridad de revisión</span>
+          <div class="e3-rv" style="font-size:18px">${tier}</div>
+          <div class="e3-rc">${d.tier ? 'declarada por Presupuesto Abierto · orden de trabajo, no probabilidad de delito' : 'no hay señal de esta entidad en la cola publicada'}</div></div>
+        <div class="e3-read"><span class="e3-rk">Fuentes en línea</span>
+          <div class="e3-rv">${covPct}<small>%</small></div>
+          <div class="e3-rc">${cov} de ${Object.keys(FEEDS).length} archivos publicados respondieron</div></div>
       </div>
-      <div class="sigs" style="margin-bottom:12px">${h.sigs.map(s=>scs(s.src,s.tx)).join('')}</div>
-      <div class="hyp"><div class="hyp-lbl">Hipótesis analítica</div><div class="hyp-tx">${h.hyp}</div></div>
-      <div class="g2" style="margin-top:14px">
-        <div><div class="ct">Contribución de señales</div>
-          ${hbar(h.sigs.map(s=>({l:(SM[s.src]?.l||s.src),v:s.w,c:SM[s.src]?.c||'#888'})),W4,140,60)}
-        </div>
-        <div>
-          <div class="ct">Próximos pasos</div>
-          ${h.nxt.map(s=>`<div style="padding:6px 0;font-size:12px;border-bottom:1px solid var(--bd);color:var(--tx2)">→ ${s}</div>`).join('')}
-        </div>
+    </div>
+    <div class="e3-ribbon">${ORDER.map(sid => {
+      const [txt, cls] = resolution(d, sid);
+      return `<button class="e3-src" data-s="${sid}" style="--e3c:${svar(sid)}">
+        <span class="e3-sn">${E(RADAR[sid].name)}</span>
+        <span class="e3-ss" style="color:${RESCOL[cls]}"><i class="e3-dot" style="background:${RESCOL[cls]}"></i>${txt}</span>
+        <span class="e3-sa">${E(RADAR[sid].repo)}</span></button>`;
+    }).join('')}</div>
+  </div>`;
+}
+
+const lead = (h, p) => `<div class="e3-lead"><h2>${h}</h2><p>${p}</p></div>`;
+
+// ── 01 identidad ───────────────────────────────────────────────────
+function lIdent(el, d){
+  const rows = ORDER.map(sid => {
+    const [txt, cls] = resolution(d, sid);
+    const feed = Object.keys(FEEDS).find(k => FEEDS[k].radar === sid);
+    const method = sid === 'cgr' ? 'EXACT_NORMALIZED_NAME' : sid === 'del' ? 'CL-COM (territorio)' : 'RUT_EXACT';
+    const conf = cls === 'ok' ? '1.00' : cls === 'mid' ? '0.00' : '—';
+    return `<tr>
+      <td><span class="e3-pill out" style="color:${svar(sid)}"><i></i>${E(RADAR[sid].name)}</span></td>
+      <td><span style="color:${RESCOL[cls]};font-weight:700;font-size:11px">${txt}</span></td>
+      <td style="font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--tx2)">${method}</td>
+      <td style="text-align:right;font-weight:600;font-variant-numeric:tabular-nums">${conf}</td>
+      <td style="font-size:11px;color:var(--tx2)">${feed ? E(FEEDS[feed].label) : 'sin publicación en Pages'}</td>
+      <td>${feed ? `<span class="e3-pill ${state[feed].s === 'ok' ? 'ok' : state[feed].s === 'error' ? 'cr' : ''}"><i></i>${state[feed].s}</span>` : '<span class="e3-pill"><i></i>n/d</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = lead('Quién es esta entidad, y con qué certeza',
+    'Antes de cualquier conclusión, el expediente declara cómo resolvió la identidad en cada fuente. Una entidad puede estar resuelta por RUT en un radar y ser sólo una coincidencia de nombre en otro: toda inferencia hereda la certeza del eslabón más débil.') + `
+    <div class="g21">
+      <div class="card"><div class="ct">Resolución de identidad por fuente</div>
+        <div class="e3-scroll"><table class="dtbl"><thead><tr><th>Fuente</th><th>Identidad</th><th>Método</th><th style="text-align:right">Conf.</th><th>Archivo consultado</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="e3-note"><strong>La clave global exige RUT válido.</strong> Sin dígito verificador conforme, una fuente aporta candidatos pero nunca identidad. Sólo las fuentes en estado RESUELTA cuentan para la convergencia de la carátula.</div>
+      </div>
+      <div class="card"><div class="ct">Conflictos abiertos</div>
+        ${d.conflicts.length ? d.conflicts.map(c => `<div class="e3-item"><div class="e3-mk">!</div><div><h4>${E(c.t)}</h4><p>${c.d}</p></div></div>`).join('')
+          : '<div class="e3-empty">Sin conflictos de identidad detectados entre las fuentes disponibles.</div>'}
+      </div>
+    </div>
+    <div class="card"><div class="ct">Denominaciones observadas</div>
+      ${d.alias.length ? `<div class="e3-scroll"><table class="dtbl"><thead><tr><th>Denominación</th><th>Fuente</th><th>Campo</th></tr></thead><tbody>${
+        d.alias.map(a => `<tr><td style="font-weight:600">${E(a[0])}</td><td style="color:var(--tx2)">${E(a[1])}</td><td style="font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--txm)">${E(a[2])}</td></tr>`).join('')}</tbody></table></div>`
+        : '<div class="e3-empty">Ninguna fuente disponible publica una denominación para este RUT.</div>'}
+    </div>`;
+}
+
+// ── 02 caracterización ─────────────────────────────────────────────
+function lCar(el, d){
+  const s = d.sii;
+  const ficha = s ? [
+    ['Estado tributario', s.tax_status === 'ACTIVE_AS_PUBLISHED' ? 'Activo según publicación' : (s.tax_status || '—')],
+    ['Tipo de contribuyente', s.taxpayer_type || '—'],
+    ['Subtipo', (s.taxpayer_subtype || '—') + (s.taxpayer_subtype_code ? ' · ' + s.taxpayer_subtype_code : '')],
+    ['Inicio de actividades', s.start_date || 'sin dato publicado'],
+    ['Término de giro', s.termination_date || 'sin registro'],
+    ['Actividad principal', s.main_activity || '—'],
+    ['ACTECO vigentes', String((s.acteco || []).length)],
+    ['Región principal', s.main_region || '—'],
+    ['Año comercial observado', String(s.commercial_year || '—')],
+    ['Tramo de ventas', s.sales_band_label || '—'],
+    ['Trabajadores informados', s.workers == null ? '—' : N(s.workers)],
+    ['Capital propio negativo', s.negative_equity_band ? 'informado' : 'no informado'],
+    ['Años con historia', (s.history_available_years || []).join(', ') || '—'],
+  ] : null;
+
+  const trig = d.screen.filter(x => x.cls);
+  const actRows = d.screen.length ? d.screen.map(a => {
+    const pill = a.cls === 'A' ? '<span class="e3-pill cr"><i></i>A · gatillante</span>'
+      : a.cls === 'A_REGISTRO' ? '<span class="e3-pill hi"><i></i>A · registro externo</span>'
+      : a.cls === 'B' ? '<span class="e3-pill mid"><i></i>B · candidato</span>'
+      : '<span class="e3-pill"><i></i>sin clase gatillante</span>';
+    return `<tr><td style="font-family:'SF Mono',Menlo,monospace;font-weight:600">${E(a.code)}</td>
+      <td style="font-size:11px;color:var(--tx2);max-width:250px">${E(a.glosa)}</td>
+      <td><span class="e3-pill ${/VIGENTE/i.test(a.estado) ? 'ok' : ''}"><i></i>${E(a.estado || '—')}</span></td>
+      <td style="font-size:11px">${a.sector ? E(a.sector) : '<span style="color:var(--txm)">sin equivalencia en la política</span>'}</td>
+      <td>${pill}</td></tr>`;
+  }).join('') : '';
+
+  CH.peers = {draw:w => peerChart(w, d)};
+
+  el.innerHTML = lead('Qué es esta entidad, y cómo se compara',
+    'Descripción registral y posición frente a entidades comparables. Un tramo de ventas alto no dice nada por sí solo: dice algo cuando se lee contra un grupo de pares, con el tamaño de ese grupo a la vista.') + `
+    <div class="g12">
+      <div class="card"><div class="ct">Ficha registral</div>
+        ${ficha ? `<dl class="e3-dl">${ficha.map(([k, v]) => `<dt>${E(k)}</dt><dd>${E(v)}</dd>`).join('')}</dl>
+        <div class="e3-note">Campos SII entregados por el enriquecimiento de Presupuesto Abierto. Cortes declarados: estado registral y ACTECO ${E((d.enrichMeta && d.enrichMeta.RADAR_SII && d.enrichMeta.RADAR_SII.published_updates && d.enrichMeta.RADAR_SII.published_updates.sii_activities_current) || 's/f')}; ventas y trabajadores, último año comercial publicado.</div>`
+        : `<div class="e3-empty">Este RUT no está en el universo enriquecido publicado (${cache.enrich ? N(Object.keys(cache.enrich.entities).length) : '—'} entidades). La ficha registral completa exige el Parquet del Radar SII, que no se publica en Pages.</div>`}
+      </div>
+      <div class="card"><div class="ct">Posición frente a pares</div>
+        ${d.peers && d.peers.ok ? `<div style="font-size:11px;color:var(--txm);margin:-6px 0 12px">Grupo: <b style="color:var(--tx2)">${E(d.peers.level)}</b> · n=${N(d.peers.n)}${d.peers.fellBack ? ' · se bajó de nivel por grupo insuficiente' : ''}${d.peers.sufficient ? '' : ' · <span style="color:var(--cm)">grupo insuficiente (&lt;20), leer con reserva</span>'}</div>` : ''}
+        <div data-e3chart="peers"></div>
+        <div class="e3-note warn"><strong>No es el grupo de pares canónico.</strong> Context Hub define el benchmark sobre ACTECO × comuna × año con un mínimo de 20 pares, pero no publica esa tabla en Pages. Lo anterior se calcula sobre el universo enriquecido publicado (${cache.enrich ? N(Object.keys(cache.enrich.entities).length) : '—'} entidades), que es una muestra sesgada hacia proveedores del Estado.</div>
+      </div>
+    </div>
+    <div class="card"><div class="ct">Giros vigentes y perímetro UAF</div>
+      ${actRows ? `<div class="e3-scroll"><table class="dtbl"><thead><tr><th>ACTECO</th><th>Glosa</th><th>Estado</th><th>Sector UAF compatible</th><th>Clase de screening</th></tr></thead><tbody>${actRows}</tbody></table></div>`
+        : '<div class="e3-empty">Sin ACTECO publicados para este RUT.</div>'}
+      <div class="e3-note ${trig.length ? 'warn' : ''}">
+        <strong>${trig.length ? trig.length + ' giro(s) con clase gatillante.' : 'Ningún giro alcanza clase gatillante.'}</strong>
+        La clase proviene de <code>${E(SCREEN_SRC)}</code>. Una coincidencia ACTECO señala compatibilidad sectorial y <b>no acredita</b> la calidad jurídica de sujeto obligado; la clase A_REGISTRO depende de una autorización que no se deduce del código.
+        ${d.uaf.truncated ? ` El registro UAF publicado está truncado a ${N(d.uaf.shown)} de ${N(d.uaf.total)} filas, de modo que la inscripción <b>no es verificable</b> con lo disponible.` : ''}
       </div>
     </div>`;
 }
+
+// ── 03 cronología ──────────────────────────────────────────────────
+function lCron(el, d){
+  CH.tl = {draw:w => timelineChart(w, d), bind:bindTimeline};
+  const byYear = {};
+  d.events.forEach(e => { const y = Math.floor(e.t); (byYear[y] = byYear[y] || new Set()).add(e.src); });
+  const conv = Object.entries(byYear).filter(([, s]) => s.size >= 2).sort((a, b) => b[0] - a[0]);
+  el.innerHTML = lead('Cuándo ocurrió cada cosa, y qué coincidió con qué',
+    'Una entidad de riesgo casi nunca se detecta por un hecho aislado, sino por la secuencia. Cada fuente ocupa su propio carril; el sombreado marca las ventanas donde tres o más fuentes independientes registran movimiento dentro de doce meses.') + `
+    <div class="card"><div class="ct">Cronología multi-fuente</div>
+      <div data-e3chart="tl"></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ct">Años con coincidencia entre fuentes</div>
+        ${conv.length ? conv.map(([y, s]) => `<div class="e3-item"><div class="e3-mk">${s.size}</div><div><h4>${y}</h4>
+          <p>${[...s].map(x => RADAR[x].name).join(' · ')}</p></div></div>`).join('')
+          : '<div class="e3-empty">Ninguna coincidencia temporal entre fuentes distintas.</div>'}
+        <div class="e3-note">La coincidencia mide <strong>corroboración entre fuentes independientes</strong>, no intensidad de riesgo. Varias señales del mismo radar siguen siendo una sola fuente.</div>
+      </div>
+      <div class="card"><div class="ct">Qué no aparece en esta cronología</div>
+        ${d.gaps.filter(g => g.s !== 'FALLO').slice(0, 4).map(g => `<div class="e3-item"><div class="e3-mk">?</div><div><h4>${E(g.t)}</h4><p>${g.d}</p></div></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── 04 red ─────────────────────────────────────────────────────────
+function lRed(el, d){
+  CH.net = {draw:w => netChart(w, d), bind:bindNet};
+  const rows = d.orgs.map(o => {
+    const hit = d.cgr.orgHits.find(h => h.org.id === o.id);
+    return `<tr><td style="font-weight:600">${E(o.name)}</td>
+      <td style="font-family:'SF Mono',Menlo,monospace;font-size:11px">${E(o.id || '—')}</td>
+      <td><span class="e3-pill out" style="color:${svar('pre')}"><i></i>Presupuesto</span></td>
+      <td><span class="e3-pill ok"><i></i>Registral</span></td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${o.n}</td>
+      <td style="text-align:right;font-variant-numeric:tabular-nums">${o.amount ? '$' + N(Math.round(o.amount)) : '—'}</td>
+      <td style="font-size:11px;color:var(--tx2)">${hit ? `Organismo con ${hit.cgr.findings} hallazgos CGR · enlace por nombre, CANDIDATE` : 'Sin hallazgos CGR asociados en lo publicado'}</td></tr>`;
+  }).join('');
+  el.innerHTML = lead('Con quién se conecta, por qué vía y con qué evidencia',
+    'La red no propaga puntajes. Muestra vínculos observados con su tipo, su fuente y su método de aserción, para que el analista decida si significan algo. Con los datos publicados hoy sólo es reconstruible el tramo entidad ↔ organismo pagador.') + `
+    <div class="e3-note warn" style="margin:0 0 14px"><strong>Una relación no transfiere riesgo.</strong> Compartir organismo contratante, domicilio o actividad no crea ni hereda riesgo AML. Aquí no existe un score de red: existen vínculos con evidencia, y cada uno vale lo que vale su fuente.</div>
+    <div class="g21">
+      <div class="card"><div class="ct">Organismos pagadores</div>
+        <div data-e3chart="net"></div>
+        <div class="e3-legend">
+          <span class="e3-lg"><span style="width:11px;height:11px;border-radius:50%;background:var(--s3);border:1.4px solid var(--bds);display:inline-block"></span>organismo</span>
+          <span class="e3-lg"><span style="width:11px;height:11px;border-radius:50%;background:var(--s3);border:2.4px solid var(--cr);display:inline-block"></span>con hallazgos CGR propios</span>
+          <span class="e3-lg">grosor del vínculo = nº de señales</span>
+        </div>
+      </div>
+      <div class="card"><div class="ct">Lo que falta para que esto sea una red</div>
+        <div class="e3-item"><div class="e3-mk">?</div><div><h4>Propiedad y control</h4>
+          <p>Radar SII declara ${cache.siiDash && cache.siiDash.kpis ? N(cache.siiDash.kpis.ownership_edges) : '≈2.000.000'} aristas de propiedad y ${cache.siiDash && cache.siiDash.kpis ? N(cache.siiDash.kpis.ownership_societies) : '—'} sociedades, pero el Parquet se entrega como artefacto de GitHub Actions. Publicar <code>ownership_edges</code> por RUT en <code>docs/data/</code> habilitaría socios, participación y domicilios compartidos.</p></div></div>
+        <div class="e3-item"><div class="e3-mk">?</div><div><h4>Beneficiario final</h4>
+          <p>Ninguna fuente pública abierta entrega la cadena de beneficiario final. Aunque se publicara el grafo de propiedad, seguiría siendo propiedad directa registral, no control efectivo.</p></div></div>
+        <div class="e3-item"><div class="e3-mk">?</div><div><h4>Identidad en CGR</h4>
+          <p>CGR no publica RUT en sus entidades, de modo que sus 34 proveedores y 24 organismos sólo pueden enlazarse por nombre normalizado, con estado CANDIDATE.</p></div></div>
+      </div>
+    </div>
+    <div class="card"><div class="ct">Vínculos observados</div>
+      ${rows ? `<div class="e3-scroll"><table class="dtbl"><thead><tr><th>Contraparte</th><th>ID</th><th>Fuente</th><th>Aserción</th><th style="text-align:right">Señales</th><th style="text-align:right">Monto observado</th><th>Lectura</th></tr></thead><tbody>${rows}</tbody></table></div>`
+        : '<div class="e3-empty">Sin contrapartes publicadas para esta entidad.</div>'}
+    </div>`;
+}
+
+// ── 05 señales ─────────────────────────────────────────────────────
+const SEV = {HIGH:{c:'cr', v:'--cr', l:'Alta'}, MEDIUM:{c:'hi', v:'--ch', l:'Media'}, LOW:{c:'', v:'--txm', l:'Baja'}};
+function lSig(el, d){
+  CH.mx = {draw:w => matrixChart(w, d), bind:bindMatrix};
+  const counters = autoCounters(d);
+  const sigs = d.signals.length ? d.signals.map((s, i) => {
+    const sv = SEV[s.sev] || SEV.LOW;
+    const typ = TYP.find(t => t.id === s.typ);
+    return `<div class="e3-sig">
+      <span class="e3-stripe" style="background:var(${sv.v})"></span>
+      <div>
+        <div class="e3-code">${E(s.code)}</div>
+        <div class="e3-why">${E(s.why)}</div>
+        ${s.checks ? `<div class="e3-chk"><b style="color:var(--tx2)">Descartes obligatorios:</b> ${E(s.checks)}</div>` : ''}
+        <div class="e3-tags">
+          <span class="e3-pill out" style="color:${svar(s.src)}"><i></i>${E(RADAR[s.src].name)}</span>
+          ${typ ? `<span class="e3-pill">${E(typ.n)}</span>` : ''}
+          <span class="e3-pill" style="font-family:'SF Mono',Menlo,monospace">${E(s.period)}</span>
+          ${s.tier ? `<span class="e3-pill ${s.tier === 'P1' ? 'cr' : s.tier === 'P2' ? 'hi' : ''}"><i></i>${s.tier}</span>` : ''}
+          <button class="e3-link" data-sig="${i}">Evidencia</button>
+        </div>
+      </div>
+      <div class="e3-right"><span class="e3-pill ${sv.c}"><i></i>Severidad ${sv.l}</span>
+        <span style="font-size:10px;color:var(--txm)">confianza ${E(String(s.conf).toLowerCase())}</span></div>
+    </div>`;
+  }).join('') : '<div class="e3-empty">Ninguna fuente disponible publica señales para este RUT. Con la cola de Presupuesto truncada y el registro UAF parcial, esto no equivale a ausencia de señales.</div>';
+
+  el.innerHTML = lead('Qué dice cada señal, cuánto se corrobora y qué la contradice',
+    'Esta vista sustituye el puntaje único. En su lugar: una matriz que separa la corroboración real de la repetición de una misma fuente, el catálogo de señales con la regla y los descartes que cada radar exige, los contra-indicios y los vacíos declarados.') + `
+    <div class="g2">
+      <div class="card"><div class="ct">Matriz de convergencia</div>
+        <div data-e3chart="mx"></div>
+        <div class="e3-note"><strong>Cómo leerla.</strong> Una fila con celdas en varias columnas es corroboración entre radares independientes. Una fila oscura en una sola columna es una fuente insistiendo, y pesa mucho menos aunque sume más señales.</div>
+      </div>
+      <div class="card"><div class="ct">Contra-indicios</div>
+        ${counters.length ? counters.map(c => `<div class="e3-item"><div class="e3-mk good">−</div><div><h4>${E(c.t)}</h4><p>${c.d}</p></div></div>`).join('')
+          : '<div class="e3-empty">No se derivaron contra-indicios automáticos. Los contra-indicios documentales (contratos marco, fusiones, hitos contractuales) los aporta el analista al instruir el expediente.</div>'}
+        <div class="e3-note">Los descartes que exige cada catálogo — contratos marco, facturación periódica, estados de pago, monopolios técnicos — son contra-indicios en potencia. Un expediente que no los busca no es un análisis.</div>
+      </div>
+    </div>
+    <div class="card"><div class="ct">Señales gobernadas · ${d.signals.length}</div>${sigs}</div>
+    <div class="card"><div class="ct">Vacíos declarados · ${d.gaps.length}</div>
+      ${d.gaps.map(g => `<div class="e3-item"><div class="e3-mk">?</div><div><h4>${E(g.t)}</h4><p>${g.d}</p>
+        <div style="margin-top:5px"><span class="e3-pill ${g.s === 'FALLO' ? 'cr' : g.s === 'PARCIAL' ? 'mid' : ''}"><i></i>${E(g.s.replace('_', ' '))}</span></div></div></div>`).join('')}
+      <div class="e3-note"><strong>La ausencia de dato no es un cero.</strong> Todos los radares declaran <code>source_failure_is_zero = false</code> y preservan el último snapshot válido. Esta vista replica esa regla: nada de lo anterior se computa como evidencia negativa.</div>
+    </div>`;
+  el.querySelectorAll('[data-sig]').forEach(b => b.addEventListener('click', () => evidenceForSignal(d.signals[+b.dataset.sig])));
+}
+
+function autoCounters(d){
+  const c = [];
+  const withOc = (d.preSignals || []).filter(s => s.has_purchase_order);
+  if (withOc.length) c.push({t:`${withOc.length} de ${d.preSignals.length} señales tienen orden de compra asociada`,
+    d:'El catálogo de Presupuesto exige descartar hitos contractuales y estados de pago legítimos antes de interpretar un monto atípico. La existencia de OC es el primer descarte documental disponible.'});
+  if (d.cgr.cands.length || d.cgr.orgHits.length) c.push({t:'Los hallazgos CGR no están atribuidos a esta entidad',
+    d:'El enlace es por nombre normalizado y permanece CANDIDATE. Mientras CGR no publique RUT, cualquier lectura adversa apoyada en esos hallazgos es refutable por error de identidad.'});
+  if (d.uaf.hit) c.push({t:'La entidad sí figura en el registro UAF publicado',
+    d:'Está inscrita como ' + E(d.uaf.hit.entity_type) + ', de modo que la compatibilidad sectorial de sus ACTECO no configura una brecha de inscripción.'});
+  const nonLaft = (d.sanEvents || []).filter(e => !e.laft_directo);
+  if (nonLaft.length) c.push({t:`${nonLaft.length} evento(s) adverso(s) sin materia ALA/CFT directa`,
+    d:'Radar Sanciones marca <code>laft_directo = false</code> para ' + nonLaft.length + ' de los eventos: son materias de conducta de mercado o cumplimiento regulatorio, no de lavado de activos. Una sanción prudencial no acredita LA/FT.'});
+  if (d.sii && d.sii.workers > 10) c.push({t:'Dotación informada consistente con la operación',
+    d:`La entidad informa ${N(d.sii.workers)} trabajadores dependientes, lo que debilita la lectura de sociedad instrumental sin capacidad operativa real.`});
+  return c;
+}
+
+// ── 06 hipótesis (ACH interactivo) ─────────────────────────────────
+const HYPS = [
+  {id:'H1', t:'Vehículo de canalización', d:'La entidad se usa para canalizar y justificar fondos de origen no acreditado a través de contratación pública.'},
+  {id:'H2', t:'Operación económica genuina', d:'El patrón se explica por la escala real de la operación, su industria y su relación contractual con el Estado.'},
+  {id:'H3', t:'Sociedad instrumental de un tercero', d:'La entidad es controlada de hecho por un tercero no registrado y los titulares formales actúan por cuenta ajena.'},
+  {id:'H4', t:'Error de identidad', d:'Parte de la evidencia adversa pertenece a otra entidad y fue asociada por coincidencia de nombre.'},
+];
+let ACH = null;
+function achRows(d){
+  const rows = [];
+  d.signals.slice(0, 14).forEach(s => rows.push({e:s.code + ' · ' + clip(s.why, 96), w:s.sev === 'HIGH' ? 3 : s.sev === 'MEDIUM' ? 2 : 1, src:s.src,
+    v:{H1:'n', H2:'n', H3:'n', H4:s.src === 'cgr' ? 'c' : 'n'}}));
+  if (d.rut.valid) rows.push({e:'RUT válido y resuelto en ' + d.converge + ' fuente(s) independiente(s)', w:3, src:'sii', v:{H1:'n', H2:'n', H3:'n', H4:'i'}});
+  if (d.obs.pre) rows.push({e:'Los pagos del Estado están asociados a este RUT, no a un nombre', w:3, src:'pre', v:{H1:'n', H2:'n', H3:'n', H4:'i'}});
+  if (d.cgr.cands.length || d.cgr.orgHits.length) rows.push({e:'Los hallazgos CGR se vinculan sólo por nombre normalizado', w:2, src:'cgr', v:{H1:'n', H2:'n', H3:'n', H4:'c'}});
+  return rows;
+}
+function lHip(el, d){
+  if (!ACH || ACH.key !== d.rut.key) ACH = {key:d.rut.key, rows:achRows(d)};
+  const score = h => ACH.rows.reduce((a, r) => a + (r.v[h] === 'i' ? r.w : 0), 0);
+  const cons = h => ACH.rows.reduce((a, r) => a + (r.v[h] === 'c' ? r.w : 0), 0);
+  const ranked = HYPS.map(h => ({...h, inc:score(h.id), con:cons(h.id)})).sort((a, b) => a.inc - b.inc);
+  const maxInc = Math.max(1, ...ranked.map(r => r.inc));
+  const glyph = {c:['e3-c', '+'], i:['e3-i', '−'], n:['e3-n', '·']};
+  const diag = r => new Set(HYPS.map(h => r.v[h.id])).size > 1;
+  const cells = ACH.rows.length * HYPS.length;
+  const judged = ACH.rows.reduce((a, r) => a + HYPS.filter(h => r.v[h.id] !== 'n').length, 0);
+  const tie = ranked.length > 1 && ranked[0].inc === ranked[1].inc;
+  const tied = ranked.filter(r => r.inc === ranked[0].inc).length;
+
+  el.innerHTML = lead('Qué explicaciones compiten, y cuál resiste la evidencia',
+    'El expediente no defiende una hipótesis: enfrenta varias, incluida la de que la evidencia adversa pertenezca a otra entidad. Siguiendo el análisis de hipótesis en competencia, una hipótesis no se elige por la evidencia que la confirma, sino por la que no logra refutarla.') + `
+    <div class="g2">
+      <div class="card"><div class="ct">Hipótesis en competencia</div>
+        ${ranked.map((h, i) => `<div style="padding:12px 0;border-bottom:${i < ranked.length - 1 ? '1px solid var(--bd)' : '0'}">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+            <div style="font-size:12.5px;font-weight:700"><span style="font-family:'SF Mono',Menlo,monospace;color:var(--txm)">${h.id}</span> · ${E(h.t)}</div>
+            <span class="e3-pill ${i === 0 && !tie ? 'ok' : ''}">${i === 0 && !tie ? 'mejor resiste' : 'inconsistencia ' + h.inc}</span>
+          </div>
+          <p style="margin:4px 0 8px;font-size:11.5px;color:var(--tx2);line-height:1.55">${E(h.d)}</p>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:5px;border-radius:3px;background:var(--s3);overflow:hidden"><div style="height:100%;width:${(h.inc / maxInc * 100).toFixed(0)}%;background:var(--cr);border-radius:3px"></div></div>
+            <span style="font-size:10.5px;color:var(--txm);font-family:'SF Mono',Menlo,monospace;white-space:nowrap">${h.inc} inc · ${h.con} cons</span>
+          </div></div>`).join('')}
+        <div class="e3-note">${tie
+          ? `<strong>${tied} hipótesis empatadas en ${ranked[0].inc} de inconsistencia.</strong> Con ${judged} de ${cells} celdas evaluadas, la evidencia todavía no las distingue: ninguna «gana». Marque las celdas que faltan, o registre cuál diligencia las separaría.`
+          : `<strong>Se puntúa por inconsistencia</strong> (${judged} de ${cells} celdas evaluadas). La hipótesis que menos contradicciones acumula es la que mejor resiste, no la más probable.`}</div>
+      </div>
+      <div class="card"><div class="ct">Disposición del expediente</div>
+        <div style="display:flex;gap:8px;flex-direction:column">
+          ${[['Escalar a reporte', 'Deriva a la unidad competente con el paquete de evidencia completo.'],
+             ['Mantener en vigilancia', 'Reevaluación al cambiar cualquier fuente del expediente.'],
+             ['Archivar con fundamento', 'Se conserva la traza; no vuelve a la cola sin evidencia nueva.']]
+            .map((o, i) => `<button class="e3-opt" aria-pressed="${i === 1}"><b>${E(o[0])}</b><span>${E(o[1])}</span></button>`).join('')}
+        </div>
+        <div style="margin-top:12px">
+          <label class="e3-rk" for="e3just" style="display:block;margin-bottom:5px">Fundamento de la decisión</label>
+          <textarea id="e3just" rows="4" style="width:100%;font:inherit;font-size:12px;padding:10px 12px;border-radius:7px;border:1px solid var(--bd);background:var(--s2);color:var(--tx);resize:vertical" placeholder="Qué diligencia discrimina entre las hipótesis vivas, y por qué esa es la siguiente."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-p" id="e3sign">Registrar disposición</button>
+          <button class="btn" id="e3exp">Exportar expediente</button>
+          <span id="e3msg" style="font-size:11px;color:var(--txm)"></span>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="ct">Matriz de consistencia · ${ACH.rows.length} piezas de evidencia</div>
+      <div style="font-size:11.5px;color:var(--txm);margin:-6px 0 12px">Haga clic en cada celda para alternar <b>consistente (+)</b>, <b>inconsistente (−)</b> y <b>neutral (·)</b>. Las filas marcadas <span class="e3-diag">diagnóstica</span> son las que efectivamente separan hipótesis.</div>
+      <div class="e3-scroll"><table class="dtbl e3-ach">
+        <thead><tr><th style="min-width:260px">Evidencia</th><th>Fuente</th><th style="text-align:center">Peso</th>
+        ${HYPS.map(h => `<th style="text-align:center">${h.id}</th>`).join('')}<th></th></tr></thead>
+        <tbody>${ACH.rows.map((r, ri) => `<tr>
+          <td style="font-size:11.5px">${E(r.e)}</td>
+          <td><span class="e3-pill out" style="color:${svar(r.src)}"><i></i>${E(RADAR[r.src].name)}</span></td>
+          <td style="text-align:center;color:var(--tx2);font-variant-numeric:tabular-nums">${r.w}</td>
+          ${HYPS.map(h => { const g = glyph[r.v[h.id]]; return `<td class="c" data-r="${ri}" data-h="${h.id}"><span class="${g[0]}">${g[1]}</span></td>`; }).join('')}
+          <td>${diag(r) ? '<span class="e3-diag">diagnóstica</span>' : ''}</td></tr>`).join('')}
+          <tr style="background:var(--s2)"><td style="font-weight:700;font-size:11.5px">Inconsistencia ponderada</td><td></td><td></td>
+          ${HYPS.map(h => `<td style="text-align:center;font-weight:800;font-variant-numeric:tabular-nums">${score(h.id)}</td>`).join('')}<td></td></tr>
+        </tbody></table></div>
+    </div>`;
+
+  el.querySelectorAll('.e3-ach td.c').forEach(td => td.addEventListener('click', () => {
+    const r = ACH.rows[+td.dataset.r], h = td.dataset.h;
+    r.v[h] = r.v[h] === 'n' ? 'c' : r.v[h] === 'c' ? 'i' : 'n';
+    lHip(el, d);
+  }));
+  el.querySelectorAll('.e3-opt').forEach(b => b.addEventListener('click', () => {
+    el.querySelectorAll('.e3-opt').forEach(x => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', 'true');
+  }));
+  q('#e3sign').addEventListener('click', () => {
+    const j = q('#e3just').value.trim();
+    q('#e3msg').textContent = j ? 'Disposición registrada en esta sesión.' : 'El fundamento es obligatorio para registrar la disposición.';
+    q('#e3msg').style.color = j ? 'var(--cl)' : 'var(--cr)';
+  });
+  q('#e3exp').addEventListener('click', () => exportDrawer(d));
+}
+
+// ── cajones ────────────────────────────────────────────────────────
+function sourceDrawer(sid, d){
+  const feeds = Object.keys(FEEDS).filter(k => FEEDS[k].radar === sid);
+  const [txt, cls] = resolution(d, sid);
+  openDrawer(RADAR[sid].name, `
+    <div style="height:3px;border-radius:2px;background:${svar(sid)};margin-bottom:13px"></div>
+    ${fields([
+      ['Fuente última', E(RADAR[sid].full), true],
+      ['Repositorio', E(RADAR[sid].repo)],
+      ['Clave global', 'ENT-RUT-{RUT_NORMALIZADO}'],
+      ['Identidad para este RUT', `<span style="color:${RESCOL[cls]}">${txt}</span>`],
+      ['Política de puntaje', 'RADAR_SPECIFIC_ONLY · common_risk_score = false'],
+      ['Fallo de fuente', 'source_failure_is_zero = false'],
+    ])}
+    <div class="e3-rk" style="margin:16px 0 6px">Archivos consultados</div>
+    ${feeds.length ? feeds.map(k => `<div class="e3-f"><div class="e3-fk">${E(FEEDS[k].label)}</div>
+      <div class="e3-fv"><a href="${E(state[k].url)}" target="_blank" rel="noopener">${E(state[k].url)}</a></div>
+      <div style="font-size:11px;color:var(--txm);margin-top:3px">estado: ${state[k].s}${state[k].bytes ? ' · ' + N(state[k].bytes) + ' bytes' : ''}${state[k].err ? ' · ' + E(state[k].err) : ''}</div></div>`).join('')
+      : `<div class="e3-empty">Este radar no publica un archivo consumible en Pages. Sus salidas viven en la rama <code>radar-data</code> o en artefactos de GitHub Actions.</div>`}
+    <div class="e3-note">Ningún radar publica un puntaje de riesgo común. El expediente compone evidencia entre fuentes; no promedia puntajes ajenos.</div>`);
+}
+function evidenceForEvent(e){
+  openDrawer(e.k, `
+    <div style="height:3px;border-radius:2px;background:${svar(e.src)};margin-bottom:13px"></div>
+    <p style="font-size:12px;color:var(--tx2);line-height:1.6;margin:0 0 13px">${E(e.d)}</p>
+    ${fields([
+      ['producer_id', 'RADAR_' + e.src.toUpperCase()],
+      ['source_id', E(RADAR[e.src].full)],
+      ['Período observado', String(e.t).slice(0, 4)],
+      e.raw && e.raw.resolucion ? ['Resolución', E(e.raw.resolucion)] : null,
+      e.raw && e.raw.document_pdf_sha256 ? ['content_sha256', E(e.raw.document_pdf_sha256)] : null,
+      e.raw && e.raw.document_confidence != null ? ['document_confidence', String(e.raw.document_confidence)] : null,
+      e.url ? ['source_url', `<a href="${E(e.url)}" target="_blank" rel="noopener">abrir documento oficial</a>`] : null,
+    ])}
+    <div class="e3-note">La fecha de ocurrencia distingue fecha exacta, intervalo y período auditado heredado. La fecha de publicación del documento no se usa como sustituto.</div>`);
+}
+function evidenceForSignal(s){
+  openDrawer(s.code, `
+    <div style="height:3px;border-radius:2px;background:${svar(s.src)};margin-bottom:13px"></div>
+    <p style="font-size:12px;color:var(--tx2);line-height:1.6;margin:0 0 6px"><b style="color:var(--tx)">Regla:</b> ${E(s.why)}</p>
+    ${s.checks ? `<p style="font-size:12px;color:var(--tx2);line-height:1.6;margin:0 0 13px"><b style="color:var(--tx)">Descartes:</b> ${E(s.checks)}</p>` : ''}
+    ${fields([
+      ['signal_type', E(s.code)],
+      ['period', E(s.period)],
+      ['severity', E(s.sev)],
+      ['confidence', E(String(s.conf))],
+      s.tier ? ['priority_tier', E(s.tier) + (s.score != null ? ' · score ' + s.score : '')] : null,
+      s.expl ? ['Descomposición del score', E(s.expl), true] : null,
+      s.org ? ['Organismo', E(s.org), true] : null,
+      s.amount ? ['Monto observado', '$' + N(Math.round(s.amount))] : null,
+      s.oc != null ? ['Orden de compra', s.oc ? 'sí' : 'no'] : null,
+      ['record_class', 'DERIVED_SIGNAL'],
+      ['producer_id', 'RADAR_' + s.src.toUpperCase()],
+      s.origin ? ['origen', E(s.origin), true] : null,
+      s.url ? ['source_url', `<a href="${E(s.url)}" target="_blank" rel="noopener">abrir fuente</a>`] : null,
+    ])}
+    <div class="e3-note">Una señal <strong>prioriza revisión</strong>. No presume delito, fraude, corrupción ni lavado de activos, y no se promueve automáticamente a señal AML gobernada.</div>`);
+}
+function exportDrawer(d){
+  openDrawer('Paquete de expediente', `
+    <p style="font-size:12px;color:var(--tx2);line-height:1.6;margin:0 0 13px">Contenido que se exportaría para reproducir el análisis sin acceso al portal.</p>
+    ${fields([
+      ['Identidad', 'ENT-RUT-' + E(d.rut.key)],
+      ['Señales', String(d.signals.length)],
+      ['Eventos fechados', String(d.events.length)],
+      ['Contrapartes', String(d.orgs.length)],
+      ['Contra-indicios derivados', String(autoCounters(d).length)],
+      ['Vacíos declarados', String(d.gaps.length)],
+      ['Matriz de hipótesis', HYPS.length + ' × ' + (ACH ? ACH.rows.length : 0)],
+      ['Fuentes en línea', Object.keys(FEEDS).filter(k => state[k].s === 'ok').length + ' de ' + Object.keys(FEEDS).length],
+      ['URLs de origen', Object.keys(FEEDS).map(k => state[k].url).join('\n'), true],
+    ])}
+    <div class="e3-note">Se exportan también los vacíos y los contra-indicios. Un expediente que sólo exporta lo que incrimina no es exportable como evidencia.</div>`);
+}
+
+return {render};
+})();
+
+function rAml360(){ E3.render(); }
 
 function rRed(){
   document.getElementById('ct').innerHTML=`
@@ -959,7 +2155,7 @@ function rPerfil(){
 }
 
 // ── NAV ────────────────────────────────────────────────────────
-const TITLES={hallazgos:'Motor de Hallazgos',territorio:'Análisis Territorial',actividad:'Actividad Sectorial',anomalias:'Anomalías',aml360:'AML 360°',red:'Red de Relaciones',evidencia:'Evidencia',fiscal:'Perímetro UAF',sanciones:'Sanciones',perfil:'Perfil por RUT'};
+const TITLES={hallazgos:'Motor de Hallazgos',territorio:'Análisis Territorial',actividad:'Actividad Sectorial',anomalias:'Anomalías',aml360:'Entity 360',red:'Red de Relaciones',evidencia:'Evidencia',fiscal:'Perímetro UAF',sanciones:'Sanciones',perfil:'Perfil por RUT'};
 const RENDERS={hallazgos:rHallazgos,territorio:rTerritorio,actividad:rActividad,anomalias:rAnomalias,aml360:rAml360,red:rRed,evidencia:rEvidencia,fiscal:rFiscal,sanciones:rSanciones,perfil:rPerfil};
 
 function sw(btn){
