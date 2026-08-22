@@ -1,0 +1,92 @@
+name: Provider Anomaly Analyzer · monthly
+on:
+  schedule:
+    - cron: '27 10 15 * *'
+  workflow_dispatch:
+    inputs:
+      year:
+        description: Año objetivo; vacío = último mes completo
+        required: false
+        default: ''
+        type: string
+      month:
+        description: Mes 1-12; vacío = último mes completo
+        required: false
+        default: ''
+        type: string
+permissions:
+  contents: write
+  id-token: write
+concurrency:
+  group: provider-analyzer-monthly
+  cancel-in-progress: false
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated analyzer
+        run: python -m pip install -e 'provider_analyzer[dev]'
+      - name: Resolve target period
+        id: period
+        shell: bash
+        run: |
+          ARGS=''
+          if [ -n "${{ inputs.year || '' }}" ]; then ARGS="$ARGS --year ${{ inputs.year }}"; fi
+          if [ -n "${{ inputs.month || '' }}" ]; then ARGS="$ARGS --month ${{ inputs.month }}"; fi
+          python provider_analyzer/scripts/plan_public_procurement_window.py $ARGS --output runtime/provider_analyzer/plan.json
+          PERIOD=$(python -c "import json;print(json.load(open('runtime/provider_analyzer/plan.json'))['period'])")
+          ASOF=$(python -c "import json;print(json.load(open('runtime/provider_analyzer/plan.json'))['as_of'])")
+          echo "period=$PERIOD" >> "$GITHUB_OUTPUT"
+          echo "as_of=$ASOF" >> "$GITHUB_OUTPUT"
+      - name: Detect current-month competition signals
+        shell: bash
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
+          python provider_analyzer/scripts/sync_chilecompra_bulk_offers.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --max-rows 0 --out runtime/provider_analyzer/detect --lab-out runtime/provider_analyzer/bulk_competition.json
+          python provider_analyzer/scripts/build_public_integrity_targets.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --output runtime/provider_analyzer/targets.json
+      - name: Materialize only the new monthly history and route state
+        shell: bash
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
+          python provider_analyzer/scripts/build_chilecompra_order_month_summary.py --url "https://transparenciachc.blob.core.windows.net/oc-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/orders
+          python provider_analyzer/scripts/build_chilecompra_tender_route_month.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/routes_month
+          python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz
+      - name: Reuse governed historical context from AML CLAUDE
+        shell: bash
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
+          python provider_analyzer/scripts/fetch_provider_context.py --targets runtime/provider_analyzer/targets.json --end-year "$Y" --end-month "$M" --history-output runtime/provider_analyzer/history.json --routes-output runtime/provider_analyzer/routes.json
+      - name: Build explainable review priority and compact export
+        run: |
+          python provider_analyzer/scripts/build_public_integrity_priority.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --histories runtime/provider_analyzer/history.json --routes runtime/provider_analyzer/routes.json --as-of '${{ steps.period.outputs.as_of }}' --years 3 --min-history-coverage 0.80 --output runtime/provider_analyzer/priority.json
+          python provider_analyzer/scripts/materialize_provider_analyzer.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --source-health runtime/provider_analyzer/detect/bulk_offers_health.json --targets runtime/provider_analyzer/targets.json --history runtime/provider_analyzer/history.json --routes runtime/provider_analyzer/routes.json --priority runtime/provider_analyzer/priority.json --period '${{ steps.period.outputs.period }}' --as-of '${{ steps.period.outputs.as_of }}' --output-dir runtime/provider_analyzer/presentation
+          python provider_analyzer/scripts/export_fusion_signals.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --priority runtime/provider_analyzer/priority.json --period '${{ steps.period.outputs.period }}' --output-dir provider_analyzer/exports
+      - name: Validate export guardrails
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open('provider_analyzer/exports/manifest.json',encoding='utf-8'))
+          assert m['schema']=='PROVIDER_ANALYZER_EXPORT_V1'
+          assert m['guardrails']['contains_no_raw_procurement_dataset'] is True
+          rows=[json.loads(x) for x in open('provider_analyzer/exports/provider_signals_v1.jsonl',encoding='utf-8') if x.strip()]
+          assert all(x['scoring_eligible'] is False and x['risk_effect']=='CONTEXT' for x in rows)
+          PY
+      - name: Publish only compact governed export
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --rebase origin main
+          git add provider_analyzer/exports/manifest.json provider_analyzer/exports/provider_signals_v1.jsonl
+          if ! git diff --cached --quiet; then git commit -m "data: provider analyzer ${{ steps.period.outputs.period }}"; git push origin HEAD:main; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: provider-analyzer-${{ steps.period.outputs.period }}
+          path: runtime/provider_analyzer/
+          retention-days: 14
