@@ -1,0 +1,15 @@
+{
+  "schema": "PROVIDER_ANALYZER_EXPORT_V1",
+  "status": "NOT_MATERIALIZED",
+  "generated_at": null,
+  "period": null,
+  "signal_count": null,
+  "content_sha256": null,
+  "source_system": "PROVIDER_ANALYZER",
+  "guardrails": {
+    "missing_is_not_zero": true,
+    "contains_no_raw_procurement_dataset": true,
+    "signal_is_not_wrongdoing_probability": true,
+    "review_priority_is_not_aml_risk_score": true
+  }
+}

@@ -1,0 +1,31 @@
+name: Provider Analyzer CI
+on:
+  pull_request:
+    paths:
+      - 'provider_analyzer/**'
+      - '.github/workflows/provider-analyzer-*.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'provider_analyzer/**'
+      - '.github/workflows/provider-analyzer-*.yml'
+permissions:
+  contents: read
+concurrency:
+  group: provider-analyzer-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e 'provider_analyzer[dev]'
+      - run: python -m compileall -q provider_analyzer/src provider_analyzer/scripts provider_analyzer/tests
+      - run: pytest -q provider_analyzer/tests
+      - name: Validate isolation contract
+        run: |
+          ! grep -R 'ldmtlwzqaqmegedktlxr' provider_analyzer .github/workflows/provider-analyzer-*.yml
+          ! grep -R 'Intelligence_Fusion_Layer' .github/workflows/provider-analyzer-monthly.yml .github/workflows/provider-analyzer-backfill.yml

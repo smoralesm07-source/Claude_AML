@@ -1,0 +1,74 @@
+name: Provider Anomaly Analyzer · historical backfill
+on:
+  workflow_dispatch:
+    inputs:
+      start_year:
+        description: Año inicial
+        required: false
+        default: '2024'
+        type: string
+      start_month:
+        description: Mes inicial
+        required: false
+        default: '1'
+        type: string
+      end_year:
+        description: Año final; vacío = último mes completo
+        required: false
+        default: ''
+        type: string
+      end_month:
+        description: Mes final; vacío = último mes completo
+        required: false
+        default: ''
+        type: string
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: provider-analyzer-backfill
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e provider_analyzer
+      - id: plan
+        shell: bash
+        run: |
+          ARGS="--start-year ${{ inputs.start_year }} --start-month ${{ inputs.start_month }}"
+          if [ -n "${{ inputs.end_year }}" ]; then ARGS="$ARGS --end-year ${{ inputs.end_year }} --end-month ${{ inputs.end_month }}"; fi
+          python provider_analyzer/scripts/plan_backfill_matrix.py $ARGS --github-output
+  backfill:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e provider_analyzer
+      - name: Scan and persist one historical month
+        shell: bash
+        run: |
+          Y='${{ matrix.year }}'; M='${{ matrix.month }}'
+          python provider_analyzer/scripts/build_chilecompra_order_month_summary.py --url "https://transparenciachc.blob.core.windows.net/oc-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/orders
+          python provider_analyzer/scripts/build_chilecompra_tender_route_month.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/routes_month
+          python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: provider-backfill-failure-${{ matrix.period }}
+          path: runtime/provider_analyzer/
+          retention-days: 7
