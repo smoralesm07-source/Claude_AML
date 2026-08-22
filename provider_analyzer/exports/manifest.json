@@ -6,10 +6,39 @@
   "signal_count": null,
   "content_sha256": null,
   "source_system": "PROVIDER_ANALYZER",
+  "objects": {
+    "provider_signals": {
+      "path": "provider_analyzer/exports/provider_signals_v1.jsonl",
+      "records": null,
+      "sha256": null
+    },
+    "evidence": {
+      "path": "provider_analyzer/exports/provider_evidence_v1.jsonl",
+      "records": null,
+      "sha256": null
+    },
+    "events": {
+      "path": "provider_analyzer/exports/provider_events_v1.jsonl",
+      "records": null,
+      "sha256": null
+    },
+    "context_signals": {
+      "path": "provider_analyzer/exports/provider_context_signals_v1.jsonl",
+      "records": null,
+      "sha256": null
+    }
+  },
+  "contract": {
+    "analyzer_semantic_class": "INTEGRITY_REVIEW",
+    "fusion_semantics": "CONTEXT_ONLY",
+    "scoring_eligible": false,
+    "risk_effect": "NONE"
+  },
   "guardrails": {
     "missing_is_not_zero": true,
     "contains_no_raw_procurement_dataset": true,
     "signal_is_not_wrongdoing_probability": true,
-    "review_priority_is_not_aml_risk_score": true
+    "review_priority_is_not_aml_risk_score": true,
+    "fusion_may_use_as_context_only": true
   }
 }
