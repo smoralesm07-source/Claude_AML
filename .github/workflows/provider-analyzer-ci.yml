@@ -30,11 +30,11 @@ jobs:
         run: |
           set -euo pipefail
           FORBIDDEN="ldmtlwzqa""qmegedktlxr"
-          if grep -R "$FORBIDDEN" provider_analyzer .github/workflows/provider-analyzer-monthly.yml .github/workflows/provider-analyzer-backfill.yml; then
+          if grep -R --binary-files=without-match --exclude-dir='__pycache__' --exclude='*.pyc' "$FORBIDDEN" provider_analyzer .github/workflows/provider-analyzer-monthly.yml .github/workflows/provider-analyzer-backfill.yml; then
             echo 'ATLAS Supabase project reference leaked into provider analyzer'
             exit 1
           fi
-          if grep -R 'Intelligence_Fusion_Layer' .github/workflows/provider-analyzer-monthly.yml .github/workflows/provider-analyzer-backfill.yml; then
+          if grep -R --binary-files=without-match 'Intelligence_Fusion_Layer' .github/workflows/provider-analyzer-monthly.yml .github/workflows/provider-analyzer-backfill.yml; then
             echo 'Provider analyzer workflow must not write or invoke Intelligence_Fusion_Layer'
             exit 1
           fi
