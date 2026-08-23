@@ -1,11 +1,11 @@
 {
   "schema": "PROVIDER_ANALYZER_BACKFILL_REQUEST_V1",
   "stage": "SMOKE_BACKFILL",
-  "attempt": 2,
-  "requested_at": "2026-08-23T11:34:00-04:00",
+  "attempt": 3,
+  "requested_at": "2026-08-23T11:39:00-04:00",
   "start_year": 2024,
   "start_month": 1,
   "end_year": 2024,
   "end_month": 1,
-  "reason": "Validar extremo a extremo descarga ChileCompra, normalizacion, OIDC, persistencia y cobertura antes de escalar el backfill historico completo; segundo disparo incorpora heartbeat en AML CLAUDE."
+  "reason": "Tercer disparo por ruta PR-CI-merge para validar recepcion del evento GitHub Actions y luego ejecutar el smoke backfill idempotente de enero 2024."
 }
