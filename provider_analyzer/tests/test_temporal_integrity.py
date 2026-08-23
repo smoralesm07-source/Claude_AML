@@ -5,6 +5,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from intelligence_fusion.sources.chilecompra_bulk_orders import ChileCompraBulkOrdersAdapter
+from intelligence_fusion.sources.chilecompra_bulk_offers import ChileCompraBulkOffersAdapter
 from intelligence_fusion.sources.validation import plausible_event_date, stable_party_id, valid_chilean_rut, valid_order_id
 
 
@@ -35,6 +36,11 @@ def test_event_date_rejects_impossible_historical_value():
 def test_official_chilecompra_delimiter_wins_over_commas_in_values():
     sample = 'Codigo;Descripcion;RutProveedor\n1234-56-SE24;"insumo, médico, especial";76086428-5\n'
     assert ChileCompraBulkOrdersAdapter.sniff(sample).delimiter == ';'
+
+
+def test_official_chilecompra_offer_delimiter_wins_over_commas_in_values():
+    sample = 'CodigoExterno;Descripcion;RutProveedor\n1234-56-LP24;"servicio, soporte, mensual";76086428-5\n'
+    assert ChileCompraBulkOffersAdapter.sniff(sample).delimiter == ';'
 
 
 def test_route_partition_is_derived_from_event_date_not_source_month():
