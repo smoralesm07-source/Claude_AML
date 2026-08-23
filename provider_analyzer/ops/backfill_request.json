@@ -1,11 +1,11 @@
 {
   "schema": "PROVIDER_ANALYZER_BACKFILL_REQUEST_V1",
   "stage": "SMOKE_BACKFILL",
-  "attempt": 3,
-  "requested_at": "2026-08-23T11:39:00-04:00",
+  "attempt": 4,
+  "requested_at": "2026-08-23T11:43:00-04:00",
   "start_year": 2024,
   "start_month": 1,
   "end_year": 2024,
   "end_month": 1,
-  "reason": "Tercer disparo por ruta PR-CI-merge para validar recepcion del evento GitHub Actions y luego ejecutar el smoke backfill idempotente de enero 2024."
+  "reason": "Cuarto disparo tras desplegar provider_analyzer_gateway y migrar las Edge Functions al RPC controlado sobre el esquema privado."
 }
