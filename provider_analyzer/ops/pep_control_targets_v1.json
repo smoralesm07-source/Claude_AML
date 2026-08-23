@@ -1,0 +1,37 @@
+{
+  "schema": "PEP_CONTROL_PROCUREMENT_TARGETS_V1",
+  "source_observation_id": "DIP-REAL-001",
+  "source_system": "INFOPROBIDAD_DIP",
+  "semantics": "CONTEXT_ONLY",
+  "scoring_eligible": false,
+  "risk_effect": "NONE",
+  "targets": [
+    {
+      "entity_id": "ENT-RUT-76013464-3",
+      "rut": "76013464-3",
+      "name": "INVERSIONES BUCA LTDA.",
+      "relationship": "DECLARED_CONTROLLER_CANDIDATE",
+      "beneficial_owner_confirmed": false
+    },
+    {
+      "entity_id": "ENT-RUT-76114976-8",
+      "rut": "76114976-8",
+      "name": "CONCRECES CAPITAL S.A",
+      "relationship": "DECLARED_CONTROLLER_CANDIDATE",
+      "beneficial_owner_confirmed": false
+    },
+    {
+      "entity_id": "ENT-RUT-76043103-6",
+      "rut": "76043103-6",
+      "name": "CONCRECES FACTORING S.A",
+      "relationship": "DECLARED_CONTROLLER_CANDIDATE",
+      "beneficial_owner_confirmed": false
+    }
+  ],
+  "guardrails": [
+    "PEP_STATUS_IS_CONTEXT_NOT_ADVERSE_SIGNAL",
+    "DECLARED_CONTROLLER_IS_NOT_AUTOMATICALLY_AML_BENEFICIAL_OWNER",
+    "EXACT_NORMALIZED_RUT_MATCH_ONLY",
+    "NO_NAME_MATCHING"
+  ]
+}
