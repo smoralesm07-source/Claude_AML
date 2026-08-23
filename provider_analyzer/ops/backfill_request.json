@@ -1,11 +1,11 @@
 {
   "schema": "PROVIDER_ANALYZER_BACKFILL_REQUEST_V1",
   "stage": "SMOKE_BACKFILL",
-  "attempt": 4,
-  "requested_at": "2026-08-23T11:43:00-04:00",
+  "attempt": 5,
+  "requested_at": "2026-08-23T15:51:00-04:00",
   "start_year": 2024,
   "start_month": 1,
   "end_year": 2024,
   "end_month": 1,
-  "reason": "Cuarto disparo tras desplegar provider_analyzer_gateway y migrar las Edge Functions al RPC controlado sobre el esquema privado."
+  "reason": "Reejecutar enero 2024 con separación source_period/event_period, validación estructural y cuarentena auditable."
 }
