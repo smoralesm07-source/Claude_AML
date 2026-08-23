@@ -55,6 +55,10 @@ class ChileCompraBulkOrdersAdapter:
 
     @staticmethod
     def sniff(text:str)->csv.Dialect:
+        header=(text.splitlines()[0] if text.splitlines() else '')
+        if ';' in header:
+            class Semi(csv.excel): delimiter=';'
+            return Semi()
         try:return csv.Sniffer().sniff(text[:12000],delimiters=';,\t|')
         except csv.Error:
             class Semi(csv.excel): delimiter=';'
