@@ -1,0 +1,112 @@
+{
+  "schema": "PEP_CONTROL_PROCUREMENT_SCAN_V1",
+  "source_observation_id": "DIP-REAL-001",
+  "generated_from": {
+    "github_run_id": 32663133280,
+    "workflow": "PEP Control Target Scan · 2026 YTD",
+    "code_pr": "smoralesm07-source/Claude_AML#6",
+    "code_merge_sha": "79c33095c7137e86e3733fc659fc9476ab220cf1",
+    "artifact_id": 9499285339,
+    "artifact_sha256_zip": "1b4a8f8abe9b9557f12c6b26e7e5c31790601e632dbc3e8e64e60542e0330abb"
+  },
+  "source_scope": {
+    "source_system": "CHILECOMPRA_OFFICIAL_BULK_ORDERS",
+    "expected_months": [
+      "2026-1",
+      "2026-2",
+      "2026-3",
+      "2026-4",
+      "2026-5",
+      "2026-6",
+      "2026-7",
+      "2026-8"
+    ],
+    "loaded_months": [
+      "2026-1",
+      "2026-2",
+      "2026-3",
+      "2026-4",
+      "2026-5",
+      "2026-6",
+      "2026-7",
+      "2026-8"
+    ],
+    "missing_months": [],
+    "incomplete_months": [],
+    "coverage_complete": true,
+    "match_method": "EXACT_NORMALIZED_SUPPLIER_RUT"
+  },
+  "matched_targets": 0,
+  "targets": {
+    "76013464-3": {
+      "entity_id": "ENT-RUT-76013464-3",
+      "name": "INVERSIONES BUCA LTDA.",
+      "relationship": "DECLARED_CONTROLLER_CANDIDATE",
+      "beneficial_owner_confirmed": false,
+      "status": "NO_MATCH_IN_LOADED_DATASET",
+      "pair_month_rows": 0,
+      "purchase_event_rows": 0,
+      "order_count_sum": 0,
+      "amount_total_clp_sum": 0,
+      "buyers": [],
+      "order_ids": [],
+      "tender_ids": [],
+      "first_seen": null,
+      "last_seen": null,
+      "signal_code": null,
+      "semantics": "CONTEXT_ONLY",
+      "scoring_eligible": false,
+      "risk_effect": "NONE"
+    },
+    "76114976-8": {
+      "entity_id": "ENT-RUT-76114976-8",
+      "name": "CONCRECES CAPITAL S.A",
+      "relationship": "DECLARED_CONTROLLER_CANDIDATE",
+      "beneficial_owner_confirmed": false,
+      "status": "NO_MATCH_IN_LOADED_DATASET",
+      "pair_month_rows": 0,
+      "purchase_event_rows": 0,
+      "order_count_sum": 0,
+      "amount_total_clp_sum": 0,
+      "buyers": [],
+      "order_ids": [],
+      "tender_ids": [],
+      "first_seen": null,
+      "last_seen": null,
+      "signal_code": null,
+      "semantics": "CONTEXT_ONLY",
+      "scoring_eligible": false,
+      "risk_effect": "NONE"
+    },
+    "76043103-6": {
+      "entity_id": "ENT-RUT-76043103-6",
+      "name": "CONCRECES FACTORING S.A",
+      "relationship": "DECLARED_CONTROLLER_CANDIDATE",
+      "beneficial_owner_confirmed": false,
+      "status": "NO_MATCH_IN_LOADED_DATASET",
+      "pair_month_rows": 0,
+      "purchase_event_rows": 0,
+      "order_count_sum": 0,
+      "amount_total_clp_sum": 0,
+      "buyers": [],
+      "order_ids": [],
+      "tender_ids": [],
+      "first_seen": null,
+      "last_seen": null,
+      "signal_code": null,
+      "semantics": "CONTEXT_ONLY",
+      "scoring_eligible": false,
+      "risk_effect": "NONE"
+    }
+  },
+  "interpretation": "No se observaron coincidencias exactas por RUT de proveedor para los tres objetivos en los archivos oficiales de órdenes de compra de ChileCompra cargados entre enero y agosto de 2026. El resultado está acotado a esa fuente y período y no equivale a afirmar ausencia de contratación pública histórica o por otros instrumentos.",
+  "guardrails": [
+    "PEP_STATUS_IS_CONTEXT_NOT_ADVERSE_SIGNAL",
+    "DECLARED_CONTROLLER_IS_NOT_AUTOMATICALLY_AML_BENEFICIAL_OWNER",
+    "PURCHASE_ORDER_IS_COMMITMENT_NOT_PROOF_OF_PAYMENT",
+    "NO_MATCH_IN_LOADED_DATASET_IS_NOT_EQUIVALENT_TO_NO_PUBLIC_PROCUREMENT",
+    "EXACT_NORMALIZED_RUT_MATCH_ONLY",
+    "NO_NAME_MATCHING",
+    "NO_RAW_PROCUREMENT_PERSISTED_IN_REPOSITORY"
+  ]
+}
