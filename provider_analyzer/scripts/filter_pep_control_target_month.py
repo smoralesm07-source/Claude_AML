@@ -85,7 +85,7 @@ def main() -> None:
         "purchase_events": events,
         "semantics": "CONTEXT_ONLY",
         "signal_code": "PEP-05",
-        "scoring_eligible": false if False else False,
+        "scoring_eligible": False,
         "risk_effect": "NONE",
         "guardrails": [
             "PEP_STATUS_IS_CONTEXT_NOT_ADVERSE_SIGNAL",
