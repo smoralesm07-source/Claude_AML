@@ -105,9 +105,9 @@ def main():
         if reason:quarantine.append(quarantine_record(raw,reason=reason,source_year=year,source_month=month));continue
         events.append(normalized)
     written=0
-    for b in chunks(events,500):written+=int(post({'kind':'route_event_batch','rows':b}).get('written') or 0)
+    for b in chunks(events,2000):written+=int(post({'kind':'route_event_batch','rows':b}).get('written') or 0)
     qwritten=0
     for b in chunks(quarantine,500):qwritten+=int(post({'kind':'quarantine_event_batch','rows':b}).get('written') or 0)
-    period=f'{year:04d}-{month:02d}';post({'kind':'state','row':{'pipeline':'MONTHLY_DATA_'+period.replace('-','_'),'status':'SUCCESS','source_digest':h({'history':hist.get('coverage'),'tender':th.get('coverage')}),'detail':{'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten,'economic_amount_semantics':'DECIMAL_PAIR_RECONCILED','route_partition_semantics':'EVENT_DATE','source_partition_semantics':'CHILECOMPRA_ARCHIVE_MONTH'}}})
+    period=f'{year:04d}-{month:02d}';post({'kind':'state','row':{'pipeline':'MONTHLY_DATA_'+period.replace('-','_'),'status':'SUCCESS','source_digest':h({'history':hist.get('coverage'),'tender':th.get('coverage')}),'detail':{'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'route_batch_size':2000,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten,'economic_amount_semantics':'DECIMAL_PAIR_RECONCILED','route_partition_semantics':'EVENT_DATE','source_partition_semantics':'CHILECOMPRA_ARCHIVE_MONTH'}}})
     print(json.dumps({'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten},ensure_ascii=False))
 if __name__=='__main__':main()
