@@ -22,6 +22,10 @@ on:
         required: false
         default: ''
         type: string
+  push:
+    branches: [main]
+    paths:
+      - 'provider_analyzer/ops/backfill_request.json'
 permissions:
   contents: read
   id-token: write
@@ -39,11 +43,47 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e provider_analyzer
+      - id: request
+        shell: bash
+        env:
+          INPUT_START_YEAR: ${{ inputs.start_year }}
+          INPUT_START_MONTH: ${{ inputs.start_month }}
+          INPUT_END_YEAR: ${{ inputs.end_year }}
+          INPUT_END_MONTH: ${{ inputs.end_month }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          if os.environ.get('GITHUB_EVENT_NAME') == 'push':
+              request = json.loads(Path('provider_analyzer/ops/backfill_request.json').read_text(encoding='utf-8'))
+              start_year = str(request.get('start_year') or '')
+              start_month = str(request.get('start_month') or '')
+              end_year = str(request.get('end_year') or '')
+              end_month = str(request.get('end_month') or '')
+          else:
+              start_year = os.environ.get('INPUT_START_YEAR') or '2024'
+              start_month = os.environ.get('INPUT_START_MONTH') or '1'
+              end_year = os.environ.get('INPUT_END_YEAR') or ''
+              end_month = os.environ.get('INPUT_END_MONTH') or ''
+
+          if not start_year or not start_month:
+              raise SystemExit('start_year and start_month are required')
+          if bool(end_year) != bool(end_month):
+              raise SystemExit('end_year and end_month must be provided together')
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as fh:
+              fh.write(f'start_year={start_year}\n')
+              fh.write(f'start_month={start_month}\n')
+              fh.write(f'end_year={end_year}\n')
+              fh.write(f'end_month={end_month}\n')
+          print(json.dumps({'start': f'{int(start_year):04d}-{int(start_month):02d}', 'end_year': end_year or None, 'end_month': end_month or None}))
+          PY
       - id: plan
         shell: bash
         run: |
-          ARGS="--start-year ${{ inputs.start_year }} --start-month ${{ inputs.start_month }}"
-          if [ -n "${{ inputs.end_year }}" ]; then ARGS="$ARGS --end-year ${{ inputs.end_year }} --end-month ${{ inputs.end_month }}"; fi
+          ARGS="--start-year ${{ steps.request.outputs.start_year }} --start-month ${{ steps.request.outputs.start_month }}"
+          if [ -n "${{ steps.request.outputs.end_year }}" ]; then ARGS="$ARGS --end-year ${{ steps.request.outputs.end_year }} --end-month ${{ steps.request.outputs.end_month }}"; fi
           python provider_analyzer/scripts/plan_backfill_matrix.py $ARGS --github-output
   backfill:
     needs: plan
