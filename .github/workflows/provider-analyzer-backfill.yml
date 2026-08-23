@@ -99,6 +99,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -e provider_analyzer
+      - name: Mark historical month as running
+        run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "BACKFILL_${{ matrix.period }}" --status RUNNING --period "${{ matrix.period }}"
       - name: Scan and persist one historical month
         shell: bash
         run: |
@@ -106,6 +108,12 @@ jobs:
           python provider_analyzer/scripts/build_chilecompra_order_month_summary.py --url "https://transparenciachc.blob.core.windows.net/oc-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/orders
           python provider_analyzer/scripts/build_chilecompra_tender_route_month.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/routes_month
           python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz
+      - name: Mark historical month as successful
+        if: success()
+        run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "BACKFILL_${{ matrix.period }}" --status SUCCESS --period "${{ matrix.period }}"
+      - name: Mark historical month as failed
+        if: failure()
+        run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "BACKFILL_${{ matrix.period }}" --status FAILED --period "${{ matrix.period }}"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
