@@ -9,7 +9,9 @@ import os
 import time
 import urllib.parse
 import urllib.request
+from collections import defaultdict
 from datetime import date, datetime, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from intelligence_fusion.sources.validation import plausible_event_date, valid_order_id
@@ -38,6 +40,40 @@ def gz_rows(path:Path|None):
     if not path or not path.exists():return []
     with gzip.open(path,'rt',encoding='utf-8') as fh:return [json.loads(x) for x in fh if x.strip()]
 
+def exact_decimal(value)->Decimal:
+    try:return Decimal(str(value if value not in (None,'') else 0))
+    except (InvalidOperation,ValueError,TypeError) as exc:raise ValueError(f'INVALID_DECIMAL:{value!r}') from exc
+
+def decimal_text(value:Decimal)->str:
+    return format(value,'f')
+
+def economic_rows(hist:dict,year:int,month:int,now:str)->tuple[list[dict],list[dict]]:
+    """Build buyer and pair rows from the same exact pair amounts.
+
+    JSON floats in the historical build are converted through Decimal(str(...)) once.
+    Buyer totals are then derived from those exact persisted pair values, so the two
+    database layers reconcile exactly instead of depending on float summation order.
+    """
+    raw_pairs=hist.get('pairs') or []
+    buyer_amounts:dict[str,Decimal]=defaultdict(Decimal)
+    buyer_orders:dict[str,int]=defaultdict(int)
+    normalized=[]
+    for r in raw_pairs:
+        buyer=str(r.get('buyer_id') or '').strip();supplier=str(r.get('supplier_id') or '').strip();pair_id=str(r.get('pair_id') or '').strip()
+        if not buyer or not supplier or not pair_id:raise ValueError('INVALID_ECONOMIC_PAIR')
+        amount=exact_decimal(r.get('amount_total_clp'));orders=int(r.get('order_count') or 0)
+        if orders<0:raise ValueError('INVALID_ORDER_COUNT')
+        buyer_amounts[buyer]+=amount;buyer_orders[buyer]+=orders
+        normalized.append((r,buyer,supplier,pair_id,amount,orders))
+    expected_orders=sum(int(v or 0) for v in (hist.get('buyer_order_counts') or {}).values())
+    actual_orders=sum(buyer_orders.values())
+    if expected_orders!=actual_orders:raise ValueError(f'ECONOMIC_ORDER_RECONCILIATION_FAILED:{expected_orders}!={actual_orders}')
+    buyers=[{'year':year,'month':month,'buyer_id':bid,'amount_total_clp':decimal_text(buyer_amounts[bid]),'order_count':buyer_orders[bid],'source':'CHILECOMPRA_OC_DA','loaded_at':now} for bid in sorted(buyer_amounts)]
+    pairs=[]
+    for r,buyer,supplier,pair_id,amount,orders in normalized:
+        pairs.append({'year':year,'month':month,'pair_id':pair_id,'buyer_id':buyer,'supplier_id':supplier,'order_count':orders,'amount_total_clp':decimal_text(amount),'buyer_amount_total_clp':decimal_text(buyer_amounts[buyer]),'modalities':r.get('modalities') or [],'first_seen':r.get('first_seen'),'last_seen':r.get('last_seen'),'source':'CHILECOMPRA_OC_DA','loaded_at':now})
+    return buyers,pairs
+
 def quarantine_record(raw:dict,*,reason:str,source_year:int,source_month:int,stage:str='ROUTE_EVENT')->dict:
     core={'stage':stage,'reason':reason,'source':raw.get('source') or 'CHILECOMPRA','source_year':source_year,'source_month':source_month,'payload':raw}
     return {'quarantine_id':'QEVT-'+h(core)[:28],'stage':stage,'reason':reason,'source':core['source'],'source_year':source_year,'source_month':source_month,'payload':raw,'semantic_hash':h(core),'created_at':datetime.now(timezone.utc).isoformat()}
@@ -57,8 +93,7 @@ def normalize_route_event(e:dict,*,source_year:int,source_month:int,now:str)->tu
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--history-month',type=Path,required=True);ap.add_argument('--purchase-events',type=Path,required=True);ap.add_argument('--tender-health',type=Path,required=True);ap.add_argument('--tender-events',type=Path,required=True);ap.add_argument('--order-quarantine',type=Path);args=ap.parse_args()
     hist=json.loads(args.history_month.read_text(encoding='utf-8'));th=json.loads(args.tender_health.read_text(encoding='utf-8'));year=int(hist['year']);month=int(hist['month']);now=datetime.now(timezone.utc).isoformat();print(post({'kind':'ping'}))
-    buyers=[{'year':year,'month':month,'buyer_id':bid,'amount_total_clp':float(amt or 0),'order_count':int((hist.get('buyer_order_counts') or {}).get(bid) or 0),'source':'CHILECOMPRA_OC_DA','loaded_at':now} for bid,amt in (hist.get('buyer_totals_clp') or {}).items()]
-    pairs=[{'year':year,'month':month,'pair_id':r['pair_id'],'buyer_id':r['buyer_id'],'supplier_id':r['supplier_id'],'order_count':int(r.get('order_count') or 0),'amount_total_clp':float(r.get('amount_total_clp') or 0),'buyer_amount_total_clp':float(r.get('buyer_amount_total_clp') or 0),'modalities':r.get('modalities') or [],'first_seen':r.get('first_seen'),'last_seen':r.get('last_seen'),'source':'CHILECOMPRA_OC_DA','loaded_at':now} for r in (hist.get('pairs') or [])]
+    buyers,pairs=economic_rows(hist,year,month,now)
     for b in chunks(buyers,800):post({'kind':'buyer_month_batch','rows':b})
     for b in chunks(pairs,800):post({'kind':'pair_month_batch','rows':b})
     oc=hist.get('coverage') or {};lc=th.get('coverage') or {};coverage=[{'source':'CHILECOMPRA_OC_DA','year':year,'month':month,'rows_read':int(oc.get('rows_read') or 0),'orders':int(oc.get('orders') or 0),'identity_coverage':oc.get('identity_coverage'),'amount_coverage':oc.get('clp_amount_coverage'),'detail':oc,'loaded_at':now},{'source':'CHILECOMPRA_LIC_DA','year':year,'month':month,'rows_read':int(lc.get('rows_read') or 0),'orders':int(lc.get('tenders') or 0),'identity_coverage':None,'amount_coverage':None,'detail':lc,'loaded_at':now}];post({'kind':'coverage_batch','rows':coverage})
@@ -73,6 +108,6 @@ def main():
     for b in chunks(events,500):written+=int(post({'kind':'route_event_batch','rows':b}).get('written') or 0)
     qwritten=0
     for b in chunks(quarantine,500):qwritten+=int(post({'kind':'quarantine_event_batch','rows':b}).get('written') or 0)
-    period=f'{year:04d}-{month:02d}';post({'kind':'state','row':{'pipeline':'MONTHLY_DATA_'+period.replace('-','_'),'status':'SUCCESS','source_digest':h({'history':hist.get('coverage'),'tender':th.get('coverage')}),'detail':{'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten,'route_partition_semantics':'EVENT_DATE','source_partition_semantics':'CHILECOMPRA_ARCHIVE_MONTH'}}})
+    period=f'{year:04d}-{month:02d}';post({'kind':'state','row':{'pipeline':'MONTHLY_DATA_'+period.replace('-','_'),'status':'SUCCESS','source_digest':h({'history':hist.get('coverage'),'tender':th.get('coverage')}),'detail':{'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten,'economic_amount_semantics':'DECIMAL_PAIR_RECONCILED','route_partition_semantics':'EVENT_DATE','source_partition_semantics':'CHILECOMPRA_ARCHIVE_MONTH'}}})
     print(json.dumps({'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten},ensure_ascii=False))
 if __name__=='__main__':main()

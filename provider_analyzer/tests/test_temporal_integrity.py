@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+from decimal import Decimal
 from pathlib import Path
 
+from intelligence_fusion.sources.chilecompra_bulk_orders import ChileCompraBulkOrdersAdapter
 from intelligence_fusion.sources.validation import plausible_event_date, stable_party_id, valid_chilean_rut, valid_order_id
 
 
@@ -30,6 +32,11 @@ def test_event_date_rejects_impossible_historical_value():
     assert plausible_event_date('2024-03-04') == '2024-03-04'
 
 
+def test_official_chilecompra_delimiter_wins_over_commas_in_values():
+    sample = 'Codigo;Descripcion;RutProveedor\n1234-56-SE24;"insumo, médico, especial";76086428-5\n'
+    assert ChileCompraBulkOrdersAdapter.sniff(sample).delimiter == ';'
+
+
 def test_route_partition_is_derived_from_event_date_not_source_month():
     mod = load_persist_module()
     event, reason = mod.normalize_route_event({'date':'2024-03-04','buyer_id':'61111111-1','supplier_id':'76222222-2','pair_id':'76222222-2::61111111-1','product_key':'CODE:43211902','status':'PURCHASED','order_id':'1234-56-SE24','source':'MERCADO_PUBLICO_BULK_ORDERS'},source_year=2024,source_month=1,now='2026-08-23T16:00:00+00:00')
@@ -43,3 +50,17 @@ def test_route_event_quarantines_impossible_date():
     event, reason = mod.normalize_route_event({'date':'1379-09-10','buyer_id':'CL','product_key':'TEXT:bad row','status':'PURCHASED','order_id':'Proveniente de licitación pública'},source_year=2024,source_month=1,now='2026-08-23T16:00:00+00:00')
     assert event is None
     assert reason == 'INVALID_EVENT_DATE'
+
+
+def test_economic_rows_reconcile_using_decimal_pair_values():
+    mod = load_persist_module()
+    hist = {
+        'buyer_order_counts': {'61111111-1': 2},
+        'pairs': [
+            {'pair_id':'76000000-1::61111111-1','buyer_id':'61111111-1','supplier_id':'76000000-1','order_count':1,'amount_total_clp':0.1,'modalities':[]},
+            {'pair_id':'76000000-2::61111111-1','buyer_id':'61111111-1','supplier_id':'76000000-2','order_count':1,'amount_total_clp':0.2,'modalities':[]},
+        ],
+    }
+    buyers, pairs = mod.economic_rows(hist, 2024, 1, '2026-08-23T16:00:00+00:00')
+    assert Decimal(buyers[0]['amount_total_clp']) == sum(Decimal(p['amount_total_clp']) for p in pairs)
+    assert buyers[0]['amount_total_clp'] == '0.3'
