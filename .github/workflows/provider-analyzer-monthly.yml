@@ -14,6 +14,10 @@ on:
         required: false
         default: ''
         type: string
+  push:
+    branches: [main]
+    paths:
+      - 'provider_analyzer/ops/monthly_request.json'
 permissions:
   contents: write
   id-token: write
@@ -34,10 +38,21 @@ jobs:
       - name: Resolve target period
         id: period
         shell: bash
+        env:
+          INPUT_YEAR: ${{ inputs.year || '' }}
+          INPUT_MONTH: ${{ inputs.month || '' }}
         run: |
+          YEAR="$INPUT_YEAR"; MONTH="$INPUT_MONTH"
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            YEAR=$(python -c "import json;print(json.load(open('provider_analyzer/ops/monthly_request.json',encoding='utf-8'))['year'])")
+            MONTH=$(python -c "import json;print(json.load(open('provider_analyzer/ops/monthly_request.json',encoding='utf-8'))['month'])")
+          fi
+          if { [ -n "$YEAR" ] && [ -z "$MONTH" ]; } || { [ -z "$YEAR" ] && [ -n "$MONTH" ]; }; then
+            echo 'year and month must be provided together' >&2
+            exit 1
+          fi
           ARGS=''
-          if [ -n "${{ inputs.year || '' }}" ]; then ARGS="$ARGS --year ${{ inputs.year }}"; fi
-          if [ -n "${{ inputs.month || '' }}" ]; then ARGS="$ARGS --month ${{ inputs.month }}"; fi
+          if [ -n "$YEAR" ]; then ARGS="$ARGS --year $YEAR --month $MONTH"; fi
           python provider_analyzer/scripts/plan_public_procurement_window.py $ARGS --output runtime/provider_analyzer/plan.json
           PERIOD=$(python -c "import json;print(json.load(open('runtime/provider_analyzer/plan.json'))['period'])")
           ASOF=$(python -c "import json;print(json.load(open('runtime/provider_analyzer/plan.json'))['as_of'])")
