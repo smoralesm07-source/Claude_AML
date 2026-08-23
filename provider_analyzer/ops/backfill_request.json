@@ -1,10 +1,11 @@
 {
   "schema": "PROVIDER_ANALYZER_BACKFILL_REQUEST_V1",
   "stage": "SMOKE_BACKFILL",
-  "requested_at": "2026-08-23T11:24:00-04:00",
+  "attempt": 2,
+  "requested_at": "2026-08-23T11:34:00-04:00",
   "start_year": 2024,
   "start_month": 1,
   "end_year": 2024,
   "end_month": 1,
-  "reason": "Validar extremo a extremo descarga ChileCompra, normalizacion, OIDC, persistencia y cobertura antes de escalar el backfill historico completo."
+  "reason": "Validar extremo a extremo descarga ChileCompra, normalizacion, OIDC, persistencia y cobertura antes de escalar el backfill historico completo; segundo disparo incorpora heartbeat en AML CLAUDE."
 }
