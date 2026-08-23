@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 from decimal import Decimal
 from pathlib import Path
+from types import SimpleNamespace
 
 from intelligence_fusion.sources.chilecompra_bulk_orders import ChileCompraBulkOrdersAdapter
 from intelligence_fusion.sources.chilecompra_bulk_offers import ChileCompraBulkOffersAdapter
@@ -70,3 +71,15 @@ def test_economic_rows_reconcile_using_decimal_pair_values():
     buyers, pairs = mod.economic_rows(hist, 2024, 1, '2026-08-23T16:00:00+00:00')
     assert Decimal(buyers[0]['amount_total_clp']) == sum(Decimal(p['amount_total_clp']) for p in pairs)
     assert buyers[0]['amount_total_clp'] == '0.3'
+
+
+def test_route_batches_are_conservative_after_timeout_observation():
+    mod = load_persist_module()
+    assert mod.ROUTE_BATCH_SIZE == 1000
+
+
+def test_retry_policy_does_not_hide_auth_rejections():
+    mod = load_persist_module()
+    assert mod._retryable_http(SimpleNamespace(code=403), '{"detail":"57014: canceling statement due to statement timeout"}') is True
+    assert mod._retryable_http(SimpleNamespace(code=403), '{"detail":"WRONG_REPOSITORY"}') is False
+    assert mod._retryable_http(SimpleNamespace(code=503), 'temporary unavailable') is True
