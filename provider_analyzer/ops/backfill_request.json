@@ -1,11 +1,11 @@
 {
   "schema": "PROVIDER_ANALYZER_BACKFILL_REQUEST_V1",
-  "stage": "HISTORICAL_BACKFILL",
-  "attempt": 7,
-  "requested_at": "2026-08-23T16:45:00-04:00",
+  "stage": "HISTORICAL_BACKFILL_REPAIR",
+  "attempt": 8,
+  "requested_at": "2026-08-23T17:02:00-04:00",
   "start_year": 2024,
   "start_month": 2,
   "end_year": 2026,
   "end_month": 7,
-  "reason": "Poblar histórico completo posterior al smoke validado de enero 2024, con integridad temporal, conciliación monetaria exacta, parser oficial ChileCompra y lotes de ruta optimizados."
+  "reason": "Segunda pasada completa e idempotente sobre código robusto: parser oficial ChileCompra, lotes de ruta 1000, reintentos transitorios selectivos, paralelismo 3 y persistencia temporal validada. Reemplaza la matriz inicial que presentó timeouts con lotes de 2000."
 }
