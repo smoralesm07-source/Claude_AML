@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
@@ -18,6 +19,8 @@ from intelligence_fusion.sources.validation import plausible_event_date, valid_o
 
 EDGE_URL=os.environ.get('PROVIDER_ANALYZER_INGEST','https://bzqxvidggykkdouotylg.supabase.co/functions/v1/provider-analyzer-ingest')
 AUDIENCE='provider-analyzer-ingest';_TOKEN=None;_AT=0.0
+ROUTE_BATCH_SIZE=1000
+TRANSIENT_HTTP={429,500,502,503,504}
 
 def token():
     global _TOKEN,_AT
@@ -27,9 +30,27 @@ def token():
     with urllib.request.urlopen(req,timeout=30) as r:_TOKEN=json.load(r)['value']
     _AT=time.time();return _TOKEN
 
-def post(body,timeout=180):
-    req=urllib.request.Request(EDGE_URL,data=json.dumps(body,ensure_ascii=False,separators=(',',':')).encode(),method='POST',headers={'Authorization':'Bearer '+token(),'Content-Type':'application/json','User-Agent':'Provider-Anomaly-Analyzer/1.0'})
-    with urllib.request.urlopen(req,timeout=timeout) as r:return json.load(r)
+def _retryable_http(exc:urllib.error.HTTPError,body:str)->bool:
+    low=body.lower()
+    return exc.code in TRANSIENT_HTTP or (exc.code==403 and ('statement timeout' in low or '57014' in low or 'canceling statement due to statement timeout' in low))
+
+def post(body,timeout=180,attempts=4):
+    payload=json.dumps(body,ensure_ascii=False,separators=(',',':')).encode()
+    last=None
+    for attempt in range(attempts):
+        req=urllib.request.Request(EDGE_URL,data=payload,method='POST',headers={'Authorization':'Bearer '+token(),'Content-Type':'application/json','User-Agent':'Provider-Anomaly-Analyzer/1.0'})
+        try:
+            with urllib.request.urlopen(req,timeout=timeout) as r:return json.load(r)
+        except urllib.error.HTTPError as exc:
+            raw=exc.read().decode('utf-8','replace')
+            last=RuntimeError(f'HTTP {exc.code}: {raw[:400]}')
+            if not _retryable_http(exc,raw) or attempt+1>=attempts:raise last from exc
+        except (urllib.error.URLError,TimeoutError) as exc:
+            last=exc
+            if attempt+1>=attempts:raise
+        time.sleep(2**attempt)
+    if last:raise last
+    raise RuntimeError('POST_FAILED_WITHOUT_ERROR')
 
 def chunks(rows,n):
     for i in range(0,len(rows),n):yield rows[i:i+n]
@@ -48,12 +69,7 @@ def decimal_text(value:Decimal)->str:
     return format(value,'f')
 
 def economic_rows(hist:dict,year:int,month:int,now:str)->tuple[list[dict],list[dict]]:
-    """Build buyer and pair rows from the same exact pair amounts.
-
-    JSON floats in the historical build are converted through Decimal(str(...)) once.
-    Buyer totals are then derived from those exact persisted pair values, so the two
-    database layers reconcile exactly instead of depending on float summation order.
-    """
+    """Build buyer and pair rows from the same exact pair amounts."""
     raw_pairs=hist.get('pairs') or []
     buyer_amounts:dict[str,Decimal]=defaultdict(Decimal)
     buyer_orders:dict[str,int]=defaultdict(int)
@@ -105,9 +121,9 @@ def main():
         if reason:quarantine.append(quarantine_record(raw,reason=reason,source_year=year,source_month=month));continue
         events.append(normalized)
     written=0
-    for b in chunks(events,2000):written+=int(post({'kind':'route_event_batch','rows':b}).get('written') or 0)
+    for b in chunks(events,ROUTE_BATCH_SIZE):written+=int(post({'kind':'route_event_batch','rows':b}).get('written') or 0)
     qwritten=0
     for b in chunks(quarantine,500):qwritten+=int(post({'kind':'quarantine_event_batch','rows':b}).get('written') or 0)
-    period=f'{year:04d}-{month:02d}';post({'kind':'state','row':{'pipeline':'MONTHLY_DATA_'+period.replace('-','_'),'status':'SUCCESS','source_digest':h({'history':hist.get('coverage'),'tender':th.get('coverage')}),'detail':{'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'route_batch_size':2000,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten,'economic_amount_semantics':'DECIMAL_PAIR_RECONCILED','route_partition_semantics':'EVENT_DATE','source_partition_semantics':'CHILECOMPRA_ARCHIVE_MONTH'}}})
-    print(json.dumps({'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten},ensure_ascii=False))
+    period=f'{year:04d}-{month:02d}';post({'kind':'state','row':{'pipeline':'MONTHLY_DATA_'+period.replace('-','_'),'status':'SUCCESS','source_digest':h({'history':hist.get('coverage'),'tender':th.get('coverage')}),'detail':{'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'route_batch_size':ROUTE_BATCH_SIZE,'transient_retry_attempts':4,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten,'economic_amount_semantics':'DECIMAL_PAIR_RECONCILED','route_partition_semantics':'EVENT_DATE','source_partition_semantics':'CHILECOMPRA_ARCHIVE_MONTH'}}})
+    print(json.dumps({'period':period,'buyers':len(buyers),'pairs':len(pairs),'route_events':len(events),'route_events_written':written,'route_batch_size':ROUTE_BATCH_SIZE,'quarantine_events':len(quarantine),'quarantine_events_written':qwritten},ensure_ascii=False))
 if __name__=='__main__':main()
