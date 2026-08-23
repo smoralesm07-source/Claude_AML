@@ -1,0 +1,88 @@
+name: PEP Control Target Scan · 2026 YTD
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/pep-control-target-scan.yml'
+      - 'provider_analyzer/ops/pep_control_targets_v1.json'
+      - 'provider_analyzer/scripts/filter_pep_control_target_month.py'
+      - 'provider_analyzer/scripts/merge_pep_control_target_scan.py'
+      - 'provider_analyzer/tests/test_pep_control_target_scan.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  month:
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        month: [1,2,3,4,5,6,7,8]
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated analyzer
+        run: python -m pip install -e 'provider_analyzer[dev]'
+      - name: Validate target scan unit tests
+        run: python -m pytest provider_analyzer/tests/test_pep_control_target_scan.py -q
+      - name: Build complete official OC month
+        run: |
+          python provider_analyzer/scripts/build_chilecompra_order_month_summary.py \
+            --url "https://transparenciachc.blob.core.windows.net/oc-da/2026-${{ matrix.month }}.zip" \
+            --year 2026 --month ${{ matrix.month }} \
+            --output-dir "runtime/pep_control/2026-${{ matrix.month }}/orders"
+      - name: Filter exact target RUTs only
+        run: |
+          python provider_analyzer/scripts/filter_pep_control_target_month.py \
+            --history "runtime/pep_control/2026-${{ matrix.month }}/orders/history_month.json" \
+            --purchase-events "runtime/pep_control/2026-${{ matrix.month }}/orders/purchase_events.jsonl.gz" \
+            --targets provider_analyzer/ops/pep_control_targets_v1.json \
+            --output "runtime/pep_control/2026-${{ matrix.month }}/pep_control_month.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pep-control-2026-${{ matrix.month }}
+          path: runtime/pep_control/2026-${{ matrix.month }}/pep_control_month.json
+          retention-days: 14
+          if-no-files-found: error
+
+  merge:
+    needs: month
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pep-control-2026-*
+          path: runtime/pep_control/months
+          merge-multiple: false
+      - name: Merge January-August 2026
+        run: |
+          python provider_analyzer/scripts/merge_pep_control_target_scan.py \
+            --input-root runtime/pep_control/months \
+            --targets provider_analyzer/ops/pep_control_targets_v1.json \
+            --expected-months '2026-1,2026-2,2026-3,2026-4,2026-5,2026-6,2026-7,2026-8' \
+            --output runtime/pep_control/pep_control_procurement_2026_ytd.json
+      - name: Enforce governed coverage semantics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('runtime/pep_control/pep_control_procurement_2026_ytd.json').read_text(encoding='utf-8'))
+          assert p['schema']=='PEP_CONTROL_PROCUREMENT_SCAN_V1'
+          assert p['coverage_complete'] is True
+          assert p['match_method']=='EXACT_NORMALIZED_SUPPLIER_RUT'
+          assert all(x['risk_effect']=='NONE' and x['scoring_eligible'] is False for x in p['targets'].values())
+          print(json.dumps({'coverage_complete':p['coverage_complete'],'matched_targets':p['matched_targets'],'targets':p['targets']},ensure_ascii=False,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pep-control-procurement-2026-ytd
+          path: runtime/pep_control/pep_control_procurement_2026_ytd.json
+          retention-days: 14
+          if-no-files-found: error
