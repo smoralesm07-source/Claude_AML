@@ -2,7 +2,7 @@
   "schema": "PROVIDER_ANALYZER_MONTHLY_REQUEST_V1",
   "year": 2026,
   "month": 7,
-  "attempt": 3,
-  "requested_at": "2026-08-23T21:33:00-04:00",
-  "reason": "Tercer intento de la primera corrida mensual real: history_query ya usa batching máximo 300 y gateway indexado, validado con 300 pares reales en 103 ms."
+  "attempt": 4,
+  "requested_at": "2026-08-23T22:24:00-04:00",
+  "reason": "Cuarto intento de la primera corrida mensual real: publica señales base después de historia gobernada antes del enriquecimiento de rutas; history_query indexado y batching máximo 300 ya validados; matcher de rutas indexado fusionado."
 }
