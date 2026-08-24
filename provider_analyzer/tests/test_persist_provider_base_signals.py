@@ -17,6 +17,8 @@ def sample_signal():
         'signal_type': 'LOW_COMPETITION',
         'supplier_id': '76123456-8',
         'buyer_id': '69123456-7',
+        'buyer_name': 'Comprador de prueba',
+        'tender_id': '1000-1-LE26',
         'provider_buyer_pair_id': '76123456-8::69123456-7',
         'reason': 'Señal de revisión',
         'metrics': {'comparability_index': 90},
@@ -25,12 +27,20 @@ def sample_signal():
 
 
 def sample_priority(score=62.5, tier='MEDIUM'):
+    history = {
+        'pair_id': '76123456-8::69123456-7',
+        'order_count': 5,
+        'amount_total_clp': 123456,
+    }
     return {
         'review_cases': [{
             'review_key': '76123456-8::69123456-7',
             'review_priority': score,
             'tier': tier,
             'alternative_route_count': 0,
+            'components': {'historical_persistence': 4, 'alternative_route': 0},
+            'history': history,
+            'history_context': history,
             'history_used_for_priority': True,
         }]
     }
@@ -54,6 +64,12 @@ def test_base_signal_preserves_stable_id_and_marks_route_pending():
     assert row['payload']['provisional_stage'] == 'BASE_SIGNALS_READY'
     assert row['payload']['route_enrichment_pending'] is True
     assert row['payload']['guardrails']['route_enrichment_pending'] is True
+    assert 'raw_signal' not in row['payload']
+    assert row['payload']['source_context']['tender_id'] == '1000-1-LE26'
+    assert row['payload']['source_context']['buyer_name'] == 'Comprador de prueba'
+    assert row['payload']['source_context']['source_evidence_ids'] == ['raw-evidence-1']
+    assert 'history' not in row['payload']['priority_context']
+    assert row['payload']['priority_context']['history_context']['order_count'] == 5
 
 
 def test_semantic_hash_is_idempotent_across_run_metadata():
