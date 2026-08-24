@@ -84,6 +84,14 @@ jobs:
         run: |
           PERIOD='${{ steps.period.outputs.period }}'
           python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status RUNNING --period "$PERIOD" --stage HISTORY_READY
+      - name: Persist base review signals before route enrichment
+        run: |
+          python provider_analyzer/scripts/build_public_integrity_priority.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --histories runtime/provider_analyzer/history.json --as-of '${{ steps.period.outputs.as_of }}' --years 3 --min-history-coverage 0.80 --output runtime/provider_analyzer/priority_base.json
+          python provider_analyzer/scripts/persist_provider_base_signals.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --priority runtime/provider_analyzer/priority_base.json --period '${{ steps.period.outputs.period }}'
+      - name: Mark base review signals as ready
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'
+          python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status RUNNING --period "$PERIOD" --stage BASE_SIGNALS_READY
       - name: Rebuild targeted route evidence from source cohorts
         run: |
           python provider_analyzer/scripts/build_targeted_route_context.py --plan runtime/provider_analyzer/plan.json --targets runtime/provider_analyzer/targets.json --output runtime/provider_analyzer/routes.json --days 180
