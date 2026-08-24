@@ -84,10 +84,14 @@ def build_base_signal_rows(
         if str(x.get('review_key') or '')
     }
     rows: list[dict] = []
+    seen_signal_ids: set[str] = set()
     for signal in signals:
         signal_id = str(signal.get('signal_id') or '')
         if not signal_id:
             raise ValueError('SIGNAL_ID_REQUIRED')
+        if signal_id in seen_signal_ids:
+            raise ValueError(f'DUPLICATE_SIGNAL_ID:{signal_id}')
+        seen_signal_ids.add(signal_id)
         pair = str(signal.get('provider_buyer_pair_id') or signal.get('pair_id') or '')
         priority = priority_by_key.get(pair) or {}
         presentation = {

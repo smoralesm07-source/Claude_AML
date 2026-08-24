@@ -9,10 +9,12 @@ RULES={
  'INT-PB-005':'Adjudicación con tratamiento económico diferencial frente a pares',
 }
 
-def _sig(rule,tender_id,supplier_id,reason,metrics,evidence=None,buyer_id=None,buyer_name=None):
+def _sig(rule,tender_id,supplier_id,reason,metrics,evidence=None,buyer_id=None,buyer_name=None,signal_key=None):
     tender_pair=f'{supplier_id}::{tender_id}'
     provider_buyer_pair=f'{supplier_id}::{buyer_id}' if supplier_id and buyer_id else None
-    return {'signal_id':event_id('SIG-INT',rule,tender_pair),'signal_type':rule,'semantic_class':'INTEGRITY_REVIEW','scope':'SUPPLIER_TENDER','tender_id':tender_id,'supplier_id':supplier_id,'buyer_id':buyer_id,'buyer_name':buyer_name,'provider_buyer_pair_id':provider_buyer_pair,'evidence_ids':evidence or [],'reason':reason,'metrics':metrics,'scoring_eligible':False,'risk_effect':'NONE'}
+    # A signal ID must identify one semantic observation, not only the supplier/tender pair.
+    # INT-PB-005 is line-level, so its item/line discriminator is part of the stable ID.
+    return {'signal_id':event_id('SIG-INT',rule,tender_pair,signal_key or ''),'signal_type':rule,'semantic_class':'INTEGRITY_REVIEW','scope':'SUPPLIER_TENDER','tender_id':tender_id,'supplier_id':supplier_id,'buyer_id':buyer_id,'buyer_name':buyer_name,'provider_buyer_pair_id':provider_buyer_pair,'evidence_ids':evidence or [],'reason':reason,'metrics':metrics,'scoring_eligible':False,'risk_effect':'NONE'}
 
 def detect_competition(tenders:list[dict])->list[dict]:
     out=[]
@@ -66,5 +68,8 @@ def detect_competition(tenders:list[dict])->list[dict]:
                                  'comparability_index':ic,'comparability_band':quality.get('band'),'data_quality_flags':quality.get('data_quality_flags',[]),'review_eligible':ic>=80}
                         reason=f'Proveedor adjudicado ofertó {p/peer:.2f}× la mediana de pares en una línea con alternativas sustancialmente menores.'
                         if ic<80: reason+=f' Comparabilidad {ic:.0f}/100: no priorizar como anomalía económica sin revisión de datos.'
-                        out.append(_sig('INT-PB-005',tid,sid,reason,metrics,buyer_id=buyer_id,buyer_name=buyer_name))
+                        out.append(_sig('INT-PB-005',tid,sid,reason,metrics,buyer_id=buyer_id,buyer_name=buyer_name,signal_key=f'ITEM:{iid}'))
+    ids=[s['signal_id'] for s in out]
+    if len(ids)!=len(set(ids)):
+        raise RuntimeError('DUPLICATE_COMPETITION_SIGNAL_ID')
     return out
