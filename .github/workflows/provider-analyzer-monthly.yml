@@ -58,6 +58,10 @@ jobs:
           ASOF=$(python -c "import json;print(json.load(open('runtime/provider_analyzer/plan.json'))['as_of'])")
           echo "period=$PERIOD" >> "$GITHUB_OUTPUT"
           echo "as_of=$ASOF" >> "$GITHUB_OUTPUT"
+      - name: Mark monthly analyzer as running
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'
+          python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status RUNNING --period "$PERIOD" --stage MONTHLY_START
       - name: Detect current-month competition signals
         shell: bash
         run: |
@@ -76,9 +80,17 @@ jobs:
         run: |
           PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
           python provider_analyzer/scripts/fetch_provider_context.py --targets runtime/provider_analyzer/targets.json --end-year "$Y" --end-month "$M" --history-output runtime/provider_analyzer/history.json --history-only
+      - name: Mark governed history as ready
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'
+          python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status RUNNING --period "$PERIOD" --stage HISTORY_READY
       - name: Rebuild targeted route evidence from source cohorts
         run: |
           python provider_analyzer/scripts/build_targeted_route_context.py --plan runtime/provider_analyzer/plan.json --targets runtime/provider_analyzer/targets.json --output runtime/provider_analyzer/routes.json --days 180
+      - name: Mark targeted routes as ready
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'
+          python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status RUNNING --period "$PERIOD" --stage ROUTES_READY
       - name: Build explainable review priority and canonical Fusion export
         run: |
           python provider_analyzer/scripts/build_public_integrity_priority.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --histories runtime/provider_analyzer/history.json --routes runtime/provider_analyzer/routes.json --as-of '${{ steps.period.outputs.as_of }}' --years 3 --min-history-coverage 0.80 --output runtime/provider_analyzer/priority.json
@@ -122,6 +134,16 @@ jobs:
             provider_analyzer/exports/provider_events_v1.jsonl \
             provider_analyzer/exports/provider_context_signals_v1.jsonl
           if ! git diff --cached --quiet; then git commit -m "data: provider analyzer ${{ steps.period.outputs.period }}"; git push origin HEAD:main; fi
+      - name: Mark monthly analyzer as successful
+        if: ${{ success() }}
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'
+          python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status SUCCESS --period "$PERIOD" --stage MONTHLY_COMPLETE
+      - name: Mark monthly analyzer as failed
+        if: ${{ failure() && steps.period.outputs.period != '' }}
+        run: |
+          PERIOD='${{ steps.period.outputs.period }}'
+          python provider_analyzer/scripts/mark_provider_run.py --pipeline "PROVIDER_ANALYZER_${PERIOD//-/_}" --status FAILED --period "$PERIOD" --stage MONTHLY_FAILED
       - uses: actions/upload-artifact@v4
         if: always()
         with:
