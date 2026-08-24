@@ -101,13 +101,13 @@ jobs:
       - run: python -m pip install -e provider_analyzer
       - name: Mark historical month as running
         run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "BACKFILL_${{ matrix.period }}" --status RUNNING --period "${{ matrix.period }}"
-      - name: Scan and persist one historical month
+      - name: Scan and persist aggregate historical month
         shell: bash
         run: |
           Y='${{ matrix.year }}'; M='${{ matrix.month }}'
           python provider_analyzer/scripts/build_chilecompra_order_month_summary.py --url "https://transparenciachc.blob.core.windows.net/oc-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/orders
           python provider_analyzer/scripts/build_chilecompra_tender_route_month.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/routes_month
-          python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz
+          python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz --skip-route-events
       - name: Mark historical month as successful
         if: success()
         run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "BACKFILL_${{ matrix.period }}" --status SUCCESS --period "${{ matrix.period }}"
