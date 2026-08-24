@@ -1,11 +1,11 @@
 {
   "schema": "PROVIDER_ANALYZER_BACKFILL_REQUEST_V1",
-  "stage": "HISTORICAL_BACKFILL_REPAIR",
-  "attempt": 8,
-  "requested_at": "2026-08-23T17:02:00-04:00",
-  "start_year": 2024,
-  "start_month": 2,
+  "stage": "HISTORICAL_AGGREGATE_REPAIR",
+  "attempt": 9,
+  "requested_at": "2026-08-23T20:36:00-04:00",
+  "start_year": 2025,
+  "start_month": 3,
   "end_year": 2026,
   "end_month": 7,
-  "reason": "Segunda pasada completa e idempotente sobre código robusto: parser oficial ChileCompra, lotes de ruta 1000, reintentos transitorios selectivos, paralelismo 3 y persistencia temporal validada. Reemplaza la matriz inicial que presentó timeouts con lotes de 2000."
+  "reason": "Reparación agregada posterior a SQLSTATE 53100. Supabase conserva buyer_month, pair_month compacto y cobertura; route_event deja de materializarse masivamente y la evidencia de rutas se reconstruye de forma efímera para compradores objetivo desde las cohortes fuente 2024->mes objetivo."
 }
