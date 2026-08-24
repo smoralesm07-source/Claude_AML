@@ -27,7 +27,7 @@ concurrency:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -64,18 +64,21 @@ jobs:
           PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
           python provider_analyzer/scripts/sync_chilecompra_bulk_offers.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --max-rows 0 --out runtime/provider_analyzer/detect --lab-out runtime/provider_analyzer/bulk_competition.json
           python provider_analyzer/scripts/build_public_integrity_targets.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --output runtime/provider_analyzer/targets.json
-      - name: Materialize only the new monthly history and route state
+      - name: Materialize only new monthly aggregate history
         shell: bash
         run: |
           PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
           python provider_analyzer/scripts/build_chilecompra_order_month_summary.py --url "https://transparenciachc.blob.core.windows.net/oc-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/orders
           python provider_analyzer/scripts/build_chilecompra_tender_route_month.py --url "https://transparenciachc.blob.core.windows.net/lic-da/${Y}-${M}.zip" --year "$Y" --month "$M" --output-dir runtime/provider_analyzer/routes_month
-          python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz
-      - name: Reuse governed historical context from AML CLAUDE
+          python provider_analyzer/scripts/persist_provider_month.py --history-month runtime/provider_analyzer/orders/history_month.json --purchase-events runtime/provider_analyzer/orders/purchase_events.jsonl.gz --tender-health runtime/provider_analyzer/routes_month/health.json --tender-events runtime/provider_analyzer/routes_month/tender_negative_events.jsonl.gz --skip-route-events
+      - name: Reuse governed aggregate history from AML CLAUDE
         shell: bash
         run: |
           PERIOD='${{ steps.period.outputs.period }}'; Y=${PERIOD%-*}; MM=${PERIOD#*-}; M=$((10#$MM))
-          python provider_analyzer/scripts/fetch_provider_context.py --targets runtime/provider_analyzer/targets.json --end-year "$Y" --end-month "$M" --history-output runtime/provider_analyzer/history.json --routes-output runtime/provider_analyzer/routes.json
+          python provider_analyzer/scripts/fetch_provider_context.py --targets runtime/provider_analyzer/targets.json --end-year "$Y" --end-month "$M" --history-output runtime/provider_analyzer/history.json --history-only
+      - name: Rebuild targeted route evidence from source cohorts
+        run: |
+          python provider_analyzer/scripts/build_targeted_route_context.py --plan runtime/provider_analyzer/plan.json --targets runtime/provider_analyzer/targets.json --output runtime/provider_analyzer/routes.json --days 180
       - name: Build explainable review priority and canonical Fusion export
         run: |
           python provider_analyzer/scripts/build_public_integrity_priority.py --signals runtime/provider_analyzer/detect/bulk_competition_signals_latest.jsonl --histories runtime/provider_analyzer/history.json --routes runtime/provider_analyzer/routes.json --as-of '${{ steps.period.outputs.as_of }}' --years 3 --min-history-coverage 0.80 --output runtime/provider_analyzer/priority.json
