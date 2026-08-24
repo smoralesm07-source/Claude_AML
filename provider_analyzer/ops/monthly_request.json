@@ -2,6 +2,7 @@
   "schema": "PROVIDER_ANALYZER_MONTHLY_REQUEST_V1",
   "year": 2026,
   "month": 7,
-  "requested_at": "2026-08-23T21:18:00-04:00",
-  "reason": "Primera corrida mensual real tras validar histórico agregado completo 2024-01 a 2026-07 con conciliación exacta y almacenamiento compacto."
+  "attempt": 2,
+  "requested_at": "2026-08-23T21:29:00-04:00",
+  "reason": "Reintento de la primera corrida mensual real tras corregir history_query para consultar universos objetivo mayores a 300 pares mediante batching gobernado."
 }
