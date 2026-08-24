@@ -2,7 +2,7 @@
   "schema": "PROVIDER_ANALYZER_MONTHLY_REQUEST_V1",
   "year": 2026,
   "month": 7,
-  "attempt": 2,
-  "requested_at": "2026-08-23T21:29:00-04:00",
-  "reason": "Reintento de la primera corrida mensual real tras corregir history_query para consultar universos objetivo mayores a 300 pares mediante batching gobernado."
+  "attempt": 3,
+  "requested_at": "2026-08-23T21:33:00-04:00",
+  "reason": "Tercer intento de la primera corrida mensual real: history_query ya usa batching máximo 300 y gateway indexado, validado con 300 pares reales en 103 ms."
 }
