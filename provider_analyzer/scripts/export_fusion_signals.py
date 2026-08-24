@@ -11,6 +11,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+from intelligence_fusion.provider_signal_payload import compact_priority_context, compact_source_context
+
 EDGE_URL = os.environ.get(
     'PROVIDER_ANALYZER_INGEST',
     'https://bzqxvidggykkdouotylg.supabase.co/functions/v1/provider-analyzer-ingest',
@@ -246,7 +248,11 @@ def main():
             },
         }
         export.append(row)
-        db_payload = {**row, 'raw_signal': s}
+        db_payload = {
+            **row,
+            'source_context': compact_source_context(s),
+            'priority_context': compact_priority_context(p),
+        }
         db.append({
             'signal_id': row['signal_id'],
             'signal_type': row['signal_type'],
@@ -268,7 +274,6 @@ def main():
         event_rows.append(evt)
         context_rows.append(ctx)
 
-    key = lambda x: str(x.get('signal_id') or x.get('evidence_id') or x.get('event_id') or '')
     export.sort(key=lambda x: (-(float(x.get('review_priority') or 0)), x['signal_id']))
     evidence_rows.sort(key=lambda x: x['evidence_id'])
     event_rows.sort(key=lambda x: x['event_id'])
@@ -316,7 +321,7 @@ def main():
     }
     (args.output_dir / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
 
-    for b in chunks(db, 400):
+    for b in chunks(db, 200):
         post({'kind': 'signal_batch', 'rows': b})
     post({'kind': 'export_batch', 'row': {
         'export_id': f'{args.period}:{bundle_hash[:20]}',
@@ -333,7 +338,7 @@ def main():
         'source_digest': bundle_hash,
         'detail': manifest,
     }})
-    print(json.dumps({'period': args.period, 'signals': len(export), 'bundle_sha256': bundle_hash}, ensure_ascii=False))
+    print(json.dumps({'period': args.period, 'signals': len(export), 'bundle_sha256': bundle_hash, 'signal_batch_size': 200}, ensure_ascii=False))
 
 
 if __name__ == '__main__':

@@ -11,6 +11,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+from intelligence_fusion.provider_signal_payload import compact_priority_context, compact_source_context
+
 EDGE_URL = os.environ.get(
     'PROVIDER_ANALYZER_INGEST',
     'https://bzqxvidggykkdouotylg.supabase.co/functions/v1/provider-analyzer-ingest',
@@ -122,8 +124,8 @@ def build_base_signal_rows(
         }
         payload = {
             **presentation,
-            'raw_signal': signal,
-            'priority_context': priority,
+            'source_context': compact_source_context(signal),
+            'priority_context': compact_priority_context(priority),
         }
         rows.append({
             'signal_id': signal_id,
@@ -168,7 +170,7 @@ def main():
 
     written = 0
     unchanged = 0
-    for batch in chunks(rows, 400):
+    for batch in chunks(rows, 200):
         result = post({'kind': 'signal_batch', 'rows': batch})
         written += int(result.get('written') or 0)
         unchanged += int(result.get('unchanged') or 0)
@@ -180,6 +182,7 @@ def main():
         'written': written,
         'unchanged': unchanged,
         'route_enrichment_pending': True,
+        'batch_size': 200,
     }, ensure_ascii=False))
 
 
