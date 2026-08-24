@@ -4,7 +4,7 @@ from collections import Counter
 from datetime import date
 from typing import Iterable
 
-from .public_integrity_prioritization import detect_alternative_purchase_routes
+from .alternative_route_matcher import detect_alternative_purchase_routes
 from .sources.validation import plausible_event_date, valid_order_id
 
 
