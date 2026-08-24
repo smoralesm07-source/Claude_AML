@@ -2,7 +2,7 @@
   "schema": "PROVIDER_ANALYZER_MONTHLY_REQUEST_V1",
   "year": 2026,
   "month": 7,
-  "attempt": 5,
-  "requested_at": "2026-08-23T22:26:00-04:00",
-  "reason": "Quinto intento de la primera corrida mensual real: reemplaza ejecuciones mensuales obsoletas, publica señales base después de historia gobernada y antes del enriquecimiento de rutas; history_query indexado y matcher de rutas indexado ya validados."
+  "attempt": 6,
+  "requested_at": "2026-08-23T22:34:00-04:00",
+  "reason": "Sexto intento de la primera corrida mensual real: corrige la granularidad de signal_id de INT-PB-005 por item_id, con 1744/1744 IDs únicos validados sobre el artefacto real del intento 5; mantiene señales base antes de rutas y supersede de corridas obsoletas."
 }
