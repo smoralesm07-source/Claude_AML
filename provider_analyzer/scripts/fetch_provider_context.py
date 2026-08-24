@@ -16,6 +16,7 @@ QUERY_URL = os.environ.get(
     'https://bzqxvidggykkdouotylg.supabase.co/functions/v1/provider-analyzer-query',
 )
 AUDIENCE = 'provider-analyzer-ingest'
+HISTORY_QUERY_BATCH_SIZE = 300
 _TOKEN = None
 _AT = 0.0
 
@@ -55,6 +56,56 @@ def period(serial):
     return serial // 12, serial % 12 + 1
 
 
+def chunks(rows, size):
+    for i in range(0, len(rows), size):
+        yield rows[i : i + size]
+
+
+def history_query_batched(pair_ids, *, end_year, end_month, post_fn=post, batch_size=HISTORY_QUERY_BATCH_SIZE):
+    """Read governed pair history without exceeding the Edge Function 300-ID contract."""
+    unique = list(dict.fromkeys(str(x).strip() for x in pair_ids if str(x).strip()))
+    if not unique:
+        return {'ok': True, 'histories': {}, 'rows': 0, 'pairs': 0, 'batches': 0}
+    if batch_size < 1 or batch_size > HISTORY_QUERY_BATCH_SIZE:
+        raise ValueError('INVALID_HISTORY_BATCH_SIZE')
+
+    histories = {}
+    rows = 0
+    storage = None
+    batches = 0
+    for batch in chunks(unique, batch_size):
+        result = post_fn(
+            {
+                'kind': 'history_query',
+                'pair_ids': batch,
+                'start_year': 2024,
+                'start_month': 1,
+                'end_year': end_year,
+                'end_month': end_month,
+            }
+        )
+        if result.get('ok') is not True:
+            raise RuntimeError('HISTORY_QUERY_BATCH_REJECTED')
+        part = result.get('histories') or {}
+        overlap = set(histories).intersection(part)
+        if overlap:
+            raise RuntimeError(f'HISTORY_QUERY_DUPLICATE_RESULTS:{len(overlap)}')
+        histories.update(part)
+        rows += int(result.get('rows') or 0)
+        storage = storage or result.get('storage')
+        batches += 1
+
+    return {
+        'ok': True,
+        'histories': histories,
+        'rows': rows,
+        'pairs': len(histories),
+        'batches': batches,
+        'requested_pairs': len(unique),
+        'storage': storage or 'GOVERNED_AGGREGATE_HISTORY',
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--targets', type=Path, required=True)
@@ -88,19 +139,11 @@ def main():
             'end_month': args.end_month,
         }
     )
-    if pairs:
-        hr = post(
-            {
-                'kind': 'history_query',
-                'pair_ids': pairs,
-                'start_year': 2024,
-                'start_month': 1,
-                'end_year': args.end_year,
-                'end_month': args.end_month,
-            }
-        )
-    else:
-        hr = {'ok': True, 'histories': {}, 'rows': 0, 'pairs': 0}
+    hr = history_query_batched(
+        pairs,
+        end_year=args.end_year,
+        end_month=args.end_month,
+    )
 
     hc = (hcov.get('sources') or {}).get('CHILECOMPRA_OC_DA') or {}
     history = {
@@ -115,6 +158,13 @@ def main():
             'missing_is_not_zero': True,
         },
         'histories': hr.get('histories') or {},
+        'history_query': {
+            'requested_pairs': hr.get('requested_pairs', 0),
+            'returned_pairs': hr.get('pairs', 0),
+            'rows': hr.get('rows', 0),
+            'batches': hr.get('batches', 0),
+            'max_pairs_per_batch': HISTORY_QUERY_BATCH_SIZE,
+        },
         'storage_semantics': hr.get('storage') or 'GOVERNED_AGGREGATE_HISTORY',
         'guardrails': {
             'history_is_context_not_wrongdoing_probability': True,
@@ -134,6 +184,7 @@ def main():
                     'pairs': len(history['histories']),
                     'history_coverage': history['coverage']['month_coverage'],
                     'history_complete': history['coverage']['history_complete'],
+                    'history_batches': history['history_query']['batches'],
                     'storage_semantics': history['storage_semantics'],
                     'routes': 'REBUILT_FROM_SOURCE_COHORTS',
                 },
@@ -199,6 +250,7 @@ def main():
             {
                 'pairs': len(history['histories']),
                 'history_coverage': history['coverage']['month_coverage'],
+                'history_batches': history['history_query']['batches'],
                 'route_events': route['coverage']['events'],
                 'route_findings': len(routes),
                 'route_complete': route['coverage']['coverage_complete'],
