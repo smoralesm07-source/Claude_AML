@@ -3,5 +3,6 @@
     "2d5f5202ca8a7dff6cfe1bdd18cba6e837bc16a418c80a19144f87f9bfe611d5",
     "30f5afc30262c1ddd82cf0b2ef5c0b6a9ca191b083e870b4d4c244bbb099ad3a"
   ],
-  "purpose": "Extract D.A. 2286 readjudication and original evaluation report for factual reconstruction"
+  "purpose": "Extract D.A. 2286 readjudication and original evaluation report for factual reconstruction",
+  "run_label": "maipu-text-2"
 }
