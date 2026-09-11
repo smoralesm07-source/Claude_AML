@@ -1,0 +1,10 @@
+{
+  "tender_ids": [
+    "4377-36-L126",
+    "2770-211-LP25",
+    "2770-211-R126"
+  ],
+  "limit": 10,
+  "fetch": true,
+  "purpose": "Bootstrap documentary acquisition for San Rosendo and Maipu"
+}
