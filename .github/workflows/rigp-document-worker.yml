@@ -1,0 +1,106 @@
+name: RIGP document worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      tender_ids:
+        description: "IDs separados por coma; vacío = cola prioritaria"
+        required: false
+        default: ""
+        type: string
+      limit:
+        description: "Máximo de procesos a descubrir"
+        required: false
+        default: "10"
+        type: string
+      fetch:
+        description: "Descargar adjuntos después del descubrimiento"
+        required: false
+        default: true
+        type: boolean
+  schedule:
+    - cron: "17 11 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "rigp/ops/document_request.json"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: rigp-document-worker
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Build worker request
+        id: request
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TENDERS: ${{ inputs.tender_ids }}
+          INPUT_LIMIT: ${{ inputs.limit }}
+          INPUT_FETCH: ${{ inputs.fetch }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "push" && -f rigp/ops/document_request.json ]]; then
+            jq '{action:"run", tender_ids:(.tender_ids // []), limit:(.limit // 10), fetch:(.fetch // true)}' \
+              rigp/ops/document_request.json > /tmp/rigp-request.json
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            TENDERS=$(printf '%s' "${INPUT_TENDERS:-}" | jq -R 'split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0))')
+            LIMIT=${INPUT_LIMIT:-10}
+            FETCH=${INPUT_FETCH:-true}
+            jq -n \
+              --argjson tenders "$TENDERS" \
+              --argjson limit "$LIMIT" \
+              --argjson fetch "$FETCH" \
+              '{action:"run", tender_ids:$tenders, limit:$limit, fetch:$fetch}' > /tmp/rigp-request.json
+          else
+            jq -n '{action:"run", tender_ids:[], limit:10, fetch:true}' > /tmp/rigp-request.json
+          fi
+          echo "RIGP request:"
+          jq . /tmp/rigp-request.json
+
+      - name: Acquire GitHub OIDC token
+        id: oidc
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_JSON=$(curl -fsS \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=rigp-mp-document-worker")
+          TOKEN=$(printf '%s' "$OIDC_JSON" | jq -r '.value')
+          test -n "$TOKEN" && test "$TOKEN" != "null"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Run RIGP document acquisition
+        shell: bash
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+        run: |
+          set -euo pipefail
+          HTTP_CODE=$(curl -sS \
+            -o /tmp/rigp-response.json \
+            -w '%{http_code}' \
+            -X POST \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/rigp-request.json \
+            "https://ldmtlwzqaqmegedktlxr.supabase.co/functions/v1/rigp-mp-document-worker")
+          echo "HTTP $HTTP_CODE"
+          jq . /tmp/rigp-response.json || cat /tmp/rigp-response.json
+          if [[ "$HTTP_CODE" -ge 400 ]]; then
+            exit 1
+          fi
+          STATUS=$(jq -r '.status // "UNKNOWN"' /tmp/rigp-response.json)
+          if [[ "$STATUS" == "FAILED" ]]; then
+            exit 1
+          fi
