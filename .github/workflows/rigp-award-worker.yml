@@ -1,0 +1,64 @@
+name: RIGP award matrix worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'rigp/ops/award_request.json'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build request payload
+        id: payload
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('rigp/ops/award_request.json')
+          data = json.loads(p.read_text())
+          items = data.get('items') or []
+          if not items:
+              raise SystemExit('award_request.json has no items')
+          Path('/tmp/rigp-award-payload.json').write_text(json.dumps({'items': items}, ensure_ascii=False))
+          print(f'items={len(items)}')
+          PY
+
+      - name: Get GitHub OIDC token
+        id: oidc
+        shell: bash
+        run: |
+          RESP=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=rigp-mp-award-worker")
+          TOKEN=$(python -c 'import json,sys; print(json.load(sys.stdin)["value"])' <<< "$RESP")
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Ingest Mercado Publico award matrices
+        shell: bash
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+        run: |
+          HTTP=$(curl -sS -o /tmp/rigp-award-response.json -w '%{http_code}' \
+            -X POST 'https://ldmtlwzqaqmegedktlxr.supabase.co/functions/v1/rigp-mp-award-worker' \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/rigp-award-payload.json)
+          cat /tmp/rigp-award-response.json
+          if [ "$HTTP" -ge 400 ]; then
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/rigp-award-response.json'))
+          if r.get('status') == 'FAILED':
+              raise SystemExit(1)
+          PY
