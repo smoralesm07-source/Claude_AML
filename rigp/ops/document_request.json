@@ -1,9 +1,11 @@
 {
   "tender_ids": [
-    "4377-29-L126"
+    "4377-36-L126",
+    "2770-211-LP25",
+    "2770-211-R126"
   ],
-  "limit": 8,
+  "limit": 3,
   "fetch": true,
-  "purpose": "Acquire predecessor San Rosendo process 4377-29-L126 to explain why it was declared deserted and compare bases, evaluation and bidders against 4377-36-L126.",
-  "run_label": "san-rosendo-predecessor-document-acquisition"
+  "purpose": "Acquire and fetch the priority procurement documents needed to resolve the San Rosendo award-feasibility gate and the Maipu evaluation/readjudication gates.",
+  "run_label": "rigp-priority-document-acquisition-2026-09-12"
 }
