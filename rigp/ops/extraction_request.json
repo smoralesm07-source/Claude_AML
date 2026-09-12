@@ -1,7 +1,10 @@
 {
   "artifact_keys": [
-    "eed180a00cf158e26c21bb7008ca454bd831abc156d643c74db536dbfae42a21"
+    "2d5f5202ca8a7dff6cfe1bdd18cba6e837bc16a418c80a19144f87f9bfe611d5",
+    "30f5afc30262c1ddd82cf0b2ef5c0b6a9ca191b083e870b4d4c244bbb099ad3a",
+    "4211f9146732fb1952e46c675b78a1029443121a848d8ae4e008285cc3b2b186",
+    "60126605dfd51ae4fc83c923fbb02489d792d3faf3dd0d84801e553a7eb50cc3"
   ],
-  "purpose": "Extract San Rosendo Decree 4809 while evaluation report remains under hash-collision quality hold",
-  "run_label": "san-rosendo-decree-4809"
+  "purpose": "Extract Maipu readjudication decree 2286, original evaluation report, original award decree and readjudication certificate to resolve exit cause and replacement eligibility",
+  "run_label": "maipu-readjudication-causal-extraction"
 }
