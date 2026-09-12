@@ -1,26 +1,92 @@
 {
-  "http_status": 502,
+  "http_status": 200,
   "response": {
-    "ok": false,
-    "status": "FAILED",
+    "ok": true,
+    "status": "SUCCESS",
     "repository": "smoralesm07-source/Claude_AML",
-    "run_id": "34694691449",
-    "failed_count": 3,
+    "run_id": "34694808994",
+    "failed_count": 0,
     "results": [
       {
         "tender_id": "4377-36-L126",
-        "ok": false,
-        "error": "NO_OFFER_ROWS_PARSED:0"
+        "ok": true,
+        "parser": "VISIBLE_TEXT_V1",
+        "page_sha256": "9e9cc0b1ca42a1e674d3b05f5fbd06b03d16e668b42c4db00e81e6178aeff410",
+        "parsed_lines": 11,
+        "parsed_offers": 55,
+        "winner_rows": 11,
+        "diagnostic": {
+          "counts": {
+            "tr": 236,
+            "td": 619,
+            "span": 641,
+            "Resultado de la Adjudicación": 1,
+            "Clasificación ONU": 11,
+            "Especificaciones del Comprador": 11,
+            "Monto Unitario Oferta": 11,
+            "Adjudicada": 66
+          },
+          "excerpt": "TRID RAMIRZ B..pdf DOCUMENT_TYPE_DJ_ABSENCE_CONFLICTS_OF_INTEREST DECLARACIÓN ASTRID RAMIREZ 116 KB 12-08-2026 17:08:28 \nEVALUACIÓN.pdf DOCUMENT_TYPE_ACTA_EVALUACION_ADJ_ATTACHMENT EVALUACIÓN 304 KB 12-08-2026 17:07:59 \nSeleccionar Todos \nGenerar nuevo código \n* Ingrese el texto de la imagen \n  \n  \nResultado de la Adjudicación \n  \n1 \nClasificación ONU : \n50192109 \nPapas fritas o galletas tostadas \nEspecificaciones del Comprador : \nRamita Evercrips Original 48 gr o equivalente \nCantidad : \n450 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n77.411.637-0 ANGELICA FICA ORELLANA ELABORACION DE OTROS PRODUCTOS ALIMENTICIOS E.I.R.L. \nsegún anexo técnico valor neto \n$   880 \n450 \n396000 \nAdjudicada \n77.643.768-9 COMERCIALIZADORA E & LUZ SPA \nRamita marcopolo 42 gr \n$   520 \n0 \n0 \nNo Adjudicada \n77.881.201-0 COMERCIALIZADORA PIERIMAR SPA \nTODOS LOS GASTOS ASOCIADOS A LOS DESPACHOS, ESTAN INCLUIDOS EN LA COTIZACION. \n$   1068 \n0 \n0 \nNo Adjudicada \n77.284.929-K COMERCIAL HS LIMITADA \nRamita Evercrips Original 48 gr \n$   600 \n0 \n0 \nNo Adjudicada \n76.194.668-4 IMPORTADOR EXPORTADOR COMERCIALIZADORA DE PRODUCTOS & SERVICIOS PABLO \nRamita Evercrips Original 48 gr o equivalente \n$   794 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 396.000 \n2 \nClasificación ONU : \n50181905 \nGalletas dulces o pastelitos \nEspecificaciones del Comprador : \nOblea Bañada Super 8 Nestlé 29gr o equivalente \nCantidad : \n450 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n77.411.637-0 ANGELICA FICA ORELLANA ELABORACION DE OTROS PRODUCTOS ALIMENTICIOS E.I.R.L. \nsegún anexo técnico valor neto \n$   490 \n450 \n220500 \nAdjudicada \n77.643.768-9 COMERCIALIZADORA E & LUZ SPA \nOblea Bañada Super 8 Nestlé 29gr o equivalente \n$   351 \n0 \n0 \nNo Adjudicada \n77.881.201-0 COMERCIALIZADORA PIERIMAR SPA \nTODOS LOS GASTOS ASOCIADOS A LOS DESPACHOS, ESTAN INCLUIDOS EN LA COTIZACION. \n$   372 \n0 \n0 \nNo Adjudicada \n77.284.929-K COMERCIAL HS LIMITADA \nOblea Bañada Super 8 Nestlé 29gr \n$   300 \n0 \n0 \nNo Adjudicada \n76.194.668-4 IMPORTADOR EXPORTADOR COMERCIALIZADORA DE PRODUCTOS & SERVICIOS PABLO \nOblea Bañada Super 8 Nestlé 29gr o equivalente \n$   514 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 220.500 \n3 \nClasificación ONU : \n50192109 \nPapas fritas o galletas tostadas \nEspecificaciones del Comprador : \nPapa frita Buka artesanal 35 gr o equivalente \nCantidad : \n450 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n77.411.637-0 ANGELICA FICA ORELLANA ELABORACION DE OTROS PRODUCTOS ALIMENTICIOS E.I.R.L. \nsegún anexo técnico valor neto \n$   800 \n450 \n360000 \nAdjudicada \n77.643.768-9 COMERCIALIZADORA E & LUZ SPA \nPapa frita Buka artesanal 35 gr \n$   650 \n0 \n0 \nNo Adjudicada \n77.881.201-0 COMERCIALIZADORA PIERIMAR SPA \nTODOS LOS GASTOS ASOCIADOS A LOS DESPACHOS, ESTAN INCLUIDOS EN LA COTIZACION. \n$   600 \n0 \n0 \nNo Adjudicada \n77.284.929-K COMERCIAL HS LIMITADA \nPapa frita Buka artesanal 35 gr \n$   1000 \n0 \n0 \nNo Adjudicada \n76.194.668-4 IMPORTADOR EXPORTADOR COMERCIALIZADORA DE PRODUCTOS & SERVICIOS PABLO \nPapa frita Buka artesanal 35 gr o equivalente \n$   874 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 360.000 \n4 \nClasificación ONU : \n50181905 \nGalletas dulces o pastelitos \nEspecificaciones del Comprador : \nGalleta mini costa 35gr variedades o equivalente \nCantidad : \n450 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n77.411.637-0 ANGELICA FICA ORELLANA ELABORACION DE OTROS PRODUCTOS ALIMENTICIOS E.I.R.L. \nsegún anexo técnico valor neto \n$   400 \n450 \n180000 \nAdjudicada \n77.643.768-9 COMERCIALIZADORA E & LUZ SPA \nGalleta mini costa 35gr variedades o equivalente \n$   260 \n0 \n0 \nNo Adjudicada \n77.881.201-0 COMERCIALIZADORA PIERIMAR SPA \nTODOS LOS GASTOS ASOCIADOS A LOS DESPACHOS, ESTAN INCLUIDOS EN LA COTIZACION. \n$   220 \n0 \n0 \nNo Adjudicada \n77.284.929-K COMERCIAL HS LIMITADA \nGalleta mini Costa 35gr variedades sabores \n$   250 \n0 \n0 \nNo Adjudicada \n76.194.668-4 IMPORTADOR EXPORTADOR COMERCIALIZADORA DE PRODUCTOS & SERVICIOS PABLO \nGalleta mini costa 35gr variedades o equivalente \n$   394 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 180.000 \n5 \nClasificación ONU : \n50192112 \nPalomitas de maíz \nEspecificaciones del Comprador : \nPalomita de maíz casera 200 gr \nCantidad : \n450 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n77.411.637-0 ANGELICA FICA ORELLANA ELABORACION DE OTROS PRODUCTOS ALIMENTICIOS E.I.R.L. \nsegún anexo técnico valor neto \n$   1800 \n450 \n810000 \nAdjudicada \n77.643.768-9 COMERCIALIZADORA E & LUZ SPA \nPalomita de maíz casera 200 gr \n$   1105 \n0 \n0 \nNo Adjudicada \n77.881.201-0 COMERCIALIZADORA PIERIMAR SPA \nTODOS LOS GASTOS ASOCIADOS A LOS DESPACHOS, ESTAN INCLUIDOS EN LA COTIZACION. \n$   1925 \n0 \n0 \nNo Adjudicada \n77.284.929-K COMERCIAL HS LIMITADA \nPalomita de maíz casera 200 gr \n$   1400 \n0 \n0 \nNo Adjudicada \n76.194.668-4 IMPORTADOR EXPORTADOR COMERCIALIZADORA DE PRODUCTOS & SERVICIOS PABLO \nPalomita de maíz 200 gr Evercrisp \n$   2494 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 810.000 \n6 \nClasificación ONU : \n50161814 \nDulces con azúcar o sustitutos \nEspecificacio"
+        },
+        "ingest": {
+          "ok": true,
+          "tender_id": "4377-36-L126",
+          "offers_written": 55
+        }
       },
       {
         "tender_id": "2770-211-LP25",
-        "ok": false,
-        "error": "NO_OFFER_ROWS_PARSED:0"
+        "ok": true,
+        "parser": "VISIBLE_TEXT_V1",
+        "page_sha256": "0608a78c0b92da7c399fe271b12ed2cf9339f8ec88c217c61a7f8f113dd78b33",
+        "parsed_lines": 3,
+        "parsed_offers": 17,
+        "winner_rows": 3,
+        "diagnostic": {
+          "counts": {
+            "tr": 123,
+            "td": 287,
+            "span": 269,
+            "Resultado de la Adjudicación": 1,
+            "Clasificación ONU": 3,
+            "Especificaciones del Comprador": 3,
+            "Monto Unitario Oferta": 3,
+            "Adjudicada": 21
+          },
+          "excerpt": " 2094 KB 24-03-2026 17:23:31 \nSeleccionar Todos \nGenerar nuevo código \n* Ingrese el texto de la imagen \n  \nComisión Evaluadora \nRut Nombre Cargo \n11.362.823-5 JUAN FERNANDO AHUMADA PLAZA   \n9141495-3 Ricardo Aguirre Santiago Funcionario SMAPA \n13669371-9 Ana Patricia Rice Cruz Funcionaria SMAPA \n  \nResultado de la Adjudicación \n  \n1 \nClasificación ONU : \n39121402 \nEnchufes eléctricos \nEspecificaciones del Comprador : \nLínea 1: Materiales. \nSegún itemizado de Anexo Económico N°3.1 \nCantidad : \n1 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n76.872.717-1 IMPORTADORA HEVIA SPA \nSe adjuntan anexos correspondientes. Se adjunta pacto en anexos. \n$   1 \n0 \n0 \nNo Adjudicada \n76.325.067-9 HERRAMIENTAS INTEGRALES LIMITADA \nMateriales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n127377220 \n127377220 \nAdjudicada \n78.043.535-6 INVERSIONES SUR LIMITADA \nLínea 1: Materiales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n0 \n0 \nNo Adjudicada \n7.126.205-7 YOLANDA PURISIMA DIAZ ARAYA \nLínea 1: Materiales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n0 \n0 \nNo Adjudicada \n76.079.905-K INDUMATICA SPA \nMateriales \n$   1 \n0 \n0 \nNo Adjudicada \n14.205.876-6 FERNANDO ALBERTO VELOSO OLIVA \nLínea 1: Materiales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 127.377.220 \n2 \nClasificación ONU : \n27111701 \nDestornilladores \nEspecificaciones del Comprador : \nLínea 2: Herramientas. \nSegún itemizado de Anexo Económico N°3.2 \nCantidad : \n1 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n76.325.067-9 HERRAMIENTAS INTEGRALES LIMITADA \nHerramientas. Según itemizado de Anexo Económico N°3.2 \n$   1 \n31947446 \n31947446 \nAdjudicada \n76.176.585-k INFRAESTRUCTURAS DEPORTIVAS Y RECREACIONALES CHILE SPA \nLínea 2: Herramientas. Según itemizado de Anexo Económico N°3.2 \n$   1 \n0 \n0 \nNo Adjudicada \n7.126.205-7 YOLANDA PURISIMA DIAZ ARAYA \nLínea 2: Herramientas. Según itemizado de Anexo Económico N°3.2 \n$   1 \n0 \n0 \nNo Adjudicada \n76.079.905-K INDUMATICA SPA \nHerramientas \n$   1 \n0 \n0 \nNo Adjudicada \n77.902.405-9 INVERSIONES THOMSEB CAPITAL SPA \nSE COTIZA EL ITEM 3.2 EM SU TOTALIDAD , DESPACHO GRATIS , ENVIO EN 9 DIAS - PRIMESOURCESPA@GMAIL.COM +56948695741 \n$   27842907 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 31.947.446 \n3 \nClasificación ONU : \n39121549 \nTermostato \nEspecificaciones del Comprador : \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \nCantidad : \n1 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n76.872.717-1 IMPORTADORA HEVIA SPA \nSe adjuntan anexos correspondientes. Se adjunta pacto en anexos. \n$   1 \n0 \n0 \nNo Adjudicada \n76.176.585-k INFRAESTRUCTURAS DEPORTIVAS Y RECREACIONALES CHILE SPA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n0 \n0 \nNo Adjudicada \n78.043.535-6 INVERSIONES SUR LIMITADA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n0 \n0 \nNo Adjudicada \n7.126.205-7 YOLANDA PURISIMA DIAZ ARAYA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n0 \n0 \nNo Adjudicada \n76.079.905-K INDUMATICA SPA \nEquipos \n$   1 \n0 \n0 \nNo Adjudicada \n14.205.876-6 FERNANDO ALBERTO VELOSO OLIVA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n68470057 \n68470057 \nAdjudicada \nTotal Línea \n$ 68.470.057 \nMonto Total Adjudicado \n$ 227.794.723"
+        },
+        "ingest": {
+          "ok": true,
+          "tender_id": "2770-211-LP25",
+          "offers_written": 17
+        }
       },
       {
         "tender_id": "2770-211-R126",
-        "ok": false,
-        "error": "NO_OFFER_ROWS_PARSED:0"
+        "ok": true,
+        "parser": "VISIBLE_TEXT_V1",
+        "page_sha256": "88288eaeb229eb8401cf59e4f392edd763922487fb6cdd8b4c178c433c3ff7e6",
+        "parsed_lines": 3,
+        "parsed_offers": 17,
+        "winner_rows": 2,
+        "diagnostic": {
+          "counts": {
+            "tr": 123,
+            "td": 287,
+            "span": 269,
+            "Resultado de la Adjudicación": 1,
+            "Clasificación ONU": 3,
+            "Especificaciones del Comprador": 3,
+            "Monto Unitario Oferta": 3,
+            "Adjudicada": 20
+          },
+          "excerpt": "\n2094 KB 22-05-2026 16:12:18 \nSeleccionar Todos \nGenerar nuevo código \n* Ingrese el texto de la imagen \n  \nComisión Evaluadora \nRut Nombre Cargo \n11.362.823-5 JUAN FERNANDO AHUMADA PLAZA   \n9141495-3 Ricardo Aguirre Santiago Funcionario SMAPA \n13669371-9 Ana Patricia Rice Cruz Funcionaria SMAPA \n  \nResultado de la Adjudicación \n  \n1 \nClasificación ONU : \n39121402 \nEnchufes eléctricos \nEspecificaciones del Comprador : \nLínea 1: Materiales. \nSegún itemizado de Anexo Económico N°3.1 \nCantidad : \n1 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n76.872.717-1 IMPORTADORA HEVIA SPA \nSe adjuntan anexos correspondientes. Se adjunta pacto en anexos. \n$   1 \n0 \n0 \nNo Adjudicada \n76.325.067-9 HERRAMIENTAS INTEGRALES LIMITADA \nMateriales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n0 \n0 \nNo Adjudicada \n78.043.535-6 INVERSIONES SUR LIMITADA \nLínea 1: Materiales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n127377220 \n127377220 \nAdjudicada \n7.126.205-7 YOLANDA PURISIMA DIAZ ARAYA \nLínea 1: Materiales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n0 \n0 \nNo Adjudicada \n76.079.905-K INDUMATICA SPA \nMateriales \n$   1 \n0 \n0 \nNo Adjudicada \n14.205.876-6 FERNANDO ALBERTO VELOSO OLIVA \nLínea 1: Materiales. Según itemizado de Anexo Económico N°3.1 \n$   1 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 127.377.220 \n2 \nClasificación ONU : \n27111701 \nDestornilladores \nEspecificaciones del Comprador : \nLínea 2: Herramientas. \nSegún itemizado de Anexo Económico N°3.2 \nCantidad : \n1 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n76.325.067-9 HERRAMIENTAS INTEGRALES LIMITADA \nHerramientas. Según itemizado de Anexo Económico N°3.2 \n$   1 \n0 \n0 \nNo Adjudicada \n76.176.585-k INFRAESTRUCTURAS DEPORTIVAS Y RECREACIONALES CHILE SPA \nLínea 2: Herramientas. Según itemizado de Anexo Económico N°3.2 \n$   1 \n0 \n0 \nNo Adjudicada \n7.126.205-7 YOLANDA PURISIMA DIAZ ARAYA \nLínea 2: Herramientas. Según itemizado de Anexo Económico N°3.2 \n$   1 \n0 \n0 \nNo Adjudicada \n76.079.905-K INDUMATICA SPA \nHerramientas \n$   1 \n0 \n0 \nNo Adjudicada \n77.902.405-9 INVERSIONES THOMSEB CAPITAL SPA \nSE COTIZA EL ITEM 3.2 EM SU TOTALIDAD , DESPACHO GRATIS , ENVIO EN 9 DIAS - PRIMESOURCESPA@GMAIL.COM +56948695741 \n$   27842907 \n0 \n0 \nNo Adjudicada \nTotal Línea \n$ 0 \n3 \nClasificación ONU : \n39121549 \nTermostato \nEspecificaciones del Comprador : \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \nCantidad : \n1 \nProveedor Especificaciones del Proveedor Monto Unitario Oferta Cantidad Adjudicada Total Neto Adjudicado Estado \n76.872.717-1 IMPORTADORA HEVIA SPA \nSe adjuntan anexos correspondientes. Se adjunta pacto en anexos. \n$   1 \n0 \n0 \nNo Adjudicada \n76.176.585-k INFRAESTRUCTURAS DEPORTIVAS Y RECREACIONALES CHILE SPA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n0 \n0 \nNo Adjudicada \n78.043.535-6 INVERSIONES SUR LIMITADA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n0 \n0 \nNo Adjudicada \n7.126.205-7 YOLANDA PURISIMA DIAZ ARAYA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n0 \n0 \nNo Adjudicada \n76.079.905-K INDUMATICA SPA \nEquipos \n$   1 \n0 \n0 \nNo Adjudicada \n14.205.876-6 FERNANDO ALBERTO VELOSO OLIVA \nLínea 3: Equipos Eléctricos. Según itemizado de Anexo Económico N°3.3 \n$   1 \n68470057 \n68470057 \nAdjudicada \nTotal Línea \n$ 68.470.057 \nMonto Total Adjudicado \n$ 195.847.277"
+        },
+        "ingest": {
+          "ok": true,
+          "tender_id": "2770-211-R126",
+          "offers_written": 17
+        }
       }
     ]
   }
