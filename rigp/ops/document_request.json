@@ -1,9 +1,9 @@
 {
   "tender_ids": [
-    "4377-29-L126"
+    "4377-36-L126"
   ],
-  "limit": 6,
+  "limit": 4,
   "fetch": true,
-  "purpose": "Acquire San Rosendo predecessor tender documents independently to validate whether criteria were reused in the new call",
-  "run_label": "san-rosendo-predecessor-only-2"
+  "purpose": "Revalidate San Rosendo evaluation attachment using worker v2 with control-type aware ASP.NET handling and pre-storage hash collision checks",
+  "run_label": "san-rosendo-evaluation-revalidation-v2"
 }
