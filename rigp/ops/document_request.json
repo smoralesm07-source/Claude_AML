@@ -1,10 +1,9 @@
 {
   "tender_ids": [
-    "4377-29-L126",
-    "4377-36-L126"
+    "4377-29-L126"
   ],
   "limit": 6,
   "fetch": true,
-  "purpose": "Validate San Rosendo criteria by acquiring predecessor and current tender documents and comparing evidence",
-  "run_label": "san-rosendo-bases-validation-1"
+  "purpose": "Acquire San Rosendo predecessor tender documents independently to validate whether criteria were reused in the new call",
+  "run_label": "san-rosendo-predecessor-only-2"
 }
