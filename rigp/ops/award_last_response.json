@@ -1,0 +1,27 @@
+{
+  "http_status": 502,
+  "response": {
+    "ok": false,
+    "status": "FAILED",
+    "repository": "smoralesm07-source/Claude_AML",
+    "run_id": "34694691449",
+    "failed_count": 3,
+    "results": [
+      {
+        "tender_id": "4377-36-L126",
+        "ok": false,
+        "error": "NO_OFFER_ROWS_PARSED:0"
+      },
+      {
+        "tender_id": "2770-211-LP25",
+        "ok": false,
+        "error": "NO_OFFER_ROWS_PARSED:0"
+      },
+      {
+        "tender_id": "2770-211-R126",
+        "ok": false,
+        "error": "NO_OFFER_ROWS_PARSED:0"
+      }
+    ]
+  }
+}
