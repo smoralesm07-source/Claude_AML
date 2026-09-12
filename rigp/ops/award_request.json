@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "tender_id": "4377-36-L126",
+      "source_page_url": "https://www.mercadopublico.cl/Procurement/Modules/RFB/StepsProcessAward/PreviewAwardAct.aspx?qs=j0lCzwTRGgLrn%2F8iiyMOdlVdma0x039ey1KZhgD%2BFj8%3D"
+    },
+    {
+      "tender_id": "2770-211-LP25",
+      "source_page_url": "https://www.mercadopublico.cl/Procurement/Modules/RFB/StepsProcessAward/PreviewAwardAct.aspx?qs=iatuaRMyVqYzqBpo27L+iQ=="
+    },
+    {
+      "tender_id": "2770-211-R126",
+      "source_page_url": "https://www.mercadopublico.cl/Procurement/Modules/RFB/StepsProcessAward/PreviewAwardAct.aspx?qs=jz0Gs22HYk7sV6lDUb9tqg=="
+    }
+  ],
+  "purpose": "Populate structured public award matrices for San Rosendo and Maipu so RIGP can assess prices and winner selection without relying on broken/scanned attachments.",
+  "run_label": "priority-award-matrix-ingest-2026-09-12"
+}
