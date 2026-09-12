@@ -1,11 +1,9 @@
 {
   "tender_ids": [
-    "4377-36-L126",
-    "2770-211-LP25",
-    "2770-211-R126"
+    "1071775-10-LE26"
   ],
   "limit": 6,
   "fetch": true,
-  "purpose": "Run RIGP document worker against San Rosendo and Maipu to discover and fetch evaluation/readjudication documents with ASP.NET action resolution, signature verification and private Storage persistence",
-  "run_label": "san-rosendo-maipu-document-acquisition-v3"
+  "purpose": "Acquire Universidad de Los Lagos process 1071775-10-LE26 documents for Inversiones Sur: bases, evaluation, award, offers and execution evidence to validate or explain price outliers",
+  "run_label": "inversiones-sur-ulagos-document-acquisition"
 }
