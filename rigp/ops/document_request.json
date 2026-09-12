@@ -1,9 +1,11 @@
 {
   "tender_ids": [
-    "4377-36-L126"
+    "4377-36-L126",
+    "2770-211-LP25",
+    "2770-211-R126"
   ],
-  "limit": 4,
+  "limit": 6,
   "fetch": true,
-  "purpose": "Revalidate San Rosendo evaluation attachment using worker v2 with control-type aware ASP.NET handling and pre-storage hash collision checks",
-  "run_label": "san-rosendo-evaluation-revalidation-v2"
+  "purpose": "Run RIGP document worker against San Rosendo and Maipu to discover and fetch evaluation/readjudication documents with ASP.NET action resolution, signature verification and private Storage persistence",
+  "run_label": "san-rosendo-maipu-document-acquisition-v3"
 }
