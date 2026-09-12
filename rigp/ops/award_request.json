@@ -14,5 +14,5 @@
     }
   ],
   "purpose": "Populate structured public award matrices for San Rosendo and Maipu so RIGP can assess prices and winner selection without relying on broken/scanned attachments.",
-  "run_label": "priority-award-matrix-ingest-2026-09-12"
+  "run_label": "priority-award-matrix-ingest-2026-09-12-retry-1"
 }
