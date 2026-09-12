@@ -1,7 +1,10 @@
 {
   "artifact_keys": [
-    "2d5f5202ca8a7dff6cfe1bdd18cba6e837bc16a418c80a19144f87f9bfe611d5"
+    "755c04a3cfc2e44db074b99f3f5f4244b6fb48e4612eb7d0953a8576791dd3db",
+    "2d5f5202ca8a7dff6cfe1bdd18cba6e837bc16a418c80a19144f87f9bfe611d5",
+    "eed180a00cf158e26c21bb7008ca454bd831abc156d643c74db536dbfae42a21",
+    "69f1268d0c162b92b1bab41a7d706f66d05abe72cd5c878adad55d60ba1dbfab"
   ],
-  "purpose": "Re-extract Maipu decree 2286 after clause-scoped parser fix; verify no cross-paragraph subject/status contamination.",
-  "run_label": "maipu-readjudication-fact-parser-v2-validation"
+  "purpose": "Extract the priority Maipu evaluation/readjudication evidence and San Rosendo award decree to resolve current analytical gates.",
+  "run_label": "rigp-priority-text-extraction-2026-09-12"
 }
