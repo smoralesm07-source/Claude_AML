@@ -13,6 +13,6 @@
       "source_page_url": "https://www.mercadopublico.cl/Procurement/Modules/RFB/StepsProcessAward/PreviewAwardAct.aspx?qs=jz0Gs22HYk7sV6lDUb9tqg=="
     }
   ],
-  "purpose": "Populate structured public award matrices for San Rosendo and Maipu so RIGP can assess prices and winner selection without relying on broken/scanned attachments.",
-  "run_label": "priority-award-matrix-ingest-2026-09-12-retry-1"
+  "purpose": "Populate structured public award matrices for San Rosendo and Maipu using markup-tolerant parsing and diagnostic fallback.",
+  "run_label": "priority-award-matrix-ingest-2026-09-12-retry-2"
 }
