@@ -1,10 +1,10 @@
 {
   "artifact_keys": [
-    "2d5f5202ca8a7dff6cfe1bdd18cba6e837bc16a418c80a19144f87f9bfe611d5",
-    "30f5afc30262c1ddd82cf0b2ef5c0b6a9ca191b083e870b4d4c244bbb099ad3a",
-    "4211f9146732fb1952e46c675b78a1029443121a848d8ae4e008285cc3b2b186",
-    "60126605dfd51ae4fc83c923fbb02489d792d3faf3dd0d84801e553a7eb50cc3"
+    "c5986056519d0224479075adbe55485d20f548d391b6234e717a7338dac9bfa9",
+    "df1067f4bdf0035e7b25d30e4c385fe8760f0c68230b2d4870cfe4df7034d348",
+    "456b07006f2f89e2bc6d3622d408c0ece2ab0b2e6043538643fa05221c39fcdf",
+    "33befa7835665b3df2228d03f622f97231f74ff8c1ad46f119b6516d695eb3d5"
   ],
-  "purpose": "Extract Maipu readjudication decree 2286, original evaluation report, original award decree and readjudication certificate to resolve exit cause and replacement eligibility",
-  "run_label": "maipu-readjudication-causal-extraction"
+  "purpose": "Extract Universidad de Los Lagos 1071775-10-LE26 evaluation reports and resolutions to validate price, delivery-time, admissibility and final-score explanations for Inversiones Sur",
+  "run_label": "inversiones-sur-ulagos-evaluation-extraction"
 }
