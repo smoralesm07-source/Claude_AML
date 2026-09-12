@@ -8,7 +8,7 @@ on:
       - 'rigp/ops/award_request.json'
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -18,7 +18,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build request payload
-        id: payload
         shell: bash
         run: |
           python - <<'PY'
@@ -52,7 +51,37 @@ jobs:
             -H "Authorization: Bearer $OIDC_TOKEN" \
             -H 'Content-Type: application/json' \
             --data-binary @/tmp/rigp-award-payload.json)
+          echo "$HTTP" > /tmp/rigp-award-http.txt
           cat /tmp/rigp-award-response.json
+
+      - name: Persist diagnostic response
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw = Path('/tmp/rigp-award-response.json').read_text() if Path('/tmp/rigp-award-response.json').exists() else '{}'
+          try:
+              body = json.loads(raw)
+          except Exception:
+              body = {'raw': raw[:10000]}
+          http = Path('/tmp/rigp-award-http.txt').read_text().strip() if Path('/tmp/rigp-award-http.txt').exists() else None
+          out = {'http_status': int(http) if http and http.isdigit() else None, 'response': body}
+          Path('rigp/ops/award_last_response.json').write_text(json.dumps(out, ensure_ascii=False, indent=2) + '\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rigp/ops/award_last_response.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'rigp: record award worker response'
+            git push
+          fi
+
+      - name: Validate response
+        shell: bash
+        run: |
+          HTTP=$(cat /tmp/rigp-award-http.txt)
           if [ "$HTTP" -ge 400 ]; then
             exit 1
           fi
