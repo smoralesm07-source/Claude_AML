@@ -100,13 +100,6 @@ begin
     and 'buyer'=any(i.roles)
     and nullif(trim(b.buyer_label),'') is null;
 
-  update public.ps_supplier_metric s
-  set top_buyer_label = i.canonical_label
-  from provider_analyzer.party_identity i
-  where regexp_replace(upper(coalesce(s.top_buyer_id,'')),'[^0-9K]','','g') = i.party_key
-    and 'buyer'=any(i.roles)
-    and nullif(trim(s.top_buyer_label),'') is null;
-
   return jsonb_build_object('ok',true,'received',v_received,'written',v_written,'storage','PARTY_IDENTITY_V1');
 end
 $$;
