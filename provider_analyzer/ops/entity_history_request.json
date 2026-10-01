@@ -1,8 +1,8 @@
 {
   "schema": "PROVIDER_ENTITY_HISTORY_REQUEST_V1",
-  "requested_at": "2026-10-01T09:50:00-03:00",
-  "start_year": 2020,
+  "requested_at": "2026-10-01T10:44:00-03:00",
+  "start_year": 2007,
   "end_year": 2023,
   "storage": "SUPPLIER_YEAR_PACKED_V1",
-  "reason": "Construir la capa histórica de consulta por entidad para Atlas sin materializar meses antiguos en Supabase. 2020-2023 completa el tramo caliente previo al histórico mensual existente desde 2024."
+  "reason": "Completar la historia consultable por entidad de Mercado Publico. Se conserva 2020+ como ventana predeterminada de Atlas, pero se carga 2007-2019 en la capa anual compacta porque su huella proyectada es acotada frente al detalle mensual. Incluye reparar la ausencia detectada de 2021."
 }
