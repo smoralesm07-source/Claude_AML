@@ -1,0 +1,124 @@
+name: Provider Market Identity · monthly and backfill
+
+on:
+  schedule:
+    - cron: '17 12 16 * *'
+  workflow_dispatch:
+    inputs:
+      start_year:
+        description: Año inicial; vacío = último mes completo
+        required: false
+        default: ''
+        type: string
+      start_month:
+        description: Mes inicial; vacío = último mes completo
+        required: false
+        default: ''
+        type: string
+      end_year:
+        description: Año final; vacío = mismo período inicial
+        required: false
+        default: ''
+        type: string
+      end_month:
+        description: Mes final; vacío = mismo período inicial
+        required: false
+        default: ''
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - 'provider_analyzer/ops/identity_request.json'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: provider-market-identity
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e provider_analyzer
+      - id: plan
+        shell: bash
+        env:
+          INPUT_START_YEAR: ${{ inputs.start_year || '' }}
+          INPUT_START_MONTH: ${{ inputs.start_month || '' }}
+          INPUT_END_YEAR: ${{ inputs.end_year || '' }}
+          INPUT_END_MONTH: ${{ inputs.end_month || '' }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          event = os.environ.get('GITHUB_EVENT_NAME')
+          if event == 'push':
+              req = json.loads(Path('provider_analyzer/ops/identity_request.json').read_text(encoding='utf-8'))
+              sy, sm = int(req['start_year']), int(req['start_month'])
+              ey, em = int(req['end_year']), int(req['end_month'])
+          else:
+              sy_raw = os.environ.get('INPUT_START_YEAR') or ''
+              sm_raw = os.environ.get('INPUT_START_MONTH') or ''
+              ey_raw = os.environ.get('INPUT_END_YEAR') or ''
+              em_raw = os.environ.get('INPUT_END_MONTH') or ''
+              if bool(sy_raw) != bool(sm_raw):
+                  raise SystemExit('start_year and start_month must be provided together')
+              if bool(ey_raw) != bool(em_raw):
+                  raise SystemExit('end_year and end_month must be provided together')
+              if sy_raw:
+                  sy, sm = int(sy_raw), int(sm_raw)
+                  ey, em = (int(ey_raw), int(em_raw)) if ey_raw else (sy, sm)
+              else:
+                  now = datetime.now(timezone.utc)
+                  y, m = now.year, now.month - 1
+                  if m == 0:
+                      y, m = y - 1, 12
+                  sy = ey = y
+                  sm = em = m
+
+          start = sy * 12 + (sm - 1)
+          end = ey * 12 + (em - 1)
+          if sy < 2007 or sm < 1 or sm > 12 or em < 1 or em > 12 or start > end:
+              raise SystemExit('invalid period range')
+          include = []
+          for serial in range(start, end + 1):
+              y, m0 = divmod(serial, 12)
+              m = m0 + 1
+              include.append({'year': y, 'month': m, 'period': f'{y:04d}-{m:02d}'})
+          matrix = {'include': include}
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as fh:
+              fh.write('matrix=' + json.dumps(matrix, separators=(',', ':')) + '\n')
+          print(json.dumps({'months': len(include), 'start': include[0]['period'], 'end': include[-1]['period']}))
+          PY
+
+  sync:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e provider_analyzer
+      - name: Extract and persist compact party identities
+        run: |
+          python provider_analyzer/scripts/sync_chilecompra_party_identity.py \
+            --year "${{ matrix.year }}" \
+            --month "${{ matrix.month }}" \
+            --persist

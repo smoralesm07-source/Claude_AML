@@ -51,21 +51,35 @@ begin
       coalesce(sum(order_count),0)::bigint order_count,
       (select count(*)::integer from buyer_agg) buyer_count
     from sy
+  ), supplier_identity as (
+    select i.canonical_label
+    from provider_analyzer.party_identity i
+    where i.party_key=v_rut
+    limit 1
   )
   select jsonb_build_object(
     'ok',true,
     'schema','PROVIDER_ENTITY_HISTORY_V1',
     'rut',v_rut,
+    'label',(select canonical_label from supplier_identity),
     'period',jsonb_build_object('from_year',v_from,'to_year',v_to),
-    'summary',case when exists(select 1 from sy) then (select to_jsonb(summary) from summary) else null end,
+    'summary',case when exists(select 1 from sy)
+      then ((select to_jsonb(summary) from summary) || jsonb_build_object('label',(select canonical_label from supplier_identity)))
+      else null end,
     'years',coalesce((select jsonb_agg(to_jsonb(x) order by x.year desc) from (
       select year,amount_total_clp amount_clp,order_count,buyer_count,active_months,first_seen,last_seen from sy
     ) x),'[]'::jsonb),
     'buyers',coalesce((select jsonb_agg(to_jsonb(x) order by x.amount_clp desc nulls last,x.buyer_id) from (
-      select buyer_id,amount_clp,order_count from buyer_agg order by amount_clp desc nulls last,buyer_id limit 100
+      select a.buyer_id,i.canonical_label buyer_label,a.amount_clp,a.order_count
+      from buyer_agg a
+      left join provider_analyzer.party_identity i
+        on i.party_key=upper(regexp_replace(a.buyer_id,'[^0-9A-Za-z]','','g'))
+      order by a.amount_clp desc nulls last,a.buyer_id
+      limit 100
     ) x),'[]'::jsonb),
     'semantics',jsonb_build_object(
       'source','ChileCompra · provider_analyzer.supplier_year',
+      'identity_source','ChileCompra · provider_analyzer.party_identity',
       'amounts','Montos agregados por proveedor y año.',
       'buyers','Compradores agregados a partir del arreglo anual buyers; máximo 100 contrapartes por respuesta.',
       'public_data',true
