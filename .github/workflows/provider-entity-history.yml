@@ -1,0 +1,107 @@
+name: Provider Entity History · annual compact
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_year:
+        description: Año inicial (>= 2007)
+        required: true
+        default: '2020'
+        type: string
+      end_year:
+        description: Año final
+        required: true
+        default: '2023'
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - 'provider_analyzer/ops/entity_history_request.json'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: provider-entity-history
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        shell: bash
+        env:
+          INPUT_START_YEAR: ${{ inputs.start_year }}
+          INPUT_END_YEAR: ${{ inputs.end_year }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from datetime import date
+          from pathlib import Path
+
+          if os.environ.get('GITHUB_EVENT_NAME') == 'push':
+              req = json.loads(Path('provider_analyzer/ops/entity_history_request.json').read_text(encoding='utf-8'))
+              start = int(req['start_year'])
+              end = int(req['end_year'])
+          else:
+              start = int(os.environ.get('INPUT_START_YEAR') or 2020)
+              end = int(os.environ.get('INPUT_END_YEAR') or 2023)
+
+          current = date.today().year
+          if start < 2007 or end < start or end > current:
+              raise SystemExit(f'invalid range {start}..{end}')
+          matrix = {'year': list(range(start, end + 1))}
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as fh:
+              fh.write('matrix=' + json.dumps(matrix, separators=(',', ':')) + '\n')
+          print(json.dumps({'start_year': start, 'end_year': end, 'years': matrix['year']}))
+          PY
+
+  history:
+    needs: plan
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e provider_analyzer
+
+      - name: Mark annual history as running
+        run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "ENTITY_HISTORY_${{ matrix.year }}" --status RUNNING --period "${{ matrix.year }}"
+
+      - name: Build compact supplier-year history
+        run: |
+          python provider_analyzer/scripts/build_chilecompra_supplier_year.py \
+            --year "${{ matrix.year }}" \
+            --output-dir "runtime/provider_entity_history/${{ matrix.year }}"
+
+      - name: Persist compact supplier-year history
+        run: |
+          python provider_analyzer/scripts/persist_supplier_year.py \
+            --supplier-year "runtime/provider_entity_history/${{ matrix.year }}/supplier_year_${{ matrix.year }}.jsonl.gz" \
+            --coverage "runtime/provider_entity_history/${{ matrix.year }}/coverage_${{ matrix.year }}.json"
+
+      - name: Mark annual history as successful
+        if: success()
+        run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "ENTITY_HISTORY_${{ matrix.year }}" --status SUCCESS --period "${{ matrix.year }}"
+
+      - name: Mark annual history as failed
+        if: failure()
+        run: python provider_analyzer/scripts/mark_provider_run.py --pipeline "ENTITY_HISTORY_${{ matrix.year }}" --status FAILED --period "${{ matrix.year }}"
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: provider-entity-history-failure-${{ matrix.year }}
+          path: runtime/provider_entity_history/${{ matrix.year }}/
+          retention-days: 7
