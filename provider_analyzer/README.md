@@ -14,7 +14,7 @@ Las señales son **priorización analítica**, no inferencias de delito, infracc
 
 La persistencia pesada vive en el proyecto Supabase `AML CLAUDE`, esquema privado `provider_analyzer`. Se guardan resúmenes mensuales comprador–proveedor, cobertura, eventos compactos de ruta, señales y evidencia. Los artefactos grandes usan el bucket privado `provider-analyzer-runtime`.
 
-`supplier_year` mantiene el histórico anual compacto desde 2007. El acceso desde ATLAS se realiza mediante `provider_entity_history_v1` y la Edge Function `provider-entity-history`; la función SQL sólo es ejecutable por `service_role` y el endpoint valida el JWT de la sesión ATLAS y el gate de usuarios habilitados antes de consultar.
+`supplier_year` mantiene el histórico anual compacto desde 2007. El núcleo Provider Analyzer sólo publica `provider_entity_history_v1`, ejecutable por `service_role`. La autenticación cruzada con ATLAS se implementa fuera del núcleo, en `integrations/atlas-provider-history`, para preservar el guardrail que impide introducir referencias del proyecto ATLAS dentro de `provider_analyzer`.
 
 ## Operación
 
@@ -26,6 +26,7 @@ La persistencia pesada vive en el proyecto Supabase `AML CLAUDE`, esquema privad
 ## Contratos hacia ATLAS / Fusion
 
 - Señales: `exports/provider_signals_v1.jsonl` + `exports/manifest.json`.
-- Historia individual: `sql/provider_entity_history_v1.sql` + `edge/provider-entity-history/index.ts`.
+- Historia individual: `sql/provider_entity_history_v1.sql`.
+- Bridge ATLAS (fuera del núcleo): `../integrations/atlas-provider-history/index.ts`.
 
 Fusion puede cruzar señales con CGR, SII, UAF, sanciones y otras fuentes, pero no ejecuta el análisis masivo de compras públicas. La consulta histórica individual está limitada a un RUT y rango temporal por solicitud, preservando esta frontera de arquitectura.
