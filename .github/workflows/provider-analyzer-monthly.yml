@@ -134,14 +134,28 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git pull --rebase origin main
+          # IMPORTANTE: primero integrar al commit los archivos generados.
+          # Hacer pull --rebase con un working tree modificado provocó fallas
+          # recurrentes en julio, agosto y septiembre de 2026.
           git add \
             provider_analyzer/exports/manifest.json \
             provider_analyzer/exports/provider_signals_v1.jsonl \
             provider_analyzer/exports/provider_evidence_v1.jsonl \
             provider_analyzer/exports/provider_events_v1.jsonl \
             provider_analyzer/exports/provider_context_signals_v1.jsonl
-          if ! git diff --cached --quiet; then git commit -m "data: provider analyzer ${{ steps.period.outputs.period }}"; git push origin HEAD:main; fi
+          if ! git diff --cached --quiet; then
+            git commit -m "data: provider analyzer ${{ steps.period.outputs.period }}"
+            # No descartar otros archivos ni ejecutar reset --hard.
+            # Si hay modificaciones extra, mantener artefacto de la corrida
+            # y fallar explícitamente hasta revisar qué las produjo.
+            if [[ -n "$(git status --porcelain)" ]]; then
+              echo "::error::Existen cambios no publicados fuera del export; rebase bloqueado por seguridad"
+              git status --short
+              exit 1
+            fi
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
       - name: Mark monthly analyzer as successful
         if: ${{ success() }}
         run: |
